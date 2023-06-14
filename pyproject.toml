@@ -17,6 +17,12 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+dependencies = [
+  "botok >= 0.8.1",
+  "pybo >= 0.7.3",
+]
+
+
 [project.optional-dependencies]
 dev = [
     "pytest",
