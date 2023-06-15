@@ -5,7 +5,7 @@ from pybo.corpus.word_cleanup import word_cleanup
 
 def replace_initial_patterns(file_string):
     # Some signs(i.e ?,+,- ) are presented in human annotated training files which needs to be edited
-    initial_patterns = {"?": " ", "+": " ", "-": "", "[ ]+": " "}
+    initial_patterns = {"?": " ", "+": "", "-": "", "[ ]+": " "}
     modified_content = re.sub(
         "|".join(re.escape(key) for key in initial_patterns.keys()),
         lambda match: initial_patterns[match.group(0)],

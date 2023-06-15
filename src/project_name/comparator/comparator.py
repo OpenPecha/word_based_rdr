@@ -18,4 +18,4 @@ def comparator(file_string):
     botok_output = botok_max_matcher(file_string)
 
     equal_number_of_syls = equal_syllables_comparator(gold_corpus_output, botok_output)
-    return equal_number_of_syls
+    return equal_number_of_syls, gold_corpus_output, botok_output
