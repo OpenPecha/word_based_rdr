@@ -1,7 +1,7 @@
 from src.word_segmentation_rules_generator.preprocessing.preprocessor import file_2_botok, gold_corpus_2_tagger
 
 
-#Test function for file string that will go to botok for testing
+#Test function for file string to have no gap, so that there wont be bias before sending it to botok max match
 def test_file_2_botok():
     assert (
         file_2_botok("༄༅། །རྒྱལ་ པོ་ ལ་ གཏམ་ བྱ་ བ་ རིན་ པོ་ ཆེ འི་ ཕྲེང་་་ བ། ལ་ ལ་ ལ་ ལ་ ལ་ བ་ ཡོད། དཔལ། དགེའོ་ བཀྲ་ ཤིས་ ཤོག།")
