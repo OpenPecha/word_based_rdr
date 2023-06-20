@@ -25,10 +25,21 @@ def file_2_botok(file_string):
     input: string of a file before going under max match(botok)
     output/return: cleaned/preprocess string
     """
+
     modified_content = replace_initial_patterns(file_string)
-    t = Text(modified_content)
-    preprocessed_string = t.tokenize_chunks_plaintext
-    return preprocessed_string
+    #making sure there only one space
+    pattern = r"[ ]+"
+    replacement = ' '
+    modified_content = re.sub(pattern, replacement, modified_content)
+
+    patterns = {
+        r'([^།]) ([^།])':r'\1\2', #Full stop (2 different kind)
+    }
+
+
+    for pattern, replacement in patterns.items():
+        modified_content = re.sub(pattern, replacement, modified_content)
+    return modified_content
 
 
 def gold_corpus_2_tagger(file_string):

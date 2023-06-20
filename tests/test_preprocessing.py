@@ -4,8 +4,8 @@ from src.word_segmentation_rules_generator.preprocessing.preprocessor import fil
 #Test function for file string that will go to botok for testing
 def test_file_2_botok():
     assert (
-        file_2_botok("༄༅། །རྒྱལ་པོ་ ལ་ གཏམ་ བྱ་བ་ རིན་པོ་ཆེ-འི་ ཕྲེང་བ།")
-        == "རྒྱལ་པོ་ལ་གཏམ་བྱ་བ་རིན་པོ་ཆེའི་ཕྲེང་བ་"
+        file_2_botok("༄༅། །རྒྱལ་ པོ་ ལ་ གཏམ་ བྱ་ བ་ རིན་ པོ་ ཆེ འི་ ཕྲེང་་་ བ། ལ་ ལ་ ལ་ ལ་ ལ་ བ་ ཡོད། དཔལ། དགེའོ་ བཀྲ་ ཤིས་ ཤོག།")
+        == "༄༅། །རྒྱལ་པོ་ལ་གཏམ་བྱ་བ་རིན་པོ་ཆེའི་ཕྲེང་་་བ། ལ་ལ་ལ་ལ་ལ་བ་ཡོད། དཔལ། དགེའོ་བཀྲ་ཤིས་ཤོག།"
     )
 
 #Test function for gold corpus going into tagger 
