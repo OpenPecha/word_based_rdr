@@ -13,7 +13,7 @@ def replace_initial_patterns(file_string):
     )
     return modified_content
 
-def clean_gold_corpus_output(file_string):
+def tokenize_chunks_cleanup(file_string):
     patterns = {r"([^།_]) ([^།_])": r"\1\2", r"([^།])_ ": r"\1 "}
     modified_content = file_string
     for pattern, replacement in patterns.items():
@@ -37,10 +37,24 @@ def gold_corpus_2_tagger(file_string):
     output/return: cleaned/preprocess string where words are still separated by space
     """
     modified_content = replace_initial_patterns(file_string)
-    t = Text(modified_content)
-    preprocessed_string = t.tokenize_chunks_plaintext
-    gold_corpus_output = clean_gold_corpus_output(preprocessed_string)
+    patterns = {
+        #  '(་|༌)':r'\1 ', #Full stop (2 different kind)
+          '([^༅])།':r'\1 །', 
+          '།\s*།':'།_། ',
+          '([^_༅])། ': r'\1 །_ ',# དུ། -> དུ །_ 
+          ' །([^_])': r' །_ \1', # །བསྲེགས ->  །_ བསྲེགས་
+          '([^།་༌_ ]) ': r'\1 ',  # Putting full stop དུ། -> དུ་ །_
+    }
+    for pattern, replacement in patterns.items():
+        modified_content = re.sub(pattern, replacement, modified_content)
+    #making sure there only one space
+    pattern = r"[ ]+"
+    replacement = ' '
+    gold_corpus_output = re.sub(pattern, replacement, modified_content)
+    
+
     return gold_corpus_output
+
     
 if __name__ == "__main__":
     pass
