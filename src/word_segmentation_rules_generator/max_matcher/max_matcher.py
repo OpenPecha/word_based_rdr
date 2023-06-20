@@ -2,6 +2,7 @@ from botok import Text
 
 from ..preprocessing.preprocessor import replace_initial_patterns
 
+
 def botok_max_matcher(file_string):
     """
     input: string of a file before going under max match(botok)

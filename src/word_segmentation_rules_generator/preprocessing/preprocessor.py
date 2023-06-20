@@ -13,6 +13,12 @@ def replace_initial_patterns(file_string):
     )
     return modified_content
 
+def clean_gold_corpus_output(file_string):
+    patterns = {r"([^།_]) ([^།_])": r"\1\2", r"([^།])_ ": r"\1 "}
+    modified_content = file_string
+    for pattern, replacement in patterns.items():
+        modified_content = re.sub(pattern, replacement, modified_content)
+    return modified_content
 
 def file_2_botok(file_string):
     """
@@ -33,8 +39,8 @@ def gold_corpus_2_tagger(file_string):
     modified_content = replace_initial_patterns(file_string)
     t = Text(modified_content)
     preprocessed_string = t.tokenize_chunks_plaintext
-    return preprocessed_string
-
-
+    gold_corpus_output = clean_gold_corpus_output(preprocessed_string)
+    return gold_corpus_output
+    
 if __name__ == "__main__":
     pass
