@@ -1,4 +1,4 @@
-from src.project_name.max_matcher.max_matcher import botok_max_matcher
+from src.word_segmentation_rules_generator.max_matcher.max_matcher import botok_max_matcher
 
 
 def test_botok_max_matcher():

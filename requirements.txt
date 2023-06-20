@@ -17,7 +17,6 @@ packaging==23.1
 platformdirs==3.5.3
 pluggy==1.0.0
 pre-commit==3.3.3
-project-name @ file:///C:/Users/tenzin%20tsundue/Desktop/Monlam%20Workspace/OpenPecha_git_space/word_based_rdr
 pybo==0.8.0
 pyewts==0.2.0
 pytest==7.3.2

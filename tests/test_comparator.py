@@ -1,4 +1,4 @@
-from src.project_name.comparator.comparator import comparator
+from src.word_segmentation_rules_generator.comparator.comparator import comparator
 
 
 def test_comparator():

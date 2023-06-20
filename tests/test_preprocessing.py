@@ -1,7 +1,4 @@
-from src.project_name.preprocessing.preprocessor import (
-    file_2_botok,
-    gold_corpus_2_tagger,
-)
+from src.word_segmentation_rules_generator.preprocessing.preprocessor import file_2_botok, gold_corpus_2_tagger
 
 
 def test_file_2_botok():
