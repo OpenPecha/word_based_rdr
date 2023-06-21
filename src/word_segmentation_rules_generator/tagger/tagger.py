@@ -57,9 +57,9 @@ def tagger(file_string):
 
     gold_corpus_words = gold_corpus_output.split()
     #Spliting on space and affixes, if max match has'nt done it
-    pattern = r"\s+|ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང"
-    botok_words = re.split(pattern, botok_output)
-    #botok_words = botok_output.split()
+    # pattern = r"\s+|ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང"
+    # botok_words = re.split(pattern, botok_output)
+    botok_words = botok_output.split()
     botok_words_count = len(botok_words)
     gold_corpus_words_count = len(gold_corpus_words)
 

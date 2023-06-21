@@ -3,8 +3,8 @@ from ..preprocessing.preprocessor import gold_corpus_2_tagger
 
 
 def is_equal_string_length(gold_corpus_string, botok_output_string):
-    gold_corpus_without_spaces = gold_corpus_string.replace(" ", "").replace("_", "")
-    botok_output_string_without_spaces = botok_output_string.replace(" ", "").replace("_", "")
+    gold_corpus_without_spaces = gold_corpus_string.replace(" ", "").replace("_", "").replace("-","")
+    botok_output_string_without_spaces = botok_output_string.replace(" ", "").replace("_", "").replace("-","")
 
     equal_string_length = len(gold_corpus_without_spaces) == len(
         botok_output_string_without_spaces

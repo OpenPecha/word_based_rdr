@@ -8,7 +8,7 @@ def replace_initial_patterns(file_string, is_gold_corpus=False):
     # There are two different kind of TSEK, and here proper tsek been replaced
     initial_patterns = {"?": " ", "+": "", "-": "", "[ ]+": " ", "༌":TSEK}
     if is_gold_corpus:
-            initial_patterns = {"?": " ", "+": "", "-": " ", "[ ]+": " ", "༌":TSEK}
+            initial_patterns = {"?": " ", "+": "", "[ ]+": " ", "༌":TSEK}
 
     modified_content = re.sub(
         "|".join(re.escape(key) for key in initial_patterns.keys()),

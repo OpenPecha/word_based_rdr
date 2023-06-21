@@ -34,6 +34,9 @@ def botok_max_matcher(file_string):
     max_match_output = t.tokenize_words_raw_text
     max_match_output = adjust_spaces(max_match_output)
     max_match_output = SHADS_alignment(max_match_output)
+    pattern = r"([^་།_]) (ར་|ས་|འི་|འམ་|འང་|འོ་|འིའོ་|འིའམ་|འིའང་|འོའམ་|འོའང་)"
+    replacement = r"\1-\2"
+    max_match_output = re.sub(pattern, replacement, max_match_output)
     return max_match_output
 
 
