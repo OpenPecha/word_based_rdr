@@ -1,4 +1,6 @@
 max_match_output.py
+TIB_train.txt
+TIB_tagged.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

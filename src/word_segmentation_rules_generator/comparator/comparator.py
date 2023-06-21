@@ -3,8 +3,8 @@ from ..preprocessing.preprocessor import gold_corpus_2_tagger
 
 
 def equal_syllables_comparator(gold_corpus_string, botok_output_string):
-    gold_corpus_without_spaces = gold_corpus_string.replace(" ", "")
-    botok_output_string_without_spaces = botok_output_string.replace(" ", "")
+    gold_corpus_without_spaces = gold_corpus_string.replace(" ", "").replace("_", "")
+    botok_output_string_without_spaces = botok_output_string.replace(" ", "").replace("_", "")
 
     equal_number_of_syls = len(gold_corpus_without_spaces) == len(
         botok_output_string_without_spaces
