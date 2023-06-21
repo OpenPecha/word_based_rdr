@@ -17,6 +17,7 @@ def SHADS_alignment(file_string):
           '_།_།':'།_།',
           '_།_': '_།',
           " _།":' །_',
+          r'།_([^། ])':r'།_ \1'
           
     }
     for pattern, replacement in patterns.items():

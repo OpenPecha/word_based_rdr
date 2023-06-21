@@ -2,6 +2,8 @@ import re
 
 from botok import TSEK
 
+from src.word_segmentation_rules_generator.preprocessing.preprocessor import adjust_spaces
+
 from ..comparator.comparator import comparator
 
 
@@ -43,31 +45,35 @@ def gold_corpus_tagger(gold_corpus_words, gold_index, gold_index_track):
 
 
 def tagger(file_string):
+    # equal_number_of_syls, gold_corpus_output, botok_output = comparator(file_string)
+
     equal_number_of_syls, gold_corpus_output, botok_output = comparator(file_string)
+
     if equal_number_of_syls is False:
         return "ValueError: Output of gold corpus and botok output does not match."
 
-    pattern = r"[ ]+"
-    replacement = " "
-
-    gold_corpus_output = re.sub(pattern, replacement, gold_corpus_output.strip())
-    botok_output = re.sub(pattern, replacement, botok_output.strip())
+    gold_corpus_output = adjust_spaces(gold_corpus_output)
+    botok_output = adjust_spaces(botok_output)
 
     gold_corpus_words = gold_corpus_output.split()
-    botok_words = botok_output.split()
+    #Spliting on space and affixes, if max match has'nt done it
+    pattern = r"\s+|ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང"
+    botok_words = re.split(pattern, botok_output)
+    #botok_words = botok_output.split()
     botok_words_count = len(botok_words)
+    gold_corpus_words_count = len(gold_corpus_words)
 
     gold_index = 0
     botok_index = 0
     tagged_content = ""
-    while botok_index < botok_words_count:
+    while botok_index < botok_words_count and gold_index < gold_corpus_words_count:
         condition1 = botok_words[botok_index] == gold_corpus_words[gold_index]
-        condition2 = botok_index == 0 or (
-            "".join(botok_words[:botok_index])
-            == "".join(gold_corpus_words[:gold_index])
-        )
+        # condition2 = botok_index == 0 or (
+        #     "".join(botok_words[:botok_index])
+        #     == "".join(gold_corpus_words[:gold_index])
+        # )
         # If the word matches perfectly in output of both botok and gold corpus
-        if condition1 and condition2:
+        if condition1:
             tagged_content += botok_words[botok_index] + "/P "
             gold_index += 1
             botok_index += 1
@@ -75,20 +81,27 @@ def tagger(file_string):
 
         gold_index_track = gold_index
         botok_index_track = botok_index
+
         # Find the occurence of the next perfect word that matches in output of both botok and gold corpus
-        while not (
-            (botok_words[botok_index_track] == gold_corpus_words[gold_index_track])
-            and (
-                "".join(botok_words[botok_index : botok_index_track + 1])  # noqa
-                == "".join(gold_corpus_words[gold_index : gold_index_track + 1])  # noqa
-            )
+        while (botok_index_track < botok_words_count) and (
+            gold_index_track < gold_corpus_words_count
         ):
+
+            condition_1 = (
+                botok_words[botok_index_track] == gold_corpus_words[gold_index_track]
+            )
+
             botok_unmatched_words = "".join(
                 botok_words[botok_index : botok_index_track + 1]  # noqa
             )
             gold_corpus_unmatched_words = "".join(
                 gold_corpus_words[gold_index : gold_index_track + 1]  # noqa
             )
+
+            if condition_1 and (
+                len(botok_unmatched_words) == len(gold_corpus_unmatched_words)
+            ):
+                break
 
             botok_unmatched_syls = split_by_TSEK(botok_unmatched_words)
             gold_corpus_unmatched_syls = split_by_TSEK(gold_corpus_unmatched_words)
