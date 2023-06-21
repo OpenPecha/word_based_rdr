@@ -3,10 +3,13 @@ import re
 from botok import TSEK
 
 
-def replace_initial_patterns(file_string):
+def replace_initial_patterns(file_string, is_gold_corpus=False):
     # Some signs(i.e ?,+,- ) are presented in human annotated training files which needs to be edited
     # There are two different kind of TSEK, and here proper tsek been replaced
-    initial_patterns = {"?": " ", "+": "", "-": " ", "[ ]+": " ", "༌":TSEK}
+    initial_patterns = {"?": " ", "+": "", "-": "", "[ ]+": " ", "༌":TSEK}
+    if is_gold_corpus:
+            initial_patterns = {"?": " ", "+": "", "-": " ", "[ ]+": " ", "༌":TSEK}
+
     modified_content = re.sub(
         "|".join(re.escape(key) for key in initial_patterns.keys()),
         lambda match: initial_patterns[match.group(0)],
@@ -59,7 +62,7 @@ def gold_corpus_2_tagger(file_string):
     input: string where words are separated with space by human annotators before going to tagger
     output/return: cleaned/preprocess string where words are still separated by space
     """
-    modified_content = replace_initial_patterns(file_string)
+    modified_content = replace_initial_patterns(file_string, is_gold_corpus=True)
     patterns = {
           '([^༅])།':r'\1 །', 
           '།\\s*།':'།_། ',
