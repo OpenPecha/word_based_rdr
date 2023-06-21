@@ -43,11 +43,11 @@ def file_2_botok(file_string):
     pattern = r"[ ]+"
     replacement = ' '
     modified_content = re.sub(pattern, replacement, modified_content)
-
+    
+    #Joining all the words, not leaving spaces unless its for SHAD
     patterns = {
-        r'([^།]) ([^།])':r'\1\2', #Full stop (2 different kind)
+        r'([^།]) ([^།])':r'\1\2', 
     }
-
 
     for pattern, replacement in patterns.items():
         modified_content = re.sub(pattern, replacement, modified_content)
@@ -61,7 +61,6 @@ def gold_corpus_2_tagger(file_string):
     """
     modified_content = replace_initial_patterns(file_string)
     patterns = {
-        #  '(་|༌)':r'\1 ', #Full stop (2 different kind)
           '([^༅])།':r'\1 །', 
           '།\\s*།':'།_། ',
           '([^_༅])། ': r'\1 །_ ',# དུ། -> དུ །_ 
