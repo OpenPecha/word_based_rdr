@@ -1,6 +1,5 @@
 from botok import Text 
 
-from ..preprocessing.preprocessor import replace_initial_patterns
 from ..preprocessing.preprocessor import file_2_botok
 
 def botok_max_matcher(file_string):
