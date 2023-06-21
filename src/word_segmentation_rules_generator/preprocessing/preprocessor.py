@@ -1,11 +1,11 @@
 import re
 
-from botok import Text 
+from botok import TSEK
 
 
 def replace_initial_patterns(file_string):
     # Some signs(i.e ?,+,- ) are presented in human annotated training files which needs to be edited
-    initial_patterns = {"?": " ", "+": "", "-": "", "[ ]+": " "}
+    initial_patterns = {"?": " ", "+": "", "-": " ", "[ ]+": " "}
     modified_content = re.sub(
         "|".join(re.escape(key) for key in initial_patterns.keys()),
         lambda match: initial_patterns[match.group(0)],
@@ -13,12 +13,11 @@ def replace_initial_patterns(file_string):
     )
     return modified_content
 
-def tokenize_chunks_cleanup(file_string):
-    patterns = {r"([^།_]) ([^།_])": r"\1\2", r"([^།])_ ": r"\1 "}
-    modified_content = file_string
-    for pattern, replacement in patterns.items():
-        modified_content = re.sub(pattern, replacement, modified_content)
-    return modified_content
+def adjust_spaces(file_string):
+    pattern = r"[ ]+"
+    replacement = ' '
+    modified_string = re.sub(pattern, replacement, file_string.strip())
+    return modified_string
 
 def file_2_botok(file_string):
     """
@@ -62,7 +61,7 @@ def gold_corpus_2_tagger(file_string):
     pattern = r"[ ]+"
     replacement = ' '
     gold_corpus_output = re.sub(pattern, replacement, modified_content)
-    
+    gold_corpus_output = adjust_spaces(gold_corpus_output)
 
     return gold_corpus_output
 
