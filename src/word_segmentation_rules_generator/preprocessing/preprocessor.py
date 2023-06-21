@@ -50,7 +50,7 @@ def gold_corpus_2_tagger(file_string):
     patterns = {
         #  '(་|༌)':r'\1 ', #Full stop (2 different kind)
           '([^༅])།':r'\1 །', 
-          '།\s*།':'།_། ',
+          '།\\s*།':'།_། ',
           '([^_༅])། ': r'\1 །_ ',# དུ། -> དུ །_ 
           ' །([^_])': r' །_ \1', # །བསྲེགས ->  །_ བསྲེགས་
           '([^།་༌_ ]) ': r'\1 ',  # Putting full stop དུ། -> དུ་ །_
@@ -62,7 +62,7 @@ def gold_corpus_2_tagger(file_string):
     replacement = ' '
     gold_corpus_output = re.sub(pattern, replacement, modified_content)
     gold_corpus_output = adjust_spaces(gold_corpus_output)
-
+    
     return gold_corpus_output
 
     
