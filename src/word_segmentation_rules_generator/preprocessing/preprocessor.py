@@ -5,7 +5,8 @@ from botok import TSEK
 
 def replace_initial_patterns(file_string):
     # Some signs(i.e ?,+,- ) are presented in human annotated training files which needs to be edited
-    initial_patterns = {"?": " ", "+": "", "-": " ", "[ ]+": " "}
+    # There are two different kind of TSEK, and here proper tsek been replaced
+    initial_patterns = {"?": " ", "+": "", "-": " ", "[ ]+": " ", "༌":TSEK}
     modified_content = re.sub(
         "|".join(re.escape(key) for key in initial_patterns.keys()),
         lambda match: initial_patterns[match.group(0)],

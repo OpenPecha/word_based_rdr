@@ -8,7 +8,6 @@ def botok_max_matcher(file_string):
     input: string of a file before going under max match(botok)
     output/return: cleaned/preprocess string and word segmented
     """
-    file_string = replace_initial_patterns(file_string)
     preprocessed_string = file_2_botok(file_string)
     t = Text(preprocessed_string)
     max_match_output = t.tokenize_words_raw_text
