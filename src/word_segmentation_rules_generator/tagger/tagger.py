@@ -7,11 +7,52 @@ from src.word_segmentation_rules_generator.preprocessing.preprocessor import adj
 from ..comparator.comparator import comparator
 
 
+# def split_by_TSEK(string_to_split):
+#     split_pattern = r"[༌་]"
+#     string_to_split = re.split(split_pattern, string_to_split)
+#     string_to_split = list(filter(None, string_to_split))
+#     return string_to_split
+
 def split_by_TSEK(string_to_split):
-    split_pattern = r"[༌་]"
-    string_to_split = re.split(split_pattern, string_to_split)
-    string_to_split = list(filter(None, string_to_split))
-    return string_to_split
+    pattern = r"[་]+"  #Removing multiple TSEKs
+    replacement = '་'
+    string_to_split = re.sub(pattern, replacement, string_to_split)
+    split_pattern = TSEK
+    splited_list= re.split(split_pattern, string_to_split)
+    if len(splited_list)==1:
+        return splited_list
+    for index, element in enumerate(splited_list):
+        if element == '':
+            splited_list[index-1] += TSEK
+            break
+        if index == len(splited_list)-1:
+            break
+        if splited_list[index+1] != '':
+            splited_list[index] += TSEK
+    
+        
+    splited_list = list(filter(None, splited_list))
+    return splited_list
+def split_by_TSEK(string_to_split):
+    pattern = r"[་]+"  #Removing multiple TSEKs
+    replacement = '་'
+    string_to_split = re.sub(pattern, replacement, string_to_split)
+    split_pattern = TSEK
+    splited_list= re.split(split_pattern, string_to_split)
+    if len(splited_list)==1:
+        return splited_list
+    for index, element in enumerate(splited_list):
+        if element == '':
+            splited_list[index-1] += TSEK
+            break
+        if index == len(splited_list)-1:
+            break
+        if splited_list[index+1] != '':
+            splited_list[index] += TSEK
+    
+        
+    splited_list = list(filter(None, splited_list))
+    return splited_list
 
 
 def split_list_with_TSEK(list_to_split):
@@ -47,7 +88,7 @@ def gold_corpus_tagger(gold_corpus_words, gold_index, gold_index_track):
 
         new_word = True
         for gold_corpus_unmatched_syl in gold_corpus_unmatched_syls:
-            gold_corpus_syls_tagged.append(gold_corpus_unmatched_syl + TSEK)
+            gold_corpus_syls_tagged.append(gold_corpus_unmatched_syl)
             if new_word:
                 gold_corpus_syls_tagged.append("N")
                 new_word = False
