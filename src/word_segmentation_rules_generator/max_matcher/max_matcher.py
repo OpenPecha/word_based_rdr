@@ -17,7 +17,9 @@ def SHADS_alignment(file_string):
           '_།_།':'།_།',
           '_།_': '_།',
           " _།":' །_',
-          r'།_([^། ])':r'།_ \1'
+          r'།_([^། ])':r'།_ \1',
+          ' ། ':' །_',
+          ' །$':' །_'
           
     }
     for pattern, replacement in patterns.items():
@@ -34,6 +36,9 @@ def botok_max_matcher(file_string):
     max_match_output = t.tokenize_words_raw_text
     max_match_output = adjust_spaces(max_match_output)
     max_match_output = SHADS_alignment(max_match_output)
+    '''
+    Input: རིན་པོ་ཆེའི་, max match output: རིན་པོ་ཆེ འི་, after replacement རིན་པོ་ཆེ-འི་
+    '''
     pattern = r"([^་།_]) (ར་|ས་|འི་|འམ་|འང་|འོ་|འིའོ་|འིའམ་|འིའང་|འོའམ་|འོའང་)"
     replacement = r"\1-\2"
     max_match_output = re.sub(pattern, replacement, max_match_output)

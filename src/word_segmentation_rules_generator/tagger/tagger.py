@@ -97,6 +97,9 @@ def tagger(file_string):
             gold_corpus_unmatched_words = "".join(
                 gold_corpus_words[gold_index : gold_index_track + 1]  # noqa
             )
+            
+            botok_unmatched_words = botok_unmatched_words.replace('-','').replace('_', '')
+            gold_corpus_unmatched_words = gold_corpus_unmatched_words.replace('-','').replace('_', '')
 
             if condition_1 and (
                 len(botok_unmatched_words) == len(gold_corpus_unmatched_words)
