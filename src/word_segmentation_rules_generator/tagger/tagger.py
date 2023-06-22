@@ -67,7 +67,8 @@ def tagger(file_string):
     botok_index = 0
     tagged_content = ""
     while botok_index < botok_words_count and gold_index < gold_corpus_words_count:
-        condition1 = botok_words[botok_index] == gold_corpus_words[gold_index]
+        #Checking if the word is same, '_' is ignored because of possiblity of shads alignment
+        condition1 = botok_words[botok_index].replace('_','') == gold_corpus_words[gold_index].replace('_','')
         # condition2 = botok_index == 0 or (
         #     "".join(botok_words[:botok_index])
         #     == "".join(gold_corpus_words[:gold_index])
@@ -88,7 +89,7 @@ def tagger(file_string):
         ):
 
             condition_1 = (
-                botok_words[botok_index_track] == gold_corpus_words[gold_index_track]
+                botok_words[botok_index_track].replace('_','') == gold_corpus_words[gold_index_track].replace('_','')
             )
 
             botok_unmatched_words = "".join(
@@ -98,8 +99,8 @@ def tagger(file_string):
                 gold_corpus_words[gold_index : gold_index_track + 1]  # noqa
             )
             
-            botok_unmatched_words = botok_unmatched_words.replace('-','').replace('_', '')
-            gold_corpus_unmatched_words = gold_corpus_unmatched_words.replace('-','').replace('_', '')
+            botok_unmatched_words = botok_unmatched_words.replace('_', '')
+            gold_corpus_unmatched_words = gold_corpus_unmatched_words.replace('_', '')
 
             if condition_1 and (
                 len(botok_unmatched_words) == len(gold_corpus_unmatched_words)

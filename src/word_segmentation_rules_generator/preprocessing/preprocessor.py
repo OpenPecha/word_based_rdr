@@ -35,6 +35,18 @@ def adjust_spaces_for_non_affix(file_string):
     modified_string = re.sub(pattern, replacement, file_string)
     return modified_string
 
+def adjust_spaces_for_affix(file_string):
+    '''
+    Somtimes there error in gold corpus i.e
+    String: །འཁོར་བ འི་ འབྲོག་ ནི་ མི་ བཟད་པ-འི། 
+    Expected string: །འཁོར་བ-འི་ འབྲོག་ ནི་ མི་ བཟད་པ-འི། 
+    '''
+    pattern = r"([^་།_]) (ར་|ས་|འི་|འམ་|འང་|འོ་|འིའོ་|འིའམ་|འིའང་|འོའམ་|འོའང་)"
+    replacement = r"\1-\2"
+    modified_string = re.sub(pattern, replacement, file_string)
+    return modified_string
+
+
 def file_2_botok(file_string):
     """
     input: string of a file before going under max match(botok)
@@ -78,7 +90,8 @@ def gold_corpus_2_tagger(file_string):
     replacement = ' '
     gold_corpus_output = re.sub(pattern, replacement, modified_content)
     gold_corpus_output = adjust_spaces(gold_corpus_output)
-    #gold_corpus_output = adjust_spaces_for_non_affix(gold_corpus_output)
+    gold_corpus_output = adjust_spaces_for_non_affix(gold_corpus_output)
+    gold_corpus_output = adjust_spaces_for_affix(gold_corpus_output)
     
     return gold_corpus_output
 
