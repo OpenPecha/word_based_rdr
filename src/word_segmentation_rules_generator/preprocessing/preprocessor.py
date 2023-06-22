@@ -82,7 +82,8 @@ def gold_corpus_2_tagger(file_string):
           '([^_༅])། ': r'\1 །_ ',# དུ། -> དུ །_ 
           ' །([^_])': r' །_ \1', # །བསྲེགས ->  །_ བསྲེགས་
           #'([^།་༌_ ]) ': r'\1 ',  # Putting full stop དུ། -> དུ་ །_,
-          r"(་)\s*(།) ":  r"་\1 \2_ " #གང་ །->གང་ །_
+          r"(་)\s*(།) ":  r"་\1 \2_ ", #གང་ །->གང་ །_
+          ' །$':' །_'
     }
     for pattern, replacement in patterns.items():
         modified_content = re.sub(pattern, replacement, modified_content)
