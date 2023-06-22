@@ -14,6 +14,18 @@ def split_by_TSEK(string_to_split):
     return string_to_split
 
 
+def split_list_with_TSEK(list_to_split):
+    specific_character = TSEK
+    split_list = []
+
+    for element in list_to_split:
+        if specific_character in element:
+            insert_list = element.split(specific_character)
+            split_list += insert_list
+        else:
+            split_list.append(element)
+    return split_list
+
 # Building a tagged list for unmatched gold corpus syllables
 def gold_corpus_tagger(gold_corpus_words, gold_index, gold_index_track):
     """
@@ -106,9 +118,11 @@ def tagger(file_string):
                 len(botok_unmatched_words) == len(gold_corpus_unmatched_words)
             ):
                 break
-
-            botok_unmatched_syls = split_by_TSEK(botok_unmatched_words)
-            gold_corpus_unmatched_syls = split_by_TSEK(gold_corpus_unmatched_words)
+            
+            # botok_unmatched_syls = split_by_TSEK(botok_unmatched_words)
+            # gold_corpus_unmatched_syls = split_by_TSEK(gold_corpus_unmatched_words)
+            botok_unmatched_syls = split_list_with_TSEK(botok_words[botok_index : botok_index_track + 1])
+            gold_corpus_unmatched_syls = split_list_with_TSEK(gold_corpus_words[gold_index : gold_index_track + 1])
 
             if len(botok_unmatched_syls) > len(gold_corpus_unmatched_syls):
                 gold_index_track += 1
@@ -153,5 +167,4 @@ def tagger(file_string):
 
 
 if __name__ == "__main__":
-    # tagger("༄༅། །རྒྱལ་པོ་ ལ་ གཏམ་ བྱ་བ་ རིན་པོ་ཆེ-འི་ hello ཕྲེང་བ། །ཡོན་ཏན་ ཀུན་ གྱིས་ བརྒྱན་པ་+པོ།")
     pass
