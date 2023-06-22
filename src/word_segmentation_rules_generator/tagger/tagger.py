@@ -6,13 +6,6 @@ from src.word_segmentation_rules_generator.preprocessing.preprocessor import adj
 
 from ..comparator.comparator import comparator
 
-
-# def split_by_TSEK(string_to_split):
-#     split_pattern = r"[༌་]"
-#     string_to_split = re.split(split_pattern, string_to_split)
-#     string_to_split = list(filter(None, string_to_split))
-#     return string_to_split
-
 def split_by_TSEK(string_to_split):
     pattern = r"[་]+"  #Removing multiple TSEKs
     replacement = '་'
@@ -58,6 +51,8 @@ def gold_corpus_tagger(gold_corpus_words, gold_index, gold_index_track):
 
     N: means start of new word
     C: Continuation of the previous word
+    A: New word but contains affix in gold corpus i.e ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང
+    B: Continuation of the previous word but contains affix
     """
     gold_corpus_unmatched_word_list = gold_corpus_words[gold_index:gold_index_track]
     gold_corpus_syls_tagged = []
@@ -70,10 +65,16 @@ def gold_corpus_tagger(gold_corpus_words, gold_index, gold_index_track):
         for gold_corpus_unmatched_syl in gold_corpus_unmatched_syls:
             gold_corpus_syls_tagged.append(gold_corpus_unmatched_syl)
             if new_word:
-                gold_corpus_syls_tagged.append("N")
+                if '-' in gold_corpus_unmatched_syl:
+                    gold_corpus_syls_tagged.append("A")
+                else:
+                    gold_corpus_syls_tagged.append("N")
                 new_word = False
             else:
-                gold_corpus_syls_tagged.append("C")
+                if '-' in gold_corpus_unmatched_syl:
+                    gold_corpus_syls_tagged.append("B")
+                else:
+                    gold_corpus_syls_tagged.append("C")
     return gold_corpus_syls_tagged
 
 
@@ -83,7 +84,7 @@ def tagger(file_string):
     equal_number_of_syls, gold_corpus_output, botok_output = comparator(file_string)
 
     if equal_number_of_syls is False:
-        return "ValueError: Output of gold corpus and botok output does not match."
+        return "ValueError: Output of gold corpus and botok output does not match. Something wrong in language structure."
 
     gold_corpus_output = adjust_spaces(gold_corpus_output)
     botok_output = adjust_spaces(botok_output)
@@ -102,10 +103,7 @@ def tagger(file_string):
     while botok_index < botok_words_count and gold_index < gold_corpus_words_count:
         #Checking if the word is same, '_' is ignored because of possiblity of shads alignment
         condition1 = botok_words[botok_index].replace('_','') == gold_corpus_words[gold_index].replace('_','')
-        # condition2 = botok_index == 0 or (
-        #     "".join(botok_words[:botok_index])
-        #     == "".join(gold_corpus_words[:gold_index])
-        # )
+
         # If the word matches perfectly in output of both botok and gold corpus
         if condition1:
             tagged_content += botok_words[botok_index] + "/P "
@@ -140,8 +138,6 @@ def tagger(file_string):
             ):
                 break
             
-            # botok_unmatched_syls = split_by_TSEK(botok_unmatched_words)
-            # gold_corpus_unmatched_syls = split_by_TSEK(gold_corpus_unmatched_words)
             botok_unmatched_syls = split_list_with_TSEK(botok_words[botok_index : botok_index_track + 1])
             gold_corpus_unmatched_syls = split_list_with_TSEK(gold_corpus_words[gold_index : gold_index_track + 1])
 
@@ -167,13 +163,16 @@ def tagger(file_string):
             botok_unmatched_syls_count = len(botok_unmatched_syls)
             botok_syls = ""
             botok_tags = ""
-
+            
+            botok_unmatched_syls_index = 0
             for i in range(
                 gold_corpus_syls_tagged_index,
                 (gold_corpus_syls_tagged_index + (2 * botok_unmatched_syls_count)),
                 2,
             ):
-                botok_syls += gold_corpus_syls_tagged[i]
+                #botok_syls += gold_corpus_syls_tagged[i]
+                botok_syls += botok_unmatched_syls[botok_unmatched_syls_index]
+                botok_unmatched_syls_index += 1
                 botok_tags += gold_corpus_syls_tagged[i + 1]
 
             tagged_content += botok_syls + "/" + botok_tags + " "
