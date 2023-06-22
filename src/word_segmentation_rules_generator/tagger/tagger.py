@@ -44,6 +44,7 @@ def split_list_with_TSEK(list_to_split):
             split_list += insert_list
         else:
             split_list.append(element)
+    split_list = list(filter(None, split_list))
     return split_list
 
 # Building a tagged list for unmatched gold corpus syllables
@@ -131,8 +132,8 @@ def tagger(file_string):
                 gold_corpus_words[gold_index : gold_index_track + 1]  # noqa
             )
             
-            botok_unmatched_words = botok_unmatched_words.replace('_', '')
-            gold_corpus_unmatched_words = gold_corpus_unmatched_words.replace('_', '')
+            botok_unmatched_words = botok_unmatched_words.replace('_', '').replace('-','')
+            gold_corpus_unmatched_words = gold_corpus_unmatched_words.replace('_', '').replace('-','')
 
             if condition_1 and (
                 len(botok_unmatched_words) == len(gold_corpus_unmatched_words)

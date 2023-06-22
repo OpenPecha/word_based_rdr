@@ -41,7 +41,7 @@ def adjust_spaces_for_affix(file_string):
     String: །འཁོར་བ འི་ འབྲོག་ ནི་ མི་ བཟད་པ-འི། 
     Expected string: །འཁོར་བ-འི་ འབྲོག་ ནི་ མི་ བཟད་པ-འི། 
     '''
-    pattern = r"([^་།_]) (ར་|ས་|འི་|འམ་|འང་|འོ་|འིའོ་|འིའམ་|འིའང་|འོའམ་|འོའང་)"
+    pattern = r"([^་།_]) (ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང)"
     replacement = r"\1-\2"
     modified_string = re.sub(pattern, replacement, file_string)
     return modified_string
@@ -61,7 +61,8 @@ def file_2_botok(file_string):
     
     #Joining all the words, not leaving spaces unless its for SHAD
     patterns = {
-        r'([^།]) ([^།])':r'\1\2', 
+      #  r'([^།]) ([^།])':r'\1\2', 
+      r'(?<=([^།])) (?=([^།]))':''
     }
 
     for pattern, replacement in patterns.items():
