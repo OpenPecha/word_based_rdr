@@ -1,19 +1,18 @@
 import os
-import sys
 from multiprocessing import Pool
 
-from InitialTagger.InitialTagger import initializeCorpus, initializeSentence
-from SCRDRlearner.Object import FWObject
-from SCRDRlearner.SCRDRTree import SCRDRTree
-from SCRDRlearner.SCRDRTreeLearner import SCRDRTreeLearner
-from Utility.Config import NUMBER_OF_PROCESSES, THRESHOLD
-from Utility.LexiconCreator import createLexicon
-from Utility.Utils import getRawText, getWordTag, readDictionary
+from ..InitialTagger.InitialTagger import initializeCorpus, initializeSentence
+from ..SCRDRlearner.Object import FWObject
+from ..SCRDRlearner.SCRDRTree import SCRDRTree
+from ..SCRDRlearner.SCRDRTreeLearner import SCRDRTreeLearner
+from ..Utility.Config import NUMBER_OF_PROCESSES, THRESHOLD
+from ..Utility.LexiconCreator import createLexicon
+from ..Utility.Utils import getRawText, getWordTag, readDictionary
 
-os.chdir("../")
-sys.setrecursionlimit(100000)
-sys.path.append(os.path.abspath(""))
-os.chdir("./pSCRDRtagger")
+# os.chdir("../")
+# sys.setrecursionlimit(100000)
+# sys.path.append(os.path.abspath(""))
+# os.chdir("./pSCRDRtagger")
 
 
 def unwrap_self_RDRPOSTagger(arg, **kwarg):
@@ -72,7 +71,9 @@ def printHelp():
     print("\n#3: Find the full usage at http://rdrpostagger.sourceforge.net !")
 
 
-def run(args=sys.argv[1:]):
+# def run(args=sys.argv[1:]):
+def run(system_arguments):
+    args = system_arguments[1:]
     if len(args) == 0:
         printHelp()
     elif args[0].lower() == "train":
@@ -131,5 +132,5 @@ def run(args=sys.argv[1:]):
 
 
 if __name__ == "__main__":
-    run()
+    # run()
     pass

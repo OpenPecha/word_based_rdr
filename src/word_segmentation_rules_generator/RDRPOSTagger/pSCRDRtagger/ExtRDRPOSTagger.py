@@ -1,16 +1,15 @@
-import os
 import sys
 from multiprocessing import Pool
 
-from SCRDRlearner.Object import FWObject, getWordTag
-from SCRDRlearner.SCRDRTree import SCRDRTree
-from SCRDRlearner.SCRDRTreeLearner import SCRDRTreeLearner
-from Utility.Config import NUMBER_OF_PROCESSES, THRESHOLD
+from ..SCRDRlearner.Object import FWObject, getWordTag
+from ..SCRDRlearner.SCRDRTree import SCRDRTree
+from ..SCRDRlearner.SCRDRTreeLearner import SCRDRTreeLearner
+from ..Utility.Config import NUMBER_OF_PROCESSES, THRESHOLD
 
-os.chdir("../")
-sys.setrecursionlimit(100000)
-sys.path.append(os.path.abspath(""))
-os.chdir("./pSCRDRtagger")
+# os.chdir("../")
+# sys.setrecursionlimit(100000)
+# sys.path.append(os.path.abspath(""))
+# os.chdir("./pSCRDRtagger")
 
 
 def unwrap_self_ExtRDRPOSTagger(arg, **kwarg):

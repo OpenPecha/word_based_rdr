@@ -1,14 +1,12 @@
-import os
 import re
-import sys
 from typing import Dict
 
-from Utility.Utils import getWordTag
+from .Utils import getWordTag
 
-os.chdir("../")
-sys.setrecursionlimit(100000)
-sys.path.append(os.path.abspath(""))
-os.chdir("./pSCRDRtagger")
+# os.chdir("../")
+# sys.setrecursionlimit(100000)
+# sys.path.append(os.path.abspath(""))
+# os.chdir("./pSCRDRtagger")
 
 
 def add2WordTagFreqDict(word, tag, inDict):

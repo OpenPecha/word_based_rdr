@@ -1,12 +1,11 @@
-import os
 import sys
 
-from Utility.Utils import getWordTag, readDictionary
+from .Utils import getWordTag, readDictionary
 
-os.chdir("../")
-sys.setrecursionlimit(100000)
-sys.path.append(os.path.abspath(""))
-os.chdir("./Utility")
+# os.chdir("../")
+# sys.setrecursionlimit(100000)
+# sys.path.append(os.path.abspath(""))
+# os.chdir("./Utility")
 
 
 def computeAccuracy(goldStandardCorpus, taggedCorpus):
