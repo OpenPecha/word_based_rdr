@@ -4,6 +4,7 @@ TIB_tagged.txt
 TIB_outputs.txt
 tagger_output.py
 TSEK_split_output.py
+TIB_test.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
