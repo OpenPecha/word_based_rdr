@@ -78,35 +78,35 @@ def run(system_arguments):
         printHelp()
     elif args[0].lower() == "train":
         try:
-            print("\n====== Start ======")
-            print(
-                "\nGenerate from the gold standard training corpus a lexicon "
-                + args[1]
-                + ".DICT"
-            )
+            # print("\n====== Start ======")
+            # print(
+            #     "\nGenerate from the gold standard training corpus a lexicon "
+            #     + args[1]
+            #     + ".DICT"
+            # )
             createLexicon(args[1], "full")
             createLexicon(args[1], "short")
-            print(
-                "\nExtract from the gold standard training corpus a raw text corpus "
-                + args[1]
-                + ".RAW"
-            )
+            # print(
+            #     "\nExtract from the gold standard training corpus a raw text corpus "
+            #     + args[1]
+            #     + ".RAW"
+            # )
             getRawText(args[1], args[1] + ".RAW")
-            print(
-                "\nPerform initially POS tagging on the raw text corpus, to generate "
-                + args[1]
-                + ".INIT"
-            )
+            # print(
+            #     "\nPerform initially POS tagging on the raw text corpus, to generate "
+            #     + args[1]
+            #     + ".INIT"
+            # )
             DICT = readDictionary(args[1] + ".sDict")
             initializeCorpus(DICT, args[1] + ".RAW", args[1] + ".INIT")
-            print(
-                "\nLearn a tree model of rules for POS tagging from {} and {}".format(
-                    args[1], args[1] + ".INIT"
-                )
-            )
+            # print(
+            #     "\nLearn a tree model of rules for POS tagging from {} and {}".format(
+            #         args[1], args[1] + ".INIT"
+            #     )
+            # )
             rdrTree = SCRDRTreeLearner(THRESHOLD[0], THRESHOLD[1])
             rdrTree.learnRDRTree(args[1] + ".INIT", args[1])
-            print("\nWrite the learned tree model to file " + args[1] + ".RDR")
+            # print("\nWrite the learned tree model to file " + args[1] + ".RDR")
             rdrTree.writeToFile(args[1] + ".RDR")
             print("\nDone!")
             os.remove(args[1] + ".INIT")
