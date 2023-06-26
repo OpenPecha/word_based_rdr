@@ -3,7 +3,7 @@ import os
 from ..RDRPOSTagger.pSCRDRtagger.RDRPOSTagger import run
 
 
-def train_rdr(file_to_train_tagged="TIB_tagged.txt"):
+def train_rdr(file_to_train_tagged="TIB_train_maxmatched_tagged.txt"):
     """
     Input: File already tagged, output from botok and then through tagger file
     Output: Two files i)RDR rules .RDR ii)RDR dictionary .DICT
@@ -18,8 +18,8 @@ def train_rdr(file_to_train_tagged="TIB_tagged.txt"):
 
 def tag_rdr(
     file_to_tag="TIB_test_maxmatched.txt",
-    RDR_rules="TIB_tagged.txt.RDR",
-    RDR_dictionary="TIB_tagged.txt.DICT",
+    RDR_rules="TIB_train_maxmatched_tagged.txt.RDR",
+    RDR_dictionary="TIB_train_maxmatched_tagged.txt.DICT",
 ):
     """
     Input : file that is already went through botok max matched algorithm and word segmented,
