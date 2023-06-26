@@ -1,10 +1,7 @@
 max_match_output.py
-TIB_train.txt
-TIB_tagged.txt
 TIB_outputs.txt
 tagger_output.py
 TSEK_split_output.py
-TIB_test.txt
 rdr_test.py
 
 # Byte-compiled / optimized / DLL files
