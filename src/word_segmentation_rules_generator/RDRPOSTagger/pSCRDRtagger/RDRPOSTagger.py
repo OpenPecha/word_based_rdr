@@ -1,11 +1,10 @@
 import os
-from multiprocessing import Pool
 
 from ..InitialTagger.InitialTagger import initializeCorpus, initializeSentence
 from ..SCRDRlearner.Object import FWObject
 from ..SCRDRlearner.SCRDRTree import SCRDRTree
 from ..SCRDRlearner.SCRDRTreeLearner import SCRDRTreeLearner
-from ..Utility.Config import NUMBER_OF_PROCESSES, THRESHOLD
+from ..Utility.Config import THRESHOLD
 from ..Utility.LexiconCreator import createLexicon
 from ..Utility.Utils import getRawText, getWordTag, readDictionary
 
@@ -44,11 +43,17 @@ class RDRPOSTagger(SCRDRTree):
     def tagRawCorpus(self, DICT, rawCorpusPath):
         lines = open(rawCorpusPath, encoding="utf-8").readlines()
         # Change the value of NUMBER_OF_PROCESSES to obtain faster tagging process!
-        pool = Pool(processes=NUMBER_OF_PROCESSES)
-        taggedLines = pool.map(
-            unwrap_self_RDRPOSTagger,
-            zip([self] * len(lines), [DICT] * len(lines), lines),
-        )
+        # from multiprocessing import Pool
+        # from ..Utility.Config import NUMBER_OF_PROCESSES
+        # pool = Pool(processes=NUMBER_OF_PROCESSES)
+        # taggedLines = pool.map(
+        #     unwrap_self_RDRPOSTagger,
+        #     zip([self] * len(lines), [DICT] * len(lines), lines),
+        # )
+        taggedLines = []
+        for line in lines:
+            taggedLine = self.tagRawSentence(DICT, line)
+            taggedLines.append(taggedLine)
         outW = open(rawCorpusPath + ".TAGGED", "w", encoding="utf-8")
         for line in taggedLines:
             outW.write(line + "\n")
