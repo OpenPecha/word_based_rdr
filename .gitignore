@@ -3,6 +3,7 @@ TIB_outputs.txt
 tagger_output.py
 TSEK_split_output.py
 rdr_test.py
+test_rdr_eval.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
