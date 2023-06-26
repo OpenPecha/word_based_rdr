@@ -123,12 +123,15 @@ def run(system_arguments):
     elif args[0].lower() == "tag":
         try:
             r = RDRPOSTagger()
-            print("\n=> Read a POS tagging model from " + args[1])
+            # print("\n=> Read a POS tagging model from " + args[1])
+            print("\n=> Reading POS tagging model and lexicon")
             r.constructSCRDRtreeFromRDRfile(args[1])
-            print("\n=> Read a lexicon from " + args[2])
+            # print("\n=> Read a lexicon from " + args[2])
             DICT = readDictionary(args[2])
-            print("\n=> Perform POS tagging on " + args[3])
+            # print("\n=> Perform POS tagging on " + args[3])
+            print("\n=> Perform POS tagging ...")
             r.tagRawCorpus(DICT, args[3])
+            print("\n=> Done .....>")
         except Exception as e:
             print("\nERROR ==> ", e)
             printHelp()
