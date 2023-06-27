@@ -4,6 +4,7 @@ tagger_output.py
 TSEK_split_output.py
 rdr_test.py
 test_rdr_eval.py
+test_rdr_2_cql.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
