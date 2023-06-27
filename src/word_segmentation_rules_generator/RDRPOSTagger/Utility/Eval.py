@@ -1,3 +1,4 @@
+import re
 import sys
 
 from .Utils import getWordTag, readDictionary
@@ -24,6 +25,9 @@ def computeAccuracy(goldStandardCorpus, taggedCorpus):
         numwords += 1
         word1, tag1 = getWordTag(tagged[i])
         word2, tag2 = getWordTag(goldStandard[i])
+        pattern = r"[་]+"
+        word1 = re.sub(pattern, "་", word1)
+        word2 = re.sub(pattern, "་", word2)
         if word1 != word2 and word1 != "''" and word2 != "''":
             print(
                 "Words are not the same in gold standard and tagged corpora, at the index",
