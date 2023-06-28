@@ -5,6 +5,8 @@ TSEK_split_output.py
 rdr_test.py
 test_rdr_eval.py
 test_rdr_2_cql.py
+test_output_similarity.py
+output_test.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
