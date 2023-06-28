@@ -7,6 +7,8 @@ test_rdr_eval.py
 test_rdr_2_cql.py
 test_output_similarity.py
 output_test.txt
+maxmatch_output.py
+test_rdr.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
