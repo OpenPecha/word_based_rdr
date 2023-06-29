@@ -33,7 +33,9 @@ def adjust_spaces_for_non_affix(file_string):
     Expected: དགེ འོ་ བཀྲ་ཤིས་ ཤོག།
     *Note that in དགེ འོ་, space before འོ་ is not closed,because this is an affix
     """
-    pattern = r"([^་།_]) ([^ར ས འི འམ འང འོ འིའོ འིའམ འིའང འོའམ འོའང ། _])"
+    pattern = (
+        r"([^་།_༠ ༡ ༢ ༣ ༤ ༥ ༦ ༧ ༨ ༩]) ([^ར ས འི འམ འང འོ འིའོ འིའམ འིའང འོའམ འོའང ། _])"
+    )
     replacement = r"\1\2"
     modified_string = re.sub(pattern, replacement, file_string)
     return modified_string
@@ -81,7 +83,9 @@ def gold_corpus_2_tagger(file_string):
         "[ ]+།": "_།",  # རྣམ་གྲོལ་ ཞིང༌ ། ། ->རྣམ་གྲོལ་ ཞིང་ _།_།,
         "།[ ]+": "།_",
         r"(?<![༅།_])([།_]+)": r" \1",  # སྐད་དུ།_རཱ་ -> སྐད་དུ །_རཱ་
-        r"([།_]+)(?![༄།_])": r"\1 ",  # སྐད་དུ།_རཱ་ - >སྐད་དུ།_ རཱ་
+        r"([།_]+)(?![༄།_])": r"\1 ",  # སྐད་དུ།_རཱ་ -> སྐད་དུ།_ རཱ་
+        r"(?<=[༠༡༢༣༤༥༦༧༨༩])([ ]+)(?=[༠༡༢༣༤༥༦༧༨༩])": r"",  # གཏམ་༡ ༢  ༣བྱ་བ་ -> གཏམ་༡༢༣བྱ་བ་
+        r"\s*([༠༡༢༣༤༥༦༧༨༩]+)\s*": r" \1 ",  # གཏམ་༡༢༣བྱ་བ་ -> གཏམ་ ༡༢༣ བྱ་བ་,
     }
     for pattern, replacement in patterns.items():
         modified_content = re.sub(pattern, replacement, modified_content)
