@@ -45,7 +45,7 @@ def adjust_spaces_for_affix(file_string):
     String: །འཁོར་བ འི་ འབྲོག་ ནི་ མི་ བཟད་པ-འི།
     Expected string: །འཁོར་བ-འི་ འབྲོག་ ནི་ མི་ བཟད་པ-འི།
     """
-    pattern = r"((?![།_༠-༩])[\u0F00-\u0FFF]) (ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང)"
+    pattern = r"((?![་།_༠༡༢༣༤༥༦༧༨༩])[\u0F00-\u0FFF]) (ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང)"
     replacement = r"\1-\2"
     modified_string = re.sub(pattern, replacement, file_string)
     return modified_string
