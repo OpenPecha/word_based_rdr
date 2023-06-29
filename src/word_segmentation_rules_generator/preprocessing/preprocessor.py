@@ -66,7 +66,7 @@ def adjust_spaces_for_non_tibetan_character(file_string):
     modified_content = file_string
     patterns = {
         r"(?<=[^\u0F00-\u0FFF\s]) (?=[^\u0F00-\u0FFF\s])": r"",  # For non tibetan characters
-        r"\s*([^\u0F00-\u0FFF\s_]+)\s*": r" \1 ",
+        r"\s*([^\u0F00-\u0FFF\s_-]+)\s*": r" \1 ",
     }
     for pattern, replacement in patterns.items():
         modified_content = re.sub(pattern, replacement, modified_content)
