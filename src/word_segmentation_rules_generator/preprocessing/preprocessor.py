@@ -33,9 +33,7 @@ def adjust_spaces_for_non_affix(file_string):
     Expected: དགེ འོ་ བཀྲ་ཤིས་ ཤོག།
     *Note that in དགེ འོ་, space before འོ་ is not closed,because this is an affix
     """
-    pattern = (
-        r"([^་།_༠ ༡ ༢ ༣ ༤ ༥ ༦ ༧ ༨ ༩]) ([^ར ས འི འམ འང འོ འིའོ འིའམ འིའང འོའམ འོའང ། _])"
-    )
+    pattern = r"([^་།_]) ([^ར ས འི འམ འང འོ འིའོ འིའམ འིའང འོའམ འོའང ། _])"
     replacement = r"\1\2"
     modified_string = re.sub(pattern, replacement, file_string)
     return modified_string
@@ -51,6 +49,28 @@ def adjust_spaces_for_affix(file_string):
     replacement = r"\1-\2"
     modified_string = re.sub(pattern, replacement, file_string)
     return modified_string
+
+
+def adjust_spaces_for_tibetan_numbers(file_string):
+    modified_content = file_string
+    patterns = {
+        r"(?<=[༠༡༢༣༤༥༦༧༨༩])([ ]+)(?=[༠༡༢༣༤༥༦༧༨༩])": r"",  # གཏམ་༡ ༢  ༣བྱ་བ་ -> གཏམ་༡༢༣བྱ་བ་
+        r"\s*([༠༡༢༣༤༥༦༧༨༩]+)\s*": r" \1 ",  # གཏམ་༡༢༣བྱ་བ་ -> གཏམ་ ༡༢༣ བྱ་བ་,
+    }
+    for pattern, replacement in patterns.items():
+        modified_content = re.sub(pattern, replacement, modified_content)
+    return modified_content
+
+
+def adjust_spaces_for_non_tibetan_character(file_string):
+    modified_content = file_string
+    patterns = {
+        r"(?<=[^\u0F00-\u0FFF\s]) (?=[^\u0F00-\u0FFF\s])": r"",  # For non tibetan characters
+        r"\s*([^\u0F00-\u0FFF\s_]+)\s*": r" \1 ",
+    }
+    for pattern, replacement in patterns.items():
+        modified_content = re.sub(pattern, replacement, modified_content)
+    return modified_content
 
 
 def file_2_botok(file_string):
@@ -84,13 +104,12 @@ def gold_corpus_2_tagger(file_string):
         "།[ ]+": "།_",
         r"(?<![༅།_])([།_]+)": r" \1",  # སྐད་དུ།_རཱ་ -> སྐད་དུ །_རཱ་
         r"([།_]+)(?![༄།_])": r"\1 ",  # སྐད་དུ།_རཱ་ -> སྐད་དུ།_ རཱ་
-        r"(?<=[༠༡༢༣༤༥༦༧༨༩])([ ]+)(?=[༠༡༢༣༤༥༦༧༨༩])": r"",  # གཏམ་༡ ༢  ༣བྱ་བ་ -> གཏམ་༡༢༣བྱ་བ་
-        r"\s*([༠༡༢༣༤༥༦༧༨༩]+)\s*": r" \1 ",  # གཏམ་༡༢༣བྱ་བ་ -> གཏམ་ ༡༢༣ བྱ་བ་,
     }
     for pattern, replacement in patterns.items():
         modified_content = re.sub(pattern, replacement, modified_content)
-    gold_corpus_output = adjust_spaces(modified_content)
-    gold_corpus_output = adjust_spaces_for_non_affix(gold_corpus_output)
+    gold_corpus_output = adjust_spaces_for_non_affix(modified_content)
+    gold_corpus_output = adjust_spaces_for_tibetan_numbers(gold_corpus_output)
+    gold_corpus_output = adjust_spaces_for_non_tibetan_character(gold_corpus_output)
     gold_corpus_output = adjust_spaces_for_affix(gold_corpus_output)
 
     return gold_corpus_output
