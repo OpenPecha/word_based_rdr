@@ -8,10 +8,6 @@ def rdr_2_cql(rdr_rules_file="TIB_train_maxmatched_tagged.txt.RDR"):
     relative_path = "../resources/" + rdr_rules_file
     file_path = os.path.join(current_dir, relative_path)
 
-    # rdr_rules = file_path.read_text(encoding="utf-8")
-    # print(rdr_rules)
-    # rules = rdr_2_replace_matcher(rdr_rules)
-    # #print(rules)
     with open(file_path, encoding="utf-8") as file:
         rdr_rules = file.read()  # Read the entire file content
         cql_rules = rdr_2_replace_matcher(rdr_rules)
