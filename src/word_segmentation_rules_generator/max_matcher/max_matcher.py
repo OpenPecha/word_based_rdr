@@ -17,7 +17,8 @@ def botok_max_matcher(file_string):
     """
     Input: རིན་པོ་ཆེའི་, max match output: རིན་པོ་ཆེ འི་, after replacement རིན་པོ་ཆེ-འི་
     """
-    pattern = r"([^་།_]) (ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང)"
+    pattern = r"((?![།_༠-༩])[\u0F00-\u0FFF]) (ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང)"
+
     replacement = r"\1-\2"
     max_match_output = re.sub(pattern, replacement, max_match_output)
     return max_match_output
