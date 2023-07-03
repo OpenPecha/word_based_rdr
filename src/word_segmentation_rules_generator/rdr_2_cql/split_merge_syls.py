@@ -1,4 +1,5 @@
 import os
+import re
 
 from src.word_segmentation_rules_generator.tagger.tagger import split_by_TSEK
 
@@ -23,6 +24,10 @@ def split_merge_syls(tagged_file="TIB_train_maxmatched.txt.TAGGED"):
             break
         word_tag_splited = word.split("/")
         if word_tag_splited[1] == "P":
+            # If there is an affix involved,then there needs to be a space
+            pattern = "-"
+            replacement = " -"
+            word_tag_splited[0] = re.sub(pattern, replacement, word_tag_splited[0])
             word_tag_list.append(word_tag_splited)
         else:
             syls_list = split_by_TSEK(word_tag_splited[0])
