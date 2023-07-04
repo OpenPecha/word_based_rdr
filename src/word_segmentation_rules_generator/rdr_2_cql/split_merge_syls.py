@@ -7,7 +7,7 @@ from src.word_segmentation_rules_generator.tagger.tagger import split_by_TSEK
 def split_into_word_tag_list(tagged_file="TIB_test_maxmatched.txt.TAGGED"):
     """
     Input: file that is tagged by rdr rules
-    Output:
+    Output:List with word or syllables with their associated tag (P,A,B,N,C)
     """
     current_dir = os.path.dirname(__file__)
     relative_path = "../data/" + tagged_file
@@ -41,6 +41,12 @@ def split_into_word_tag_list(tagged_file="TIB_test_maxmatched.txt.TAGGED"):
 
 
 def adjust_anomaly_tagged(syls_list, word_tag_splited):
+    """
+    In some cases, for words that are not perfectly tagged, RDR is not tagging the same number
+    as the syllables as its supposed to i.e, ['ལོག་པ-འོ', 'C'],
+    Input: ['ལོག་པ-འོ', 'C']
+    Output: ['ལོག་', 'C','པ-འོ','C']
+    """
     anomaly_word_tag_list = []
     for i in range(len(syls_list)):
         if i < len(word_tag_splited[1]):
@@ -57,7 +63,7 @@ def adjust_affix_with_tag(word_tag_list):
             pattern = "-"
             replacement = " -"
             word_tag_list[i][0] = re.sub(pattern, replacement, word_tag_list[i][0])
-        else:  # So the tag is eithe A or B
+        else:  # So the tag is either A or B
             pattern = "-"
             replacement = " -"
             match = re.search(pattern, word_tag_list[i][0])
