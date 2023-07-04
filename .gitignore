@@ -10,6 +10,7 @@ output_test.txt
 maxmatch_output.py
 test_rdr.py
 test_split_merge_function.py
+output.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

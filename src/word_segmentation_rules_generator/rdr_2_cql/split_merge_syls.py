@@ -1,6 +1,9 @@
 import os
 import re
 
+from src.word_segmentation_rules_generator.preprocessing.preprocessor import (
+    adjust_spaces,
+)
 from src.word_segmentation_rules_generator.tagger.tagger import split_by_TSEK
 
 
@@ -37,7 +40,7 @@ def split_into_word_tag_list(tagged_file="TIB_test_maxmatched.txt.TAGGED"):
                 for i in range(len(syls_list)):
                     word_tag_list.append([syls_list[i], word_tag_splited[1][i]])
     word_tag_list = adjust_affix_with_tag(word_tag_list)
-    print(word_tag_list)
+    return word_tag_list
 
 
 def adjust_anomaly_tagged(syls_list, word_tag_splited):
@@ -74,3 +77,23 @@ def adjust_affix_with_tag(word_tag_list):
                 replacement = r" -\1"
                 word_tag_list[i][0] = re.sub(pattern, replacement, word_tag_list[i][0])
     return word_tag_list
+
+
+def split_merge_to_proper_string(tagged_file="TIB_test_maxmatched.txt.TAGGED"):
+    """
+    Input: tagged file, each word followed by \\ slash and tag predicted by rdr
+    Output: string that is joined according to the tag
+    """
+    word_tag_list = split_into_word_tag_list(tagged_file)
+    joined_string = ""
+    for i in range(len(word_tag_list)):
+        if word_tag_list[i][1] == "P":
+            joined_string += word_tag_list[i][0] + " "
+        else:
+            if word_tag_list[i][1] in ["A", "N"]:
+                joined_string += " "
+            joined_string += word_tag_list[i][0]
+            if word_tag_list[i + 1][1] in ["A", "N", "P"]:
+                joined_string += " "
+    joined_string = adjust_spaces(joined_string)
+    return joined_string
