@@ -30,4 +30,6 @@ def create_tokens(
         syls_arg = [i for i in range(syls_length)]
         token = tok.chunks_to_token(syls_arg, {}, None)
         tokens.append(token)
+
+    warnings.filterwarnings("default")
     return tokens
