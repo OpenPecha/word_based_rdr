@@ -19,7 +19,6 @@ classifiers = [
 
 dependencies = [
   "botok >= 0.8.1",
-  "pybo >= 0.7.3",
 ]
 
 

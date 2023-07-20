@@ -145,8 +145,8 @@ def getConcreteValue(str):
     if str.find('""') > 0:
         if str.find("Word") > 0:
             return "<W>"
-        elif str.find("suffixL") > 0:
-            return "<SFX>"
+        # elif str.find("suffixL") > 0:
+        #     return "<SFX>"
         else:
             return "<T>"
     return str[str.find('"') + 1 : len(str) - 1]  # noqa
@@ -179,13 +179,14 @@ def getCondition(strCondition):
             condition.context[8] = value
         elif key == "nextTag2":
             condition.context[9] = value
-        elif key == "suffixL2":
-            condition.context[10] = value
-        elif key == "suffixL3":
-            condition.context[11] = value
-        elif key == "suffixL4":
-            condition.context[12] = value
-    for i in range(13):
+        # elif key == "suffixL2":
+        #     condition.context[10] = value
+        # elif key == "suffixL3":
+        #     condition.context[11] = value
+        # elif key == "suffixL4":
+        #     condition.context[12] = value
+    # for i in range(13):
+    for i in range(10):
         if condition.context[i] is not None:
             condition.notNoneIds.append(i)
     return condition
