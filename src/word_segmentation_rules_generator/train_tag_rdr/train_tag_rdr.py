@@ -43,7 +43,7 @@ def train_with_external_rdr(gold_corpus_file, external_tagged_file, THRESHOLD=(1
 
 
 def tag_rdr(
-    file_to_tag="TIB_test_maxmatched.txt",
+    string_to_tag,
     RDR_rules="TIB_train_maxmatched_tagged.txt.RDR",
     RDR_dictionary="TIB_train_maxmatched_tagged.txt.DICT",
 ):
@@ -53,11 +53,11 @@ def tag_rdr(
     Important note: File should be in the folder 'data', and output in 'resources'
     """
     current_dir = os.path.dirname(__file__)
-    file_relative_path = "../data/" + file_to_tag
+    # file_relative_path = "../data/" + file_to_tag
     rdr_rules_relative_path = "../resources/" + RDR_rules
     RDR_dictionary_relative_path = "../resources/" + RDR_dictionary
 
-    file_path = os.path.join(current_dir, file_relative_path)
+    # file_path = os.path.join(current_dir, file_relative_path)
     rdr_rules_path = os.path.join(current_dir, rdr_rules_relative_path)
     rdr_dict_path = os.path.join(current_dir, RDR_dictionary_relative_path)
 
@@ -66,6 +66,6 @@ def tag_rdr(
         "tag",
         rdr_rules_path,
         rdr_dict_path,
-        file_path,
+        string_to_tag,
     ]
     run(function_arguments)
