@@ -1,10 +1,10 @@
-import sys
+# import sys
 from multiprocessing import Pool
 
 from ..SCRDRlearner.Object import FWObject, getWordTag
 from ..SCRDRlearner.SCRDRTree import SCRDRTree
 from ..SCRDRlearner.SCRDRTreeLearner import SCRDRTreeLearner
-from ..Utility.Config import NUMBER_OF_PROCESSES, THRESHOLD
+from ..Utility.Config import NUMBER_OF_PROCESSES  # , THRESHOLD
 
 # os.chdir("../")
 # sys.setrecursionlimit(100000)
@@ -72,17 +72,20 @@ def printHelp():
     print("\n#3: Find the full usage at http://rdrpostagger.sourceforge.net !")
 
 
-def run(args=sys.argv[1:]):
+# def run(args=sys.argv[1:]):
+def ExtRDR_RUN(system_arguments):
+    args = system_arguments[1:]
     if len(args) == 0:
         printHelp()
     elif args[0].lower() == "train":
         try:
-            print("\n===== Start =====")
-            print(
-                "\nLearn a tree model of rules for POS tagging from {} and {} ".format(
-                    args[1], args[2]
-                )
-            )
+            # print("\n===== Start =====")
+            # print(
+            #     "\nLearn a tree model of rules for POS tagging from {} and {} ".format(
+            #         args[1], args[2]
+            #     )
+            # )
+            THRESHOLD = args[3]
             rdrTree = SCRDRTreeLearner(THRESHOLD[0], THRESHOLD[1])
             rdrTree.learnRDRTree(args[2], args[1])
             print("\nWrite the learned tree model to file " + args[2] + ".RDR")
@@ -106,4 +109,5 @@ def run(args=sys.argv[1:]):
 
 
 if __name__ == "__main__":
-    run()
+    # run()
+    pass
