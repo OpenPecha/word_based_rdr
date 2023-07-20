@@ -15,7 +15,7 @@ def rdr_2_cql(
         rdr_rules = file.read()  # Read the entire file content
         cql_rules = rdr_2_replace_matcher(rdr_rules)
         # in the code rdr_2_replace_matcher, there been done pos but here we will need word tag
-        cql_rules = cql_rules.replace("pos", "word_tag")
+        cql_rules = cql_rules.replace("pos", "segmentation_tag")
         current_dir = os.path.dirname(__file__)
         cql_file_relative_path = "../resources/" + new_cql_file_name
         cql_file_path = os.path.join(current_dir, cql_file_relative_path)
