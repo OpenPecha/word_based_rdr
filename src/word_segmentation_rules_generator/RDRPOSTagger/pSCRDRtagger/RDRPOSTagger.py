@@ -4,9 +4,10 @@ from ..InitialTagger.InitialTagger import initializeCorpus, initializeSentence
 from ..SCRDRlearner.Object import FWObject
 from ..SCRDRlearner.SCRDRTree import SCRDRTree
 from ..SCRDRlearner.SCRDRTreeLearner import SCRDRTreeLearner
-from ..Utility.Config import THRESHOLD
 from ..Utility.LexiconCreator import createLexicon
 from ..Utility.Utils import getRawText, getWordTag, readDictionary
+
+# from ..Utility.Config import THRESHOLD
 
 # os.chdir("../")
 # sys.setrecursionlimit(100000)
@@ -109,6 +110,7 @@ def run(system_arguments):
             #         args[1], args[1] + ".INIT"
             #     )
             # )
+            THRESHOLD = args[2]
             rdrTree = SCRDRTreeLearner(THRESHOLD[0], THRESHOLD[1])
             rdrTree.learnRDRTree(args[1] + ".INIT", args[1])
             # print("\nWrite the learned tree model to file " + args[1] + ".RDR")
