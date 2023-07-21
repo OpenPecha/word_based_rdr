@@ -3,7 +3,14 @@ import os
 from pybo.rdr.rdr_2_replace_matcher import rdr_2_replace_matcher
 
 
-def rdr_2_cql(
+def rdr_2_cql_string(rdr_rules_string):
+    cql_rules = rdr_2_replace_matcher(rdr_rules_string)
+    # in the code rdr_2_replace_matcher, there been done pos but here we will need word tag
+    cql_rules = cql_rules.replace("pos", "segmentation_tag")
+    return cql_rules
+
+
+def rdr_2_cql_file(
     rdr_rules_file="TIB_train_maxmatched_tagged.txt.RDR",
     new_cql_file_name="TIB_train_CQL_rules_temp.txt",
 ):
@@ -13,9 +20,7 @@ def rdr_2_cql(
 
     with open(file_path, encoding="utf-8") as file:
         rdr_rules = file.read()  # Read the entire file content
-        cql_rules = rdr_2_replace_matcher(rdr_rules)
-        # in the code rdr_2_replace_matcher, there been done pos but here we will need word tag
-        cql_rules = cql_rules.replace("pos", "segmentation_tag")
+        cql_rules = rdr_2_cql_string(rdr_rules)
         current_dir = os.path.dirname(__file__)
         cql_file_relative_path = "../resources/" + new_cql_file_name
         cql_file_path = os.path.join(current_dir, cql_file_relative_path)

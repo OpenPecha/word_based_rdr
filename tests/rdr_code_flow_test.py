@@ -4,6 +4,7 @@ import sys
 from src.word_segmentation_rules_generator.max_matcher.max_matcher import (
     botok_max_matcher,
 )
+from src.word_segmentation_rules_generator.rdr_2_cql.rdr_2_cql import rdr_2_cql_string
 from src.word_segmentation_rules_generator.tagger.tagger import tagger
 from src.word_segmentation_rules_generator.train_tag_rdr.train_tag_rdr import (
     tag_rdr,
@@ -28,8 +29,12 @@ def print_code_flow():
     rdr_tag_output = tag_rdr(botok_output)
     # After your code is executed, restore the standard output
     sys.stdout = sys.__stdout__
-    print("RDR output:-------------------> ", rdr_tag_output)
+    print("RDR output:> ", rdr_tag_output)
 
     rdr_rules = train_with_external_rdr(tagger_output, rdr_tag_output)
-    print("RDR Rules generated:> ")
+    print("RDR Rules generated:---------------------------> ")
     print(rdr_rules)
+
+    cql_rules = rdr_2_cql_string(rdr_rules)
+    print("CQL Rules generated:---------------------------> ")
+    print(cql_rules)
