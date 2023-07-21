@@ -68,4 +68,4 @@ def tag_rdr(
         rdr_dict_path,
         string_to_tag,
     ]
-    run(function_arguments)
+    return run(function_arguments)

@@ -57,13 +57,15 @@ class RDRPOSTagger(SCRDRTree):
         for line in lines:
             taggedLine = self.tagRawSentence(DICT, line)
             taggedLines.append(taggedLine)
-        # outW = open(rawCorpus + ".TAGGED", "w", encoding="utf-8")
-        outW = open("function_test" + ".TAGGED", "w", encoding="utf-8")
+        result_string = " ".join(taggedLines)
+        return result_string
+        # # outW = open(rawCorpus + ".TAGGED", "w", encoding="utf-8")
+        # outW = open("function_test" + ".TAGGED", "w", encoding="utf-8")
 
-        for line in taggedLines:
-            outW.write(line + "\n")
-        outW.close()
-        print("\nOutput file: " + rawCorpus + ".TAGGED")
+        # for line in taggedLines:
+        #     outW.write(line + "\n")
+        # outW.close()
+        # print("\nOutput file: " + rawCorpus + ".TAGGED")
 
 
 def printHelp():
@@ -136,8 +138,9 @@ def run(system_arguments):
             DICT = readDictionary(args[2])
             # print("\n=> Perform POS tagging on " + args[3])
             print("\n=> Perform POS tagging ...")
-            r.tagRawCorpus(DICT, args[3])
+            rdr_tag_output = r.tagRawCorpus(DICT, args[3])
             print("\n=> Done .....>")
+            return rdr_tag_output
         except Exception as e:
             print("\nERROR ==> ", e)
             printHelp()

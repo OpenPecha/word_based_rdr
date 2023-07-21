@@ -15,4 +15,5 @@ def print_code_flow():
     tagger_output = tagger(gold_standard_string)
     print("Tagger output:> ", tagger_output)
 
-    tag_rdr(botok_output)
+    rdr_tag_output = tag_rdr(botok_output)
+    print("RDR output:> ", rdr_tag_output)
