@@ -282,10 +282,14 @@ class SCRDRTreeLearner(SCRDRTree):
             currentNode = node
             self.buildNodeForObjectSet(needToCorrectObjects, currentNode)
 
-    def learnRDRTree(self, initializedCorpus, goldStandardCorpus):
+    def learnRDRTree(
+        self, initializedCorpus, goldStandardCorpus, string_argument=False
+    ):
         self.root = Node("True", 'object.conclusion = "NN"', None, None, None, [], 0)
 
-        objects = getObjectDictionary(initializedCorpus, goldStandardCorpus)
+        objects = getObjectDictionary(
+            initializedCorpus, goldStandardCorpus, string_argument
+        )
 
         currentNode = self.root
         for initializedTag in objects:

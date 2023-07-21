@@ -109,9 +109,13 @@ def getObject(wordTags, index):  # Sequence of "Word/Tag"
     )
 
 
-def getObjectDictionary(initializedCorpus, goldStandardCorpus):
-    goldStandardSens = open(goldStandardCorpus, encoding="utf-8").readlines()
-    initializedSens = open(initializedCorpus, encoding="utf-8").readlines()
+def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
+    if string_argument:
+        goldStandardSens = goldStandardCorpus.splitlines()
+        initializedSens = initializedCorpus.splitlines()
+    else:
+        goldStandardSens = open(goldStandardCorpus, encoding="utf-8").readlines()
+        initializedSens = open(initializedCorpus, encoding="utf-8").readlines()
 
     objects: Dict[str, Dict[str, list]] = {}  # objects = {}
 

@@ -87,9 +87,10 @@ def ExtRDR_RUN(system_arguments):
             # )
             THRESHOLD = args[3]
             rdrTree = SCRDRTreeLearner(THRESHOLD[0], THRESHOLD[1])
-            rdrTree.learnRDRTree(args[2], args[1])
+            rdrTree.learnRDRTree(args[2], args[1], True)
             print("\nWrite the learned tree model to file " + args[2] + ".RDR")
-            rdrTree.writeToFile(args[2] + ".RDR")
+            # rdrTree.writeToFile(args[2] + ".RDR")
+            rdrTree.writeToFile("temp_gold_standard_rdr_rules.txt" + ".RDR")
             print("\nDone!")
         except Exception as e:
             print("\nERROR ==> ", e)
