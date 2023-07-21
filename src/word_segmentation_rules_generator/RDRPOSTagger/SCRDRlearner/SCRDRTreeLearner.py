@@ -293,7 +293,7 @@ class SCRDRTreeLearner(SCRDRTree):
 
         currentNode = self.root
         for initializedTag in objects:
-            print("\n===> Building exception rules for tag %s" % initializedTag)
+            # print("\n===> Building exception rules for tag %s" % initializedTag)
             correctCounts: Dict[str, int] = {}  # correctCounts = {}
 
             for object in objects[initializedTag][initializedTag]:

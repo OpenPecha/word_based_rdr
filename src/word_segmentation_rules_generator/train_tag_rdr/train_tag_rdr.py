@@ -39,7 +39,7 @@ def train_with_external_rdr(gold_corpus_file, external_tagged_file, THRESHOLD=(1
         external_tagged_file,
         THRESHOLD,
     ]
-    ExtRDR_RUN(function_arguments)
+    return ExtRDR_RUN(function_arguments)
 
 
 def tag_rdr(

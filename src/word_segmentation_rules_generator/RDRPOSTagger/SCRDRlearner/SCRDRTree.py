@@ -1,3 +1,5 @@
+import os
+
 from .Node import Node
 from .Object import FWObject
 
@@ -23,10 +25,16 @@ class SCRDRTree:
         self.root.writeToFileWithSeenCases(out, 0)
         out.close()
 
-    def writeToFile(self, outFile):
-        out = open(outFile, "w", encoding="utf-8")
-        self.root.writeToFile(out, 0)
-        out.close()
+    def writeToFile(self, outFile, return_string):
+        with open(outFile, "w", encoding="utf-8") as out:
+            self.root.writeToFile(out, 0)
+
+        if return_string:
+            with open(outFile, encoding="utf-8") as file:
+                rdr_content = file.read()
+
+            os.remove(outFile)  # Remove the file after reading its contents
+            return rdr_content
 
     # Build tree from file containing rules using FWObject
     def constructSCRDRtreeFromRDRfile(self, rulesFilePath):

@@ -28,7 +28,8 @@ def print_code_flow():
     rdr_tag_output = tag_rdr(botok_output)
     # After your code is executed, restore the standard output
     sys.stdout = sys.__stdout__
+    print("RDR output:-------------------> ", rdr_tag_output)
 
-    print("RDR output:> ", rdr_tag_output)
-
-    train_with_external_rdr(tagger_output, rdr_tag_output)
+    rdr_rules = train_with_external_rdr(tagger_output, rdr_tag_output)
+    print("RDR Rules generated:> ")
+    print(rdr_rules)
