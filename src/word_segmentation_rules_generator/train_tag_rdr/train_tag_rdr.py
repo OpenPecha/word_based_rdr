@@ -17,26 +17,18 @@ def train_rdr(file_to_train_tagged="TIB_train_maxmatched_tagged.txt", THRESHOLD=
     run(function_arguments)
 
 
-def train_with_external_rdr(gold_corpus_file, external_tagged_file, THRESHOLD=(1, 1)):
+def train_with_external_rdr(gold_corpus, external_tagged_corpus, THRESHOLD=(1, 1)):
 
     """
-    Input: Gold standard corpus, tagged file by external tagger, threshold
-    Output: Two files i)RDR rules .RDR
+    Input: Gold standard corpus, tagged_string by external tagger(already rdr rules tagged on botok output), threshold
+    return rdr rules in string
     """
-    # current_dir = os.path.dirname(__file__)
-    # gold_corpus_relative_path = "../data/" + gold_corpus_file
-    # gold_corpus_file_path = os.path.join(current_dir, gold_corpus_relative_path)
-
-    # external_tagged_file_relative_path = "../data/" + external_tagged_file
-    # external_tagged_file_path = os.path.join(
-    #     current_dir, external_tagged_file_relative_path
-    # )
 
     function_arguments = [
         "ExtRDRPOSTagger.py",
         "train",
-        gold_corpus_file,
-        external_tagged_file,
+        gold_corpus,
+        external_tagged_corpus,
         THRESHOLD,
     ]
     return ExtRDR_RUN(function_arguments)
