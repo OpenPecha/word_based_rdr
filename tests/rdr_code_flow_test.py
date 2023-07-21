@@ -1,3 +1,6 @@
+import os
+import sys
+
 from src.word_segmentation_rules_generator.max_matcher.max_matcher import (
     botok_max_matcher,
 )
@@ -15,5 +18,10 @@ def print_code_flow():
     tagger_output = tagger(gold_standard_string)
     print("Tagger output:> ", tagger_output)
 
+    # Redirect the standard output to the null device
+    sys.stdout = open(os.devnull, "w")
     rdr_tag_output = tag_rdr(botok_output)
+    # After your code is executed, restore the standard output
+    sys.stdout = sys.__stdout__
+
     print("RDR output:> ", rdr_tag_output)
