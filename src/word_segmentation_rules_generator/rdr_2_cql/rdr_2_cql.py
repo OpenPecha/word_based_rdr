@@ -28,20 +28,18 @@ def rdr_2_cql_file(
             file.write(cql_rules)  # Write content to the file
 
 
-def append_new_cql_rules_to_main(source_file, destination_file):
+def append_new_cql_rules_to_main(new_cql_rules, destination_file):
     """
     Used to append the replace cql rules of minimum cases to the main file
     """
     current_dir = os.path.dirname(__file__)
-    source_relative_path = "../resources/" + source_file
-    source_file_path = os.path.join(current_dir, source_relative_path)
 
     destination_relative_path = "../resources/" + destination_file
     destination_file_path = os.path.join(current_dir, destination_relative_path)
 
     try:
-        with open(source_file_path) as source:
-            lines_to_append = source.readlines()
+
+        lines_to_append = new_cql_rules.splitlines()
         with open(destination_file_path, "a") as destination:
             for line in lines_to_append:
                 destination.write(line)
