@@ -6,7 +6,7 @@ from pybo.rdr.rdr_2_replace_matcher import rdr_2_replace_matcher
 def rdr_2_cql_string(rdr_rules_string):
     cql_rules = rdr_2_replace_matcher(rdr_rules_string)
     # in the code rdr_2_replace_matcher, there been done pos but here we will need word tag
-    cql_rules = cql_rules.replace("pos", "segmentation_tag")
+    cql_rules = cql_rules.replace("pos", "seg_tag")
     return cql_rules
 
 
