@@ -18,7 +18,26 @@ def tagged_string_to_word_tag_list(tagged_string):
 def make_split_cql_rule(
     syllable_word_list, syllable_tag_list, word_index, syllable_index
 ):
-    pass
+    """
+    each cql rule should be as follows: <matchcql>\t<index>\t<operation>\t<replacecql>
+    cql example :
+    ["ལ་ལ་"] ["ལ་ལ་"]	1-2	::	[] []
+    ["ལ་"] ["ལ་"] ["ལ་ལ་"]	3-2	::	[] []
+    ["ལ་"] ["ལ་"] ["ལ་"] ["ལ་"]	2	+	[]
+    """
+
+    matchcql = ""
+    matching_index = word_index + 1
+    splitting_index = len("".join(syllable_word_list[word_index][:syllable_index]))
+    index = f"{matching_index}-{splitting_index}"
+    operation = "::"
+    replacecql = "[] []"
+
+    for i in range(len(syllable_word_list)):
+        matchcql += "[text={}] ".format("".join(syllable_word_list[i]))
+
+    new_cql_rule = "\t".join([matchcql, index, operation, replacecql])
+    print(new_cql_rule)
 
 
 def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_index):
@@ -33,7 +52,7 @@ def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_ind
     for i in range(len(syls_tag_list)):
         # curr_word means current word
         curr_word_list = syls_tag_list[i]
-        for j in range(curr_word_list):
+        for j in range(len(curr_word_list)):
             if not new_word_started:
                 new_word_started = True
                 continue
