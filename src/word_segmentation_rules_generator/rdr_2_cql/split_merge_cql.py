@@ -42,8 +42,17 @@ def find_words_for_split_merge(tag_split_list, word_list, tag_list):
         for i in range(start_index, stop_index + 1):
             syllable_word_list.append(split_by_TSEK(word_list[i]))
             syllable_tag_list.append(list(tag_list[i]))
-        print(syllable_word_list)
-        print(syllable_tag_list)
+        """
+        syllable_word_list = [[ལ་,ལ་],[ལ་,ལ་]]
+        syllable_tag_list = [['N','N'],['C','N']]
+        """
+
+        words_count = len(syllable_word_list)
+        new_word_index = 0
+        for i in range(words_count):
+            if syllable_tag_list[i][0] in ["N", "A"] and new_word_index != 0:
+                make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, i)
+                new_word_index = i
 
 
 def split_merge_cql(tagged_string):
