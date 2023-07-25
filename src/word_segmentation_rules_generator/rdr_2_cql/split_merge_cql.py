@@ -1,3 +1,5 @@
+from src.word_segmentation_rules_generator.tagger.tagger import split_by_TSEK
+
 from ..RDRPOSTagger.Utility.Utils import getWordTag
 
 
@@ -32,7 +34,20 @@ def split_tag_list_with_index(tag_list):
     return tag_split_list
 
 
+def find_words_for_split_merge(tag_split_list, word_list, tag_list):
+    for tuple_index in tag_split_list:
+        start_index, stop_index = tuple_index
+        syllable_word_list = []
+        syllable_tag_list = []
+        for i in range(start_index, stop_index + 1):
+            syllable_word_list.append(split_by_TSEK(word_list[i]))
+            syllable_tag_list.append(list(tag_list[i]))
+        print(syllable_word_list)
+        print(syllable_tag_list)
+
+
 def split_merge_cql(tagged_string):
     word_list, tag_list = tagged_string_to_word_tag_list(tagged_string)
     tag_split_list = split_tag_list_with_index(tag_list)
-    return tag_split_list
+    find_words_for_split_merge(tag_split_list, word_list, tag_list)
+    # return tag_split_list
