@@ -15,8 +15,30 @@ def tagged_string_to_word_tag_list(tagged_string):
     return word_list, tag_list
 
 
-def make_cql_rule(start_index, i, word_list, tag_list):
+def make_split_cql_rule(
+    syllable_word_list, syllable_tag_list, word_index, syllable_index
+):
     pass
+
+
+def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_index):
+    syllable_word_list = syllable_word_list[new_word_index:end_index]
+    syllable_tag_list = syllable_tag_list[new_word_index:end_index]
+
+    syls_word_list = syllable_word_list
+    syls_tag_list = syllable_tag_list
+
+    # first performing split function
+    new_word_started = False
+    for i in range(len(syls_tag_list)):
+        # curr_word means current word
+        curr_word_list = syls_tag_list[i]
+        for j in range(curr_word_list):
+            if not new_word_started:
+                new_word_started = True
+                continue
+            if syls_tag_list[i][j] in ["N", "A"]:
+                make_split_cql_rule(syls_word_list, syls_tag_list, i, j)
 
 
 def split_tag_list_with_index(tag_list):
@@ -45,14 +67,20 @@ def find_words_for_split_merge(tag_split_list, word_list, tag_list):
         """
         syllable_word_list = [[ལ་,ལ་],[ལ་,ལ་]]
         syllable_tag_list = [['N','N'],['C','N']]
+        Another example:
+        [['བཀྲ་', 'ཤིས་', 'ཤོག']]
+        [['N', 'C', 'N']]
         """
 
         words_count = len(syllable_word_list)
-        new_word_index = 0
+
+        new_word_index = -1
         for i in range(words_count):
-            if syllable_tag_list[i][0] in ["N", "A"] and new_word_index != 0:
+            if syllable_tag_list[i][0] in ["N", "A"] and new_word_index != -1:
                 make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, i)
                 new_word_index = i
+        if new_word_index == -1:
+            make_cql_rule(syllable_word_list, syllable_tag_list, 0, words_count)
 
 
 def split_merge_cql(tagged_string):
