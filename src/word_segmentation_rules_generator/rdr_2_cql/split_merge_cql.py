@@ -28,6 +28,8 @@ def make_split_cql_rule(
 
     matchcql = ""
     matching_index = word_index + 1
+    if syllable_index == 0:
+        syllable_index = 1
     splitting_index = len("".join(syllable_word_list[word_index][:syllable_index]))
     index = f"{matching_index}-{splitting_index}"
     operation = "::"
@@ -98,6 +100,7 @@ def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_ind
     syls_word_list = syllable_word_list
     syls_tag_list = syllable_tag_list
 
+    new_i, new_j = 0, 0
     # first performing split function
     new_word_started = False
     for i in range(len(syllable_tag_list)):
@@ -108,11 +111,11 @@ def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_ind
                 new_word_started = True
                 continue
             if syllable_tag_list[i][j] in ["N", "A"]:
-
-                make_split_cql_rule(syls_word_list, syls_tag_list, i, j)
+                new_i, new_j = get_new_indices(syllable_word_list, syls_word_list, i, j)
+                make_split_cql_rule(syls_word_list, syls_tag_list, new_i, new_j)
                 # Break down the rules
-                syls_word_list = split_inner_list(syls_word_list, i, j)
-                syls_tag_list = split_inner_list(syls_tag_list, i, j)
+                syls_word_list = split_inner_list(syls_word_list, new_i, new_j)
+                syls_tag_list = split_inner_list(syls_tag_list, new_i, new_j)
 
 
 def split_tag_list_with_index(tag_list):
