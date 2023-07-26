@@ -1,3 +1,5 @@
+import copy
+
 from src.word_segmentation_rules_generator.tagger.tagger import split_by_TSEK
 
 from ..RDRPOSTagger.Utility.Utils import getWordTag
@@ -97,8 +99,9 @@ def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_ind
     syllable_word_list = syllable_word_list[new_word_index:end_index]
     syllable_tag_list = syllable_tag_list[new_word_index:end_index]
 
-    syls_word_list = syllable_word_list
-    syls_tag_list = syllable_tag_list
+    # Create a deep copy of the list to avoid modifying the original list
+    syls_word_list = copy.deepcopy(syllable_word_list)
+    syls_tag_list = copy.deepcopy(syllable_tag_list)
 
     new_i, new_j = 0, 0
     # first performing split function
