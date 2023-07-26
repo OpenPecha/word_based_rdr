@@ -25,7 +25,7 @@ class SCRDRTree:
         self.root.writeToFileWithSeenCases(out, 0)
         out.close()
 
-    def writeToFile(self, outFile, return_string):
+    def writeToFile(self, outFile, return_string=False):
         with open(outFile, "w", encoding="utf-8") as out:
             self.root.writeToFile(out, 0)
 

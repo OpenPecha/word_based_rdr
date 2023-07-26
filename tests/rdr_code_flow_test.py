@@ -13,8 +13,10 @@ from src.word_segmentation_rules_generator.train_tag_rdr.train_tag_rdr import (
 
 
 def print_code_flow():
-    gold_standard_string = "༄༅། །རྒྱལ་པོ་ ལ་ གཏམ་ བྱ་བ་ རིན་པོ་ཆེ འི་ ཕྲེང་་་བ། ལ་ ལ་ལ་ ལ་ ལ་བ་ ཡོད། དཔལ། དགེའོ་ བཀྲ་ཤིས་ ཤོག།"  # noqa
-    input_string = "༄༅། །རྒྱལ་པོ་ལ་གཏམ་བྱ་བ་རིན་པོ་ཆེའི་ཕྲེང་་་བ། ལ་ལ་ལ་ལ་ལ་བ་ཡོད། དཔལ། དགེའོ་བཀྲ་ཤིས་ཤོག།"
+    gold_standard_string = (
+        "ལ་ ལ་ལ་ ལ་ ལ་བ་ ཡོད། ལ་ ལ་ ལ་བ་ ཡོད། མི་ ལ་ལ་ ལ་ ལ་བ་ ཡོད།"  # noqa
+    )
+    input_string = "ལ་ལ་ལ་ལ་ལ་བ་ཡོད། ལ་ལ་ལ་བ་ཡོད། མི་ལ་ལ་ལ་ལ་བ་ཡོད།"
 
     print("Gold output:> ", gold_standard_string)
 
