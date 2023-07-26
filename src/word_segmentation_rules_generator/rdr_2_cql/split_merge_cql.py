@@ -95,6 +95,12 @@ def get_new_indices(my_list, new_list, old_i, old_j):
     return new_i, new_j
 
 
+def make_merge_cql_rule(
+    syllable_word_list, syllable_tag_list, word_index, syllable_index
+):
+    pass
+
+
 def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_index):
     syllable_word_list = syllable_word_list[new_word_index:end_index]
     syllable_tag_list = syllable_tag_list[new_word_index:end_index]
@@ -119,6 +125,24 @@ def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_ind
                 # Break down the rules
                 syls_word_list = split_inner_list(syls_word_list, new_i, new_j)
                 syls_tag_list = split_inner_list(syls_tag_list, new_i, new_j)
+
+    # Second performing merge function
+
+    # Create a deep copy of the list to avoid modifying the original list
+
+    syls_word_list_for_merge = copy.deepcopy(syls_word_list)
+    syls_tag_list_for_merge = copy.deepcopy(syls_tag_list)
+    new_i, new_j = 0, 0
+
+    for i in range(len(syls_tag_list) - 1):
+        curr_tag_list = syls_tag_list[i + 1]
+        if curr_tag_list[0] in ["C", "B"]:
+            new_i, new_j = get_new_indices(
+                syls_word_list, syls_word_list_for_merge, i, j
+            )
+            make_merge_cql_rule(
+                syls_tag_list_for_merge, syls_tag_list_for_merge, new_i, new_j
+            )
 
 
 def split_tag_list_with_index(tag_list):
