@@ -42,8 +42,6 @@ def make_split_cql_rule(
 
     new_cql_rule = "\t".join([matchcql, index, operation, replacecql])
     print(new_cql_rule)
-    print(syllable_word_list)
-    print(syllable_tag_list)
 
 
 def split_inner_list(lst, i, j):
@@ -117,8 +115,19 @@ def make_merge_cql_rule(
 
     new_cql_rule = "\t".join([matchcql, index, operation, replacecql])
     print(new_cql_rule)
-    print(syllable_word_list)
-    print(syllable_tag_list)
+
+
+def merge_inner_lists(lst, i):
+    if i < 0 or i >= len(lst) - 1:
+        raise ValueError("Index i is out of range or the last element.")
+
+    # Remove the inner list at index i+1
+    removed_list = lst.pop(i + 1)
+
+    # Extend the inner list at index i with the elements from the removed list
+    lst[i].extend(removed_list)
+
+    return lst
 
 
 def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_index):
@@ -151,7 +160,7 @@ def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_ind
     # Create a deep copy of the list to avoid modifying the original list
 
     syls_word_list_for_merge = copy.deepcopy(syls_word_list)
-    # syls_tag_list_for_merge = copy.deepcopy(syls_tag_list)
+    syls_tag_list_for_merge = copy.deepcopy(syls_tag_list)
     new_i, new_j = 0, 0
 
     for i in range(len(syls_tag_list) - 1):
@@ -163,6 +172,10 @@ def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_ind
             make_merge_cql_rule(
                 syls_word_list_for_merge, syls_word_list_for_merge, new_i, new_j
             )
+            syls_word_list_for_merge = merge_inner_lists(
+                syls_word_list_for_merge, new_i
+            )
+            syls_tag_list_for_merge = merge_inner_lists(syls_tag_list_for_merge, new_i)
 
 
 def split_tag_list_with_index(tag_list):
