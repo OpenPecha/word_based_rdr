@@ -38,6 +38,20 @@ def make_split_cql_rule(
 
     new_cql_rule = "\t".join([matchcql, index, operation, replacecql])
     print(new_cql_rule)
+    print(syllable_word_list)
+    print(syllable_tag_list)
+
+
+def split_inner_list(lst, i, j):
+    if i < 0 or i >= len(lst):
+        raise ValueError("Index i is out of range.")
+    if j < 0 or j >= len(lst[i]):
+        raise ValueError("Index j is out of range.")
+
+    split_list = lst[i].pop(j)
+    lst.insert(i + 1, [split_list])
+
+    return lst
 
 
 def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_index):
@@ -49,15 +63,19 @@ def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_ind
 
     # first performing split function
     new_word_started = False
-    for i in range(len(syls_tag_list)):
+    for i in range(len(syllable_tag_list)):
         # curr_word means current word
-        curr_word_list = syls_tag_list[i]
+        curr_word_list = syllable_tag_list[i]
         for j in range(len(curr_word_list)):
             if not new_word_started:
                 new_word_started = True
                 continue
-            if syls_tag_list[i][j] in ["N", "A"]:
+            if syllable_tag_list[i][j] in ["N", "A"]:
+
                 make_split_cql_rule(syls_word_list, syls_tag_list, i, j)
+                # Break down the rules
+                syls_word_list = split_inner_list(syls_word_list, i, j)
+                syls_tag_list = split_inner_list(syls_tag_list, i, j)
 
 
 def split_tag_list_with_index(tag_list):
