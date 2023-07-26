@@ -98,7 +98,27 @@ def get_new_indices(my_list, new_list, old_i, old_j):
 def make_merge_cql_rule(
     syllable_word_list, syllable_tag_list, word_index, syllable_index
 ):
-    pass
+    """
+    each cql rule should be as follows: <matchcql>\t<index>\t<operation>\t<replacecql>
+    cql example :
+    ["ལ་ལ་"] ["ལ་ལ་"]	1-2	::	[] []
+    ["ལ་"] ["ལ་"] ["ལ་ལ་"]	3-2	::	[] []
+    ["ལ་"] ["ལ་"] ["ལ་"] ["ལ་"]	2	+	[]
+    """
+
+    matchcql = ""
+    matching_index = word_index + 1
+    index = f"{matching_index}"
+    operation = "+"
+    replacecql = "[]"
+
+    for i in range(len(syllable_word_list)):
+        matchcql += "[text={}] ".format("".join(syllable_word_list[i]))
+
+    new_cql_rule = "\t".join([matchcql, index, operation, replacecql])
+    print(new_cql_rule)
+    print(syllable_word_list)
+    print(syllable_tag_list)
 
 
 def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_index):
@@ -131,17 +151,17 @@ def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_ind
     # Create a deep copy of the list to avoid modifying the original list
 
     syls_word_list_for_merge = copy.deepcopy(syls_word_list)
-    syls_tag_list_for_merge = copy.deepcopy(syls_tag_list)
+    # syls_tag_list_for_merge = copy.deepcopy(syls_tag_list)
     new_i, new_j = 0, 0
 
     for i in range(len(syls_tag_list) - 1):
         curr_tag_list = syls_tag_list[i + 1]
         if curr_tag_list[0] in ["C", "B"]:
             new_i, new_j = get_new_indices(
-                syls_word_list, syls_word_list_for_merge, i, j
+                syls_word_list, syls_word_list_for_merge, i, 0
             )
             make_merge_cql_rule(
-                syls_tag_list_for_merge, syls_tag_list_for_merge, new_i, new_j
+                syls_word_list_for_merge, syls_word_list_for_merge, new_i, new_j
             )
 
 
