@@ -54,6 +54,43 @@ def split_inner_list(lst, i, j):
     return lst
 
 
+def get_new_indices(my_list, new_list, old_i, old_j):
+    # Returns new_indices of new_list with respect to original_list indices
+    if old_i < 0 or old_i >= len(my_list):
+        raise ValueError("Old index i is out of range.")
+    if old_j < 0 or old_j >= len(my_list[old_i]):
+        raise ValueError("Old index j is out of range.")
+
+    num_elements_passed = 0
+    found = False
+
+    for outer_index, inner_list in enumerate(my_list):
+        for inner_index, element in enumerate(inner_list):
+            if outer_index == old_i and inner_index == old_j:
+                found = True
+                break
+            num_elements_passed += 1
+        if found:
+            break
+
+    new_elements_passed = 0
+    new_i, new_j = 0, 0
+    found = False
+
+    for outer_index, inner_list in enumerate(new_list):
+        for inner_index, element in enumerate(inner_list):
+            if new_elements_passed == num_elements_passed:
+                found = True
+                new_i = outer_index
+                new_j = inner_index
+                break
+            new_elements_passed += 1
+        if found:
+            break
+
+    return new_i, new_j
+
+
 def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_index):
     syllable_word_list = syllable_word_list[new_word_index:end_index]
     syllable_tag_list = syllable_tag_list[new_word_index:end_index]
