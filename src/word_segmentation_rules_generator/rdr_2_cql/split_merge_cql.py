@@ -221,16 +221,24 @@ def find_words_for_split_merge(tag_split_list, word_list, tag_list):
         """
 
         words_count = len(syllable_word_list)
+        make_cql_rule_called = 0
+        make_cql_rule_supposed_to_call = 0
 
         new_word_index = -1
         for i in range(words_count):
+            if syllable_tag_list[i][0] in ["N", "A"]:
+                make_cql_rule_supposed_to_call += 1
             if syllable_tag_list[i][0] in ["N", "A"] and i != 0:
                 if new_word_index == -1:
                     new_word_index = 0
                 make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, i)
+                make_cql_rule_called += 0
                 new_word_index = i
+        if make_cql_rule_called < make_cql_rule_supposed_to_call:
+            make_cql_rule(
+                syllable_word_list, syllable_tag_list, new_word_index, words_count
+            )
         if new_word_index == -1:
-            print("Exception called")
             make_cql_rule(syllable_word_list, syllable_tag_list, 0, words_count)
 
 
