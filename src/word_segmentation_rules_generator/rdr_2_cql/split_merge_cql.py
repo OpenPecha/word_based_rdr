@@ -45,15 +45,26 @@ def make_split_cql_rule(
 
 
 def split_inner_list(lst, i, j):
-    if i < 0 or i >= len(lst):
-        raise ValueError("Index i is out of range.")
-    if j < 0 or j >= len(lst[i]):
-        raise ValueError("Index j is out of range.")
+    new_list = lst.copy()
 
-    split_list = lst[i].pop(j)
-    lst.insert(i + 1, [split_list])
+    found = False
+    # Split the list at the specified indices
+    for outer_index, inner_list in enumerate(new_list):
+        for inner_index, element in enumerate(inner_list):
+            if outer_index == i and inner_index == j:
+                if j == 0:
+                    j = 1
+                new_splited_left_inner_list = new_list[i][:j]
+                new_splited_right_inner_list = new_list[i][j:]
+                new_list.pop(i)
+                new_list.insert(i, new_splited_left_inner_list)
+                new_list.insert(i + 1, new_splited_right_inner_list)
+                found = True
+                break
+        if found:
+            break
 
-    return lst
+    return new_list
 
 
 def get_new_indices(my_list, new_list, old_i, old_j):
@@ -140,10 +151,10 @@ def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_ind
 
     new_i, new_j = 0, 0
     # first performing split function
-    new_word_started = False
     for i in range(len(syllable_tag_list)):
         # curr_word means current word
         curr_word_list = syllable_tag_list[i]
+        new_word_started = False
         for j in range(len(curr_word_list)):
             if not new_word_started:
                 new_word_started = True
@@ -213,10 +224,13 @@ def find_words_for_split_merge(tag_split_list, word_list, tag_list):
 
         new_word_index = -1
         for i in range(words_count):
-            if syllable_tag_list[i][0] in ["N", "A"] and new_word_index != -1:
+            if syllable_tag_list[i][0] in ["N", "A"] and i != 0:
+                if new_word_index == -1:
+                    new_word_index = 0
                 make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, i)
                 new_word_index = i
         if new_word_index == -1:
+            print("Exception called")
             make_cql_rule(syllable_word_list, syllable_tag_list, 0, words_count)
 
 
