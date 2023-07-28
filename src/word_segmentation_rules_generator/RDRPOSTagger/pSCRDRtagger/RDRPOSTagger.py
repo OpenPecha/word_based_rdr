@@ -4,9 +4,10 @@ from ..InitialTagger.InitialTagger import initializeCorpus, initializeSentence
 from ..SCRDRlearner.Object import FWObject
 from ..SCRDRlearner.SCRDRTree import SCRDRTree
 from ..SCRDRlearner.SCRDRTreeLearner import SCRDRTreeLearner
-from ..Utility.Config import THRESHOLD
 from ..Utility.LexiconCreator import createLexicon
 from ..Utility.Utils import getRawText, getWordTag, readDictionary
+
+# from ..Utility.Config import THRESHOLD
 
 # os.chdir("../")
 # sys.setrecursionlimit(100000)
@@ -40,8 +41,10 @@ class RDRPOSTagger(SCRDRTree):
                 sen.append(word + "/" + tag)
         return " ".join(sen)
 
-    def tagRawCorpus(self, DICT, rawCorpusPath):
-        lines = open(rawCorpusPath, encoding="utf-8").readlines()
+    def tagRawCorpus(self, DICT, rawCorpus):
+        # lines = open(rawCorpusPath, encoding="utf-8").readlines()
+        lines = rawCorpus.splitlines()
+
         # Change the value of NUMBER_OF_PROCESSES to obtain faster tagging process!
         # from multiprocessing import Pool
         # from ..Utility.Config import NUMBER_OF_PROCESSES
@@ -54,11 +57,15 @@ class RDRPOSTagger(SCRDRTree):
         for line in lines:
             taggedLine = self.tagRawSentence(DICT, line)
             taggedLines.append(taggedLine)
-        outW = open(rawCorpusPath + ".TAGGED", "w", encoding="utf-8")
-        for line in taggedLines:
-            outW.write(line + "\n")
-        outW.close()
-        print("\nOutput file: " + rawCorpusPath + ".TAGGED")
+        result_string = " ".join(taggedLines)
+        return result_string
+        # # outW = open(rawCorpus + ".TAGGED", "w", encoding="utf-8")
+        # outW = open("function_test" + ".TAGGED", "w", encoding="utf-8")
+
+        # for line in taggedLines:
+        #     outW.write(line + "\n")
+        # outW.close()
+        # print("\nOutput file: " + rawCorpus + ".TAGGED")
 
 
 def printHelp():
@@ -109,6 +116,7 @@ def run(system_arguments):
             #         args[1], args[1] + ".INIT"
             #     )
             # )
+            THRESHOLD = args[2]
             rdrTree = SCRDRTreeLearner(THRESHOLD[0], THRESHOLD[1])
             rdrTree.learnRDRTree(args[1] + ".INIT", args[1])
             # print("\nWrite the learned tree model to file " + args[1] + ".RDR")
@@ -130,8 +138,9 @@ def run(system_arguments):
             DICT = readDictionary(args[2])
             # print("\n=> Perform POS tagging on " + args[3])
             print("\n=> Perform POS tagging ...")
-            r.tagRawCorpus(DICT, args[3])
+            rdr_tag_output = r.tagRawCorpus(DICT, args[3])
             print("\n=> Done .....>")
+            return rdr_tag_output
         except Exception as e:
             print("\nERROR ==> ", e)
             printHelp()

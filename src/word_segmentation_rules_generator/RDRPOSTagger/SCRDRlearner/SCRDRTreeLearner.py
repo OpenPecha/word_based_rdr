@@ -40,31 +40,31 @@ def generateRules(object):
     # 10. Previous 1st word, current word and next 1st word
     rule10 = rule4 + " and " + rule6
 
-    # 12. Next 1st tag
-    rule12 = 'object.nextTag1 == "' + object.nextTag1 + '"'
-    # 13. Next 2nd tag
-    rule13 = 'object.nextTag2 == "' + object.nextTag2 + '"'
-    # 14. Previous 1st tag
-    rule14 = 'object.prevTag1 == "' + object.prevTag1 + '"'
-    # 15. Previous 2nd tag
-    rule15 = 'object.prevTag2 == "' + object.prevTag2 + '"'
-    # 16. Next 1st tag and next 2nd tag
-    rule16 = rule12 + " and " + rule13
-    # 17. Previous 2nd tag and previous 1st tag
-    rule17 = rule15 + " and " + rule14
-    # 18. Previous 1st tag and next 1st tag
-    rule18 = rule14 + " and " + rule12
+    # # 12. Next 1st tag
+    # rule12 = 'object.nextTag1 == "' + object.nextTag1 + '"'
+    # # 13. Next 2nd tag
+    # rule13 = 'object.nextTag2 == "' + object.nextTag2 + '"'
+    # # 14. Previous 1st tag
+    # rule14 = 'object.prevTag1 == "' + object.prevTag1 + '"'
+    # # 15. Previous 2nd tag
+    # rule15 = 'object.prevTag2 == "' + object.prevTag2 + '"'
+    # # 16. Next 1st tag and next 2nd tag
+    # rule16 = rule12 + " and " + rule13
+    # # 17. Previous 2nd tag and previous 1st tag
+    # rule17 = rule15 + " and " + rule14
+    # # 18. Previous 1st tag and next 1st tag
+    # rule18 = rule14 + " and " + rule12
 
-    # 21. Current word and next 1st tag
-    rule21 = rule1 + " and " + rule12
-    # 22. Current word and previous 1st tag
-    rule22 = rule14 + " and " + rule1
-    # 23. Previous 1st tag, current word and next 1st tag
-    rule23 = rule14 + " and " + rule21
-    # 24. Current word and 2 next tags.
-    rule24 = rule1 + " and " + rule16
-    # 25. 2 previous tags and current word
-    rule25 = rule17 + " and " + rule1
+    # # 21. Current word and next 1st tag
+    # rule21 = rule1 + " and " + rule12
+    # # 22. Current word and previous 1st tag
+    # rule22 = rule14 + " and " + rule1
+    # # 23. Previous 1st tag, current word and next 1st tag
+    # rule23 = rule14 + " and " + rule21
+    # # 24. Current word and 2 next tags.
+    # rule24 = rule1 + " and " + rule16
+    # # 25. 2 previous tags and current word
+    # rule25 = rule17 + " and " + rule1
     # 26. 2-character suffix
     # rule26 = "object.suffixL2 == \"" + object.suffixL2 + "\""
     # # 27. 3-character suffix
@@ -84,20 +84,20 @@ def generateRules(object):
     rules.append(rule9)
     rules.append(rule10)
     rules.append(rule11)
-    rules.append(rule12)
-    rules.append(rule13)
-    rules.append(rule14)
-    rules.append(rule15)
-    rules.append(rule16)
-    rules.append(rule17)
-    rules.append(rule18)
+    # rules.append(rule12)
+    # rules.append(rule13)
+    # rules.append(rule14)
+    # rules.append(rule15)
+    # rules.append(rule16)
+    # rules.append(rule17)
+    # rules.append(rule18)
     rules.append(rule19)
     rules.append(rule20)
-    rules.append(rule21)
-    rules.append(rule22)
-    rules.append(rule23)
-    rules.append(rule24)
-    rules.append(rule25)
+    # rules.append(rule21)
+    # rules.append(rule22)
+    # rules.append(rule23)
+    # rules.append(rule24)
+    # rules.append(rule25)
     # rules.append(rule26)
     # rules.append(rule27)
     # rules.append(rule28)
@@ -282,14 +282,18 @@ class SCRDRTreeLearner(SCRDRTree):
             currentNode = node
             self.buildNodeForObjectSet(needToCorrectObjects, currentNode)
 
-    def learnRDRTree(self, initializedCorpus, goldStandardCorpus):
+    def learnRDRTree(
+        self, initializedCorpus, goldStandardCorpus, string_argument=False
+    ):
         self.root = Node("True", 'object.conclusion = "NN"', None, None, None, [], 0)
 
-        objects = getObjectDictionary(initializedCorpus, goldStandardCorpus)
+        objects = getObjectDictionary(
+            initializedCorpus, goldStandardCorpus, string_argument
+        )
 
         currentNode = self.root
         for initializedTag in objects:
-            print("\n===> Building exception rules for tag %s" % initializedTag)
+            # print("\n===> Building exception rules for tag %s" % initializedTag)
             correctCounts: Dict[str, int] = {}  # correctCounts = {}
 
             for object in objects[initializedTag][initializedTag]:

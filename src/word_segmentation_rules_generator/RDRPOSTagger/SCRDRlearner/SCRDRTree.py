@@ -1,3 +1,5 @@
+import os
+
 from .Node import Node
 from .Object import FWObject
 
@@ -23,10 +25,16 @@ class SCRDRTree:
         self.root.writeToFileWithSeenCases(out, 0)
         out.close()
 
-    def writeToFile(self, outFile):
-        out = open(outFile, "w", encoding="utf-8")
-        self.root.writeToFile(out, 0)
-        out.close()
+    def writeToFile(self, outFile, return_string=False):
+        with open(outFile, "w", encoding="utf-8") as out:
+            self.root.writeToFile(out, 0)
+
+        if return_string:
+            with open(outFile, encoding="utf-8") as file:
+                rdr_content = file.read()
+
+            os.remove(outFile)  # Remove the file after reading its contents
+            return rdr_content
 
     # Build tree from file containing rules using FWObject
     def constructSCRDRtreeFromRDRfile(self, rulesFilePath):
@@ -145,8 +153,8 @@ def getConcreteValue(str):
     if str.find('""') > 0:
         if str.find("Word") > 0:
             return "<W>"
-        elif str.find("suffixL") > 0:
-            return "<SFX>"
+        # elif str.find("suffixL") > 0:
+        #     return "<SFX>"
         else:
             return "<T>"
     return str[str.find('"') + 1 : len(str) - 1]  # noqa
@@ -179,13 +187,14 @@ def getCondition(strCondition):
             condition.context[8] = value
         elif key == "nextTag2":
             condition.context[9] = value
-        elif key == "suffixL2":
-            condition.context[10] = value
-        elif key == "suffixL3":
-            condition.context[11] = value
-        elif key == "suffixL4":
-            condition.context[12] = value
-    for i in range(13):
+        # elif key == "suffixL2":
+        #     condition.context[10] = value
+        # elif key == "suffixL3":
+        #     condition.context[11] = value
+        # elif key == "suffixL4":
+        #     condition.context[12] = value
+    # for i in range(13):
+    for i in range(10):
         if condition.context[i] is not None:
             condition.notNoneIds.append(i)
     return condition
