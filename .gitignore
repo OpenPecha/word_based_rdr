@@ -15,6 +15,7 @@ full_code_flow.py
 test_split_merge.py
 tests_temp.py
 train_tag_rdr.py
+rdr_to_cql.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
