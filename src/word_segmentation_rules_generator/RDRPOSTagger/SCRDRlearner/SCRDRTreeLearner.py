@@ -1,5 +1,7 @@
 from typing import Dict
 
+from ordered_set import OrderedSet
+
 from .Node import Node
 from .Object import getObjectDictionary
 from .SCRDRTree import SCRDRTree
@@ -115,7 +117,8 @@ def generateRules(object):
     # rules.append(rule29)
     # rules.append(rule30)
 
-    rules_set_dtype = set(rules)
+    # rules_set_dtype = set(rules)
+    rules_set_dtype = OrderedSet(rules)
     return rules_set_dtype
 
 
