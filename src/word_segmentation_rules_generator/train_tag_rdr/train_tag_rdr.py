@@ -64,7 +64,7 @@ def tag_rdr(
 
 
 def tag_file_rdr(
-    file_to_tag,
+    file_to_tag="TIB_test_maxmatched.txt",
     file_format=True,
     RDR_rules="TIB_train_maxmatched_tagged.txt.RDR",
     RDR_dictionary="TIB_train_maxmatched_tagged.txt.DICT",
