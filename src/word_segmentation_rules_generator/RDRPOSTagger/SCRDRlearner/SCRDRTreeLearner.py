@@ -18,27 +18,27 @@ def generateRules(object):
     # 5. Previous 2nd word
     rule5 = 'object.prevWord2 == "' + object.prevWord2 + '"'
 
-    # 6. Current word and next 1st word
-    rule6 = rule1 + " and " + rule2
-    # 7. Previous 1st word and current word
-    rule7 = rule4 + " and " + rule1
-    # 11. Previous 1st word and next 1st word
-    rule11 = rule4 + " and " + rule2
-    # 29. Next 1st word and next 2nd word
-    # rule29 = rule2 + " and " + rule3
-    # 30. Previous 2nd word and previous 1st word
-    # rule30 = rule5 + " and " + rule4
-    # 19. Current word and next 2nd word
-    rule19 = rule1 + " and " + rule3
-    # 20. Previous 2nd word and current word
-    rule20 = rule5 + " and " + rule1
+    # # 6. Current word and next 1st word
+    # rule6 = rule1 + " and " + rule2
+    # # 7. Previous 1st word and current word
+    # rule7 = rule4 + " and " + rule1
+    # # 11. Previous 1st word and next 1st word
+    # rule11 = rule4 + " and " + rule2
+    # # 29. Next 1st word and next 2nd word
+    # # rule29 = rule2 + " and " + rule3
+    # # 30. Previous 2nd word and previous 1st word
+    # # rule30 = rule5 + " and " + rule4
+    # # 19. Current word and next 2nd word
+    # rule19 = rule1 + " and " + rule3
+    # # 20. Previous 2nd word and current word
+    # rule20 = rule5 + " and " + rule1
 
-    # 8. Current word, next 1st word and next 2nd word
-    rule8 = rule6 + " and " + rule3
-    # 9. Previous 2nd word, previous 1st word and current word
-    rule9 = rule5 + " and " + rule7
-    # 10. Previous 1st word, current word and next 1st word
-    rule10 = rule4 + " and " + rule6
+    # # 8. Current word, next 1st word and next 2nd word
+    # rule8 = rule6 + " and " + rule3
+    # # 9. Previous 2nd word, previous 1st word and current word
+    # rule9 = rule5 + " and " + rule7
+    # # 10. Previous 1st word, current word and next 1st word
+    # rule10 = rule4 + " and " + rule6
 
     # # 12. Next 1st tag
     # rule12 = 'object.nextTag1 == "' + object.nextTag1 + '"'
@@ -72,27 +72,38 @@ def generateRules(object):
     # # 28. 4-character suffix
     # rule28 = "object.suffixL4 == \"" + object.suffixL4 + "\""
 
+    rule6 = rule1 + " and " + rule2
+    rule7 = rule1 + " and " + rule2 + " and " + rule3
+    rule8 = rule4 + " and " + rule1
+    rule9 = rule4 + " and " + rule1 + " and " + rule2
+    rule10 = rule4 + " and " + rule1 + " and " + rule2 + " and " + rule3
+    rule11 = rule5 + " and " + rule4 + " and " + rule1
+    rule12 = rule5 + " and " + rule4 + " and " + rule1 + " and " + rule2
+    rule13 = (
+        rule5 + " and " + rule4 + " and " + rule1 + " and " + rule2 + " and " + rule3
+    )
+
     rules = []
     rules.append(rule1)
-    rules.append(rule2)
-    rules.append(rule3)
-    rules.append(rule4)
-    rules.append(rule5)
+    # rules.append(rule2)
+    # rules.append(rule3)
+    # rules.append(rule4)
+    # rules.append(rule5)
     rules.append(rule6)
     rules.append(rule7)
     rules.append(rule8)
     rules.append(rule9)
     rules.append(rule10)
     rules.append(rule11)
-    # rules.append(rule12)
-    # rules.append(rule13)
+    rules.append(rule12)
+    rules.append(rule13)
     # rules.append(rule14)
     # rules.append(rule15)
     # rules.append(rule16)
     # rules.append(rule17)
     # rules.append(rule18)
-    rules.append(rule19)
-    rules.append(rule20)
+    # rules.append(rule19)
+    # rules.append(rule20)
     # rules.append(rule21)
     # rules.append(rule22)
     # rules.append(rule23)
