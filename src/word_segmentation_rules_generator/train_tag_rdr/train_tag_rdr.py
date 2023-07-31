@@ -40,7 +40,7 @@ def tag_rdr(
     RDR_dictionary="TIB_train_maxmatched_tagged.txt.DICT",
 ):
     """
-    Input : file that is already went through botok max matched algorithm and word segmented,
+    Input : String that is already went through botok max matched algorithm and word segmented,
     Output: file tagged acccording to the RDR model rules and dictionary.
     Important note: File should be in the folder 'data', and output in 'resources'
     """
@@ -61,3 +61,26 @@ def tag_rdr(
         string_to_tag,
     ]
     return run(function_arguments)
+
+
+def tag_file_rdr(
+    file_to_tag,
+    file_format=True,
+    RDR_rules="TIB_train_maxmatched_tagged.txt.RDR",
+    RDR_dictionary="TIB_train_maxmatched_tagged.txt.DICT",
+):
+
+    current_dir = os.path.dirname(__file__)
+    # file_relative_path = "../data/" + file_to_tag
+    file_to_tag_relative_path = "../data/" + file_to_tag
+    file_to_tag_path = os.path.join(current_dir, file_to_tag_relative_path)
+
+    file = open(file_to_tag_path)
+    file_content = file.read()
+    rdr_tagged_output = tag_rdr(file_content, RDR_rules, RDR_dictionary)
+    if file_format:
+        with open(file_to_tag + ".TAGGED", "w") as file:
+            # Write the content to the file
+            file.write(rdr_tagged_output)
+    else:
+        return rdr_tagged_output
