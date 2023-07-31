@@ -79,7 +79,7 @@ def tag_file_rdr(
     file_content = file.read()
     rdr_tagged_output = tag_rdr(file_content, RDR_rules, RDR_dictionary)
     if file_format:
-        with open(file_to_tag + ".TAGGED", "w", encoding="utf-8") as file:
+        with open(file_to_tag_path + ".TAGGED", "w", encoding="utf-8") as file:
             # Write the content to the file
             file.write(rdr_tagged_output)
     else:
