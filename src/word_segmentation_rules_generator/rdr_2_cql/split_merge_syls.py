@@ -10,7 +10,7 @@ from src.word_segmentation_rules_generator.tagger.tagger import split_by_TSEK
 def split_into_word_tag_list(tagged_file="TIB_test_maxmatched.txt.TAGGED"):
     """
     Input: file that is tagged by rdr rules
-    Output:List with word or syllables with their associated tag (P,A,B,N,C)
+    Output:List with word or syllables with their associated tag (U,B,I,X,Y)
     """
     current_dir = os.path.dirname(__file__)
     relative_path = "../data/" + tagged_file
@@ -22,7 +22,7 @@ def split_into_word_tag_list(tagged_file="TIB_test_maxmatched.txt.TAGGED"):
     word_tag_list = []
     for word in words_list:
         word_tag_splited = word.split("/")
-        if word_tag_splited[1] == "P":
+        if word_tag_splited[1] == "U":
             # If there is an affix involved,then there needs to be a space
             pattern = "-"
             replacement = " -"
@@ -46,27 +46,27 @@ def split_into_word_tag_list(tagged_file="TIB_test_maxmatched.txt.TAGGED"):
 def adjust_anomaly_tagged(syls_list, word_tag_splited):
     """
     In some cases, for words that are not perfectly tagged, RDR is not tagging the same number
-    as the syllables as its supposed to i.e, ['ལོག་པ-འོ', 'C'],
-    Input: ['ལོག་པ-འོ', 'C']
-    Output: ['ལོག་', 'C','པ-འོ','C']
+    as the syllables as its supposed to i.e, ['ལོག་པ-འོ', 'I'],
+    Input: ['ལོག་པ-འོ', 'I']
+    Output: ['ལོག་', 'I','པ-འོ','I']
     """
     anomaly_word_tag_list = []
     for i in range(len(syls_list)):
         if i < len(word_tag_splited[1]):
             anomaly_word_tag_list.append([syls_list[i], word_tag_splited[1][i]])
         else:
-            anomaly_word_tag_list.append([syls_list[i], "C"])
+            anomaly_word_tag_list.append([syls_list[i], "I"])
     return anomaly_word_tag_list
 
 
 def adjust_affix_with_tag(word_tag_list):
     for i in range(len(word_tag_list)):
-        if word_tag_list[i][1] in ["P", "N", "C"]:
+        if word_tag_list[i][1] in ["U", "B", "I"]:
             # If there is an affix involved,then there needs to be a space
             pattern = "-"
             replacement = " -"
             word_tag_list[i][0] = re.sub(pattern, replacement, word_tag_list[i][0])
-        else:  # So the tag is either A or B
+        else:  # So the tag is either X or Y
             pattern = "-"
             replacement = " -"
             match = re.search(pattern, word_tag_list[i][0])
@@ -87,13 +87,13 @@ def split_merge_to_proper_string(tagged_file="TIB_test_maxmatched.txt.TAGGED"):
     word_tag_list = split_into_word_tag_list(tagged_file)
     joined_string = ""
     for i in range(len(word_tag_list)):
-        if word_tag_list[i][1] == "P":
+        if word_tag_list[i][1] == "U":
             joined_string += word_tag_list[i][0] + " "
         else:
-            if word_tag_list[i][1] in ["A", "N"]:
+            if word_tag_list[i][1] in ["X", "B"]:
                 joined_string += " "
             joined_string += word_tag_list[i][0]
-            if word_tag_list[i + 1][1] in ["A", "N", "P"]:
+            if word_tag_list[i + 1][1] in ["X", "B", "U"]:
                 joined_string += " "
     joined_string = adjust_spaces(joined_string)
     return joined_string

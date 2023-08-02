@@ -159,7 +159,7 @@ def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_ind
             if not new_word_started:
                 new_word_started = True
                 continue
-            if syllable_tag_list[i][j] in ["N", "A"]:
+            if syllable_tag_list[i][j] in ["B", "X"]:
                 new_i, new_j = get_new_indices(syllable_word_list, syls_word_list, i, j)
                 make_split_cql_rule(syls_word_list, syls_tag_list, new_i, new_j)
                 # Break down the rules
@@ -176,7 +176,7 @@ def make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, end_ind
 
     for i in range(len(syls_tag_list) - 1):
         curr_tag_list = syls_tag_list[i + 1]
-        if curr_tag_list[0] in ["C", "B"]:
+        if curr_tag_list[0] in ["I", "Y"]:
             new_i, new_j = get_new_indices(
                 syls_word_list, syls_word_list_for_merge, i, 0
             )
@@ -193,13 +193,13 @@ def split_tag_list_with_index(tag_list):
     tag_split_list = []
     start_index = -1
     for i in range(len(tag_list)):
-        if tag_list[i] == "P" and start_index == -1:
+        if tag_list[i] == "U" and start_index == -1:
             continue
-        if tag_list[i] == "P" and start_index != -1:
+        if tag_list[i] == "U" and start_index != -1:
             tag_split_list.append((start_index, i - 1))
             start_index = -1
             continue
-        if start_index == -1 and tag_list[i] != "P":
+        if start_index == -1 and tag_list[i] != "U":
             start_index = i
     return tag_split_list
 
@@ -214,10 +214,10 @@ def find_words_for_split_merge(tag_split_list, word_list, tag_list):
             syllable_tag_list.append(list(tag_list[i]))
         """
         syllable_word_list = [[ལ་,ལ་],[ལ་,ལ་]]
-        syllable_tag_list = [['N','N'],['C','N']]
+        syllable_tag_list = [['B','B'],['I','B']]
         Another example:
         [['བཀྲ་', 'ཤིས་', 'ཤོག']]
-        [['N', 'C', 'N']]
+        [['B', 'I', 'B']]
         """
 
         words_count = len(syllable_word_list)
@@ -226,9 +226,9 @@ def find_words_for_split_merge(tag_split_list, word_list, tag_list):
 
         new_word_index = -1
         for i in range(words_count):
-            if syllable_tag_list[i][0] in ["N", "A"]:
+            if syllable_tag_list[i][0] in ["B", "X"]:
                 make_cql_rule_supposed_to_call += 1
-            if syllable_tag_list[i][0] in ["N", "A"] and i != 0:
+            if syllable_tag_list[i][0] in ["B", "X"] and i != 0:
                 if new_word_index == -1:
                     new_word_index = 0
                 make_cql_rule(syllable_word_list, syllable_tag_list, new_word_index, i)
