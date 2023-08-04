@@ -1,5 +1,8 @@
 from typing import Dict, List, Optional
 
+from ..Utility.Get_token_attributes import Get_CONTENT_POS_attributes
+from ..Utility.String_Manipulation import Remove_tag_in_String
+
 
 class Object:
     attributes = [
@@ -75,7 +78,7 @@ def getWordTag(wordTag):
     return word, tag
 
 
-def getObject(wordTags, index):  # Sequence of "Word/Tag"
+def getObject(wordTags, wordPOS, index):  # Sequence of "Word/Tag"
     word, tag = getWordTag(wordTags[index])
     preWord1 = preTag1 = preWord2 = preTag2 = ""
     nextWord1 = nextTag1 = nextWord2 = nextTag2 = ""
@@ -168,8 +171,10 @@ def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
 
             if correctTag not in objects[initTag].keys():
                 objects[initTag][correctTag] = []
-
-            objects[initTag][correctTag].append(getObject(initWordTags, k))
+            # Getting pos tag attributes in a list
+            init_without_tags = Remove_tag_in_String(init)
+            _, pos_list = Get_CONTENT_POS_attributes(init_without_tags)
+            objects[initTag][correctTag].append(getObject(initWordTags, pos_list, k))
 
     return objects
 
