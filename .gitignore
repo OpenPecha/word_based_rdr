@@ -16,6 +16,7 @@ test_split_merge.py
 tests_temp.py
 train_tag_rdr.py
 rdr_to_cql.py
+print_pos.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
