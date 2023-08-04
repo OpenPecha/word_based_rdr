@@ -5,6 +5,7 @@ class Object:
     attributes = [
         "word",
         "tag",
+        "pos",
         "prevWord2",
         "prevWord1",
         "nextWord1",
@@ -12,7 +13,11 @@ class Object:
         "prevTag2",
         "prevTag1",
         "nextTag1",
-        "nextTag2"
+        "nextTag2",
+        "prevPos2",
+        "prevPos1",
+        "nextPos1",
+        "nextPos2"
         # "suffixL2",
         # "suffixL3",
         # "suffixL4",
