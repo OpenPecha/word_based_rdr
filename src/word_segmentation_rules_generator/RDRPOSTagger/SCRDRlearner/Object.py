@@ -141,6 +141,10 @@ def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
     j = 0
     for i in range(len(initializedSens)):
         init = initializedSens[i].strip()
+        # Getting pos tag attributes in a list
+        init_without_tags = Remove_tag_in_String(init)
+        _, pos_list = Get_CONTENT_POS_attributes(init_without_tags)
+
         if len(init) == 0:
             continue
 
@@ -182,9 +186,7 @@ def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
 
             if correctTag not in objects[initTag].keys():
                 objects[initTag][correctTag] = []
-            # Getting pos tag attributes in a list
-            init_without_tags = Remove_tag_in_String(init)
-            _, pos_list = Get_CONTENT_POS_attributes(init_without_tags)
+
             objects[initTag][correctTag].append(getObject(initWordTags, pos_list, k))
 
     return objects
