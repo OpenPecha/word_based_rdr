@@ -80,8 +80,10 @@ def getWordTag(wordTag):
 
 def getObject(wordTags, wordPOS, index):  # Sequence of "Word/Tag"
     word, tag = getWordTag(wordTags[index])
-    preWord1 = preTag1 = preWord2 = preTag2 = ""
-    nextWord1 = nextTag1 = nextWord2 = nextTag2 = ""
+    pos = wordPOS[index]
+    preWord1 = preTag1 = prePos1 = preWord2 = preTag2 = prePos2 = ""
+    nextWord1 = nextTag1 = nextPos1 = nextWord2 = nextTag2 = nextPos2 = ""
+
     # suffixL2 = suffixL3 = suffixL4 = ""
 
     # decodedW = word
@@ -93,16 +95,21 @@ def getObject(wordTags, wordPOS, index):  # Sequence of "Word/Tag"
 
     if index > 0:
         preWord1, preTag1 = getWordTag(wordTags[index - 1])
+        prePos1 = wordPOS[index - 1]
     if index > 1:
         preWord2, preTag2 = getWordTag(wordTags[index - 2])
+        prePos2 = wordPOS[index - 2]
     if index < len(wordTags) - 1:
         nextWord1, nextTag1 = getWordTag(wordTags[index + 1])
+        nextPos1 = wordPOS[index + 1]
     if index < len(wordTags) - 2:
         nextWord2, nextTag2 = getWordTag(wordTags[index + 2])
+        nextPos2 = wordPOS[index + 2]
 
     return Object(
         word,
         tag,
+        pos,
         preWord2,
         preWord1,
         nextWord1,
@@ -110,7 +117,11 @@ def getObject(wordTags, wordPOS, index):  # Sequence of "Word/Tag"
         preTag2,
         preTag1,
         nextTag1,
-        nextTag2
+        nextTag2,
+        prePos2,
+        prePos1,
+        nextPos1,
+        nextPos2
         # suffixL2,
         # suffixL3,
         # suffixL4,
