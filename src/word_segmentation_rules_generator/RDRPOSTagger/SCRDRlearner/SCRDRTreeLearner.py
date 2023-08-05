@@ -11,7 +11,7 @@ def make_rules(index, end_index, current_rule, wordrules, posrules):
     if index == end_index - 1:
         return [
             current_rule + wordrules[index] + "\n",
-            current_rule + posrules[index] + "\n",
+            current_rule + wordrules[index] + " and " + posrules[index] + "\n",
         ]
 
     word_rules = make_rules(
