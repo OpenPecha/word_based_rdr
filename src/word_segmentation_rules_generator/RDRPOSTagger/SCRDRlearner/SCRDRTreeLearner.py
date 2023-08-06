@@ -8,9 +8,15 @@ from .SCRDRTree import SCRDRTree
 
 
 def make_rules(index, end_index, current_rule, wordrules, posrules):
+    if index == 2 and index == end_index - 1:
+        return [
+            current_rule + wordrules[index],
+            current_rule + wordrules[index] + " and " + posrules[index],
+        ]
     if index == end_index - 1:
         return [
             current_rule + wordrules[index],
+            current_rule + posrules[index],
             current_rule + wordrules[index] + " and " + posrules[index],
         ]
 
@@ -21,13 +27,14 @@ def make_rules(index, end_index, current_rule, wordrules, posrules):
         wordrules,
         posrules,
     )
-    pos_rules = make_rules(
-        index + 1,
-        end_index,
-        current_rule + posrules[index] + " and ",
-        wordrules,
-        posrules,
-    )
+    if index != 2:
+        pos_rules = make_rules(
+            index + 1,
+            end_index,
+            current_rule + posrules[index] + " and ",
+            wordrules,
+            posrules,
+        )
     word_and_pos_rules = make_rules(
         index + 1,
         end_index,
