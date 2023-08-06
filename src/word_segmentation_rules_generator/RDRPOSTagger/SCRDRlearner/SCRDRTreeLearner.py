@@ -10,8 +10,8 @@ from .SCRDRTree import SCRDRTree
 def make_rules(index, end_index, current_rule, wordrules, posrules):
     if index == end_index - 1:
         return [
-            current_rule + wordrules[index] + "\n",
-            current_rule + wordrules[index] + " and " + posrules[index] + "\n",
+            current_rule + wordrules[index],
+            current_rule + wordrules[index] + " and " + posrules[index],
         ]
 
     word_rules = make_rules(
@@ -66,9 +66,9 @@ def generateRules(object):
     posrules = [rule10, rule9, rule6, rule7, rule8]
 
     for i in range(0, 3):
-        rules.append(make_rules(i, 3, "", wordrules, posrules))
-        rules.append(make_rules(i, 4, "", wordrules, posrules))
-        rules.append(make_rules(i, 5, "", wordrules, posrules))
+        rules.extend(make_rules(i, 3, "", wordrules, posrules))
+        rules.extend(make_rules(i, 4, "", wordrules, posrules))
+        rules.extend(make_rules(i, 5, "", wordrules, posrules))
 
     # rules_set_dtype = set(rules)
     rules_set_dtype = OrderedSet(rules)
