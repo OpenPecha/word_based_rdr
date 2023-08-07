@@ -27,6 +27,7 @@ def make_rules(index, end_index, current_rule, wordrules, posrules):
         wordrules,
         posrules,
     )
+    pos_rules = []
     if index != 2:
         pos_rules = make_rules(
             index + 1,
