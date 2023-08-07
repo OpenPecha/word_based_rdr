@@ -4,7 +4,7 @@ from ..RDRPOSTagger.pSCRDRtagger.ExtRDRPOSTagger import ExtRDR_RUN
 from ..RDRPOSTagger.pSCRDRtagger.RDRPOSTagger import run
 
 
-def train_rdr(file_to_train_tagged="TIB_train_maxmatched_tagged.txt", THRESHOLD=(3, 2)):
+def train_rdr(file_to_train_tagged="TIB_train_maxmatched_tagged.txt", THRESHOLD=(4, 4)):
     """
     Input: File already tagged, output from botok and then through tagger file
     Output: Two files i)RDR rules .RDR ii)RDR dictionary .DICT
