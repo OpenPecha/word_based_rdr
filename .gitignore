@@ -17,6 +17,7 @@ tests_temp.py
 train_tag_rdr.py
 rdr_to_cql.py
 print_pos.py
+test_cql.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
