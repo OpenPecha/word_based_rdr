@@ -3,10 +3,13 @@ from collections import defaultdict
 # variables
 tag = "object.tag"
 word = "object.word"
+pos = "object.pos"
 prev_tag = "object.prevTag"
 next_tag = "object.nextTag"
 prev_word = "object.prevWord"
 next_word = "object.nextWord"
+prev_pos = "object.prevPos"
+next_pos = "object.nextPos"
 
 conclusion = "object.conclusion"
 # suffix = "object.suffixL"
@@ -17,8 +20,8 @@ rule_sep = " : "
 cql_rule_sep = " & "
 level_sep = "\t"
 
-positive = [tag, word, next_tag, next_word, conclusion]
-negative = [prev_tag, prev_word]
+positive = [tag, word, pos, next_tag, next_word, next_pos, conclusion]
+negative = [prev_tag, prev_word, prev_pos]
 eq_table = {
     tag: "seg_tag",
     prev_tag: "seg_tag",
@@ -27,6 +30,9 @@ eq_table = {
     word: "text",
     prev_word: "text",
     next_word: "text",
+    pos: "pos",
+    prev_pos: "pos",
+    next_pos: "pos",
 }
 
 
