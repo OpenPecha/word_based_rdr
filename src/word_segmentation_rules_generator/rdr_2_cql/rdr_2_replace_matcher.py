@@ -42,7 +42,16 @@ def add_word_seg_tag(word_tag_dict, word, tag):
 
 def rdr_2_replace_matcher(string):
     find_rules_output = find_rules(find_levels(string))
+    for condition in find_rules_output:
+        rule_condition = condition["test"][0]
+        object_word = ""
+        for rule in rule_condition:
+            if rule[0] == "object.word":
+                object_word = rule[1]
+                print(object_word)
+
     cql = format_rules(find_rules_output)
+
     repl = "{match_cql}\t{replace_index}\t=\t{replace_cql}"
     repls = [
         repl.format(match_cql=a, replace_index=b, replace_cql=c)
