@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import Dict
 
 # variables
 tag = "object.tag"
@@ -42,13 +43,24 @@ def add_word_seg_tag(word_tag_dict, word, tag):
 
 def rdr_2_replace_matcher(string):
     find_rules_output = find_rules(find_levels(string))
+    word_tag_dict: Dict[str, str] = {}
+
     for condition in find_rules_output:
         rule_condition = condition["test"][0]
+
         object_word = ""
+        object_seg_tag = ""
+
         for rule in rule_condition:
             if rule[0] == "object.word":
                 object_word = rule[1]
-                print(object_word)
+
+        rule_conclusion = condition["ccl"][0][0][1]
+        object_seg_tag = rule_conclusion
+
+        if object_word != "":
+            add_word_seg_tag(word_tag_dict, object_word, object_seg_tag)
+    print(word_tag_dict)
 
     cql = format_rules(find_rules_output)
 
