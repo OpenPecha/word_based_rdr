@@ -36,8 +36,13 @@ eq_table = {
 }
 
 
+def add_word_seg_tag(word_tag_dict, word, tag):
+    word_tag_dict[word] = tag
+
+
 def rdr_2_replace_matcher(string):
-    cql = format_rules(find_rules(find_levels(string)))
+    find_rules_output = find_rules(find_levels(string))
+    cql = format_rules(find_rules_output)
     repl = "{match_cql}\t{replace_index}\t=\t{replace_cql}"
     repls = [
         repl.format(match_cql=a, replace_index=b, replace_cql=c)
