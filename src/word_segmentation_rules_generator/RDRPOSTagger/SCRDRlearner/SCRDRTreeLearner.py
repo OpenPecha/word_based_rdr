@@ -84,9 +84,16 @@ def generateRules(object):
     ]
 
     for i in range(0, 3):
-        rules.extend(make_rules(i, 3, "", wordrules, posrules, object_word_list))
-        rules.extend(make_rules(i, 4, "", wordrules, posrules, object_word_list))
-        rules.extend(make_rules(i, 5, "", wordrules, posrules, object_word_list))
+        if object_word_list[i] != "":
+            rules.extend(make_rules(i, 3, "", wordrules, posrules, object_word_list))
+            if object_word_list[3] != "":
+                rules.extend(
+                    make_rules(i, 4, "", wordrules, posrules, object_word_list)
+                )
+            if object_word_list[4] != "":
+                rules.extend(
+                    make_rules(i, 5, "", wordrules, posrules, object_word_list)
+                )
 
     # rules_set_dtype = set(rules)
     rules_set_dtype = OrderedSet(rules)
