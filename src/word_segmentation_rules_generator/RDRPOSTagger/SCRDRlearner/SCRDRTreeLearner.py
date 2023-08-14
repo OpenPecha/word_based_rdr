@@ -7,7 +7,7 @@ from .Object import getObjectDictionary
 from .SCRDRTree import SCRDRTree
 
 
-def make_rules(index, end_index, current_rule, wordrules, posrules):
+def make_rules(index, end_index, current_rule, wordrules, posrules, object_word_list):
     if index == 2 and index == end_index - 1:
         return [
             current_rule + wordrules[index],
@@ -26,6 +26,7 @@ def make_rules(index, end_index, current_rule, wordrules, posrules):
         current_rule + wordrules[index] + " and ",
         wordrules,
         posrules,
+        object_word_list,
     )
     pos_rules = []
     if index != 2:
@@ -35,6 +36,7 @@ def make_rules(index, end_index, current_rule, wordrules, posrules):
             current_rule + posrules[index] + " and ",
             wordrules,
             posrules,
+            object_word_list,
         )
     word_and_pos_rules = make_rules(
         index + 1,
@@ -42,6 +44,7 @@ def make_rules(index, end_index, current_rule, wordrules, posrules):
         current_rule + wordrules[index] + " and " + posrules[index] + " and ",
         wordrules,
         posrules,
+        object_word_list,
     )
     return word_rules + pos_rules + word_and_pos_rules
 
@@ -72,11 +75,18 @@ def generateRules(object):
     rules = []
     wordrules = [rule5, rule4, rule1, rule2, rule3]
     posrules = [rule10, rule9, rule6, rule7, rule8]
+    object_word_list = [
+        object.prevWord2,
+        object.prevWord1,
+        object.word,
+        object.nextWord1,
+        object.nextWord2,
+    ]
 
     for i in range(0, 3):
-        rules.extend(make_rules(i, 3, "", wordrules, posrules))
-        rules.extend(make_rules(i, 4, "", wordrules, posrules))
-        rules.extend(make_rules(i, 5, "", wordrules, posrules))
+        rules.extend(make_rules(i, 3, "", wordrules, posrules, object_word_list))
+        rules.extend(make_rules(i, 4, "", wordrules, posrules, object_word_list))
+        rules.extend(make_rules(i, 5, "", wordrules, posrules, object_word_list))
 
     # rules_set_dtype = set(rules)
     rules_set_dtype = OrderedSet(rules)
