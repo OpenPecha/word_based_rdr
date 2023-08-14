@@ -45,6 +45,7 @@ def createLexicon(corpusFilePath, fullLexicon):
         )
         for pair in pairs:
             word, tag = getWordTag(pair)
+            word = word.replace("_", " ")
             if (len(word) >= (len(pair) - 1)) or (len(tag) >= (len(pair) - 1)):
                 if fullLexicon == "full":
                     print(
