@@ -165,6 +165,9 @@ def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
         )
 
         for k in range(len(initWordTags)):
+            initWordTags[k] = initWordTags[k].replace("_", " ")
+            goldWordTags[k] = goldWordTags[k].replace("_", " ")
+
             initWord, initTag = getWordTag(initWordTags[k])
             goldWord, correctTag = getWordTag(goldWordTags[k])
 
