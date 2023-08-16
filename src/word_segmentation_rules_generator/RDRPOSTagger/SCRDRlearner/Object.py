@@ -129,28 +129,6 @@ def getObject(wordTags, wordPOS, index):  # Sequence of "Word/Tag"
     )
 
 
-def split_corpus_list_with_shad(corpus_list):
-    for index, corpus_line in enumerate(corpus_list):
-        corpus_element = corpus_line.split()
-        indices_to_strip = []
-        for i, element in enumerate(corpus_element):
-            if "།" in element:
-                indices_to_strip.append(i + 1)
-        list_stripped_with_shad = []
-        old_index_to_strip = 0
-        for index_to_strip in indices_to_strip:
-            list_stripped_with_shad.append(
-                corpus_element[old_index_to_strip:index_to_strip]
-            )
-            old_index_to_strip = index_to_strip
-        if old_index_to_strip != len(corpus_element):
-            list_stripped_with_shad.append(
-                corpus_element[old_index_to_strip : len(corpus_element) + 1]  # noqa
-            )
-
-        return [" ".join(element) for element in list_stripped_with_shad]
-
-
 def add_newline_to_shad(Corpus_string):
     pattern = r"([^ ]*།[^ ]*)"
     replacement = r"\1\n"
@@ -168,9 +146,6 @@ def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
     else:
         goldStandardSens = open(goldStandardCorpus, encoding="utf-8").readlines()
         initializedSens = open(initializedCorpus, encoding="utf-8").readlines()
-
-    # initializedSens = split_corpus_list_with_shad(initializedSens)
-    # goldStandardSens = split_corpus_list_with_shad(goldStandardSens)
 
     objects: Dict[str, Dict[str, list]] = {}  # objects = {}
 
