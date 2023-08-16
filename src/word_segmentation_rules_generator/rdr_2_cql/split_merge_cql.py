@@ -201,6 +201,8 @@ def split_tag_list_with_index(tag_list):
             continue
         if start_index == -1 and tag_list[i] != "U":
             start_index = i
+    if len(tag_split_list) == 0 and start_index != -1:
+        tag_split_list.append((0, len(tag_list) - 1))
     return tag_split_list
 
 
