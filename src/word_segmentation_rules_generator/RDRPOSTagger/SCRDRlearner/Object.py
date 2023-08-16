@@ -1,3 +1,4 @@
+import re
 from typing import Dict, List, Optional
 
 from ..Utility.Get_token_attributes import Get_CONTENT_POS_attributes
@@ -150,7 +151,17 @@ def split_corpus_list_with_shad(corpus_list):
         return [" ".join(element) for element in list_stripped_with_shad]
 
 
+def add_newline_to_shad(Corpus_string):
+    pattern = r"([^ ]*།[^ ]*)"
+    replacement = r"\1\n"
+    new_Corpus = re.sub(pattern, replacement, Corpus_string)
+    return new_Corpus
+
+
 def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
+    goldStandardCorpus = add_newline_to_shad(goldStandardCorpus)
+    initializedCorpus = add_newline_to_shad(initializedCorpus)
+
     if string_argument:
         goldStandardSens = goldStandardCorpus.splitlines()
         initializedSens = initializedCorpus.splitlines()
@@ -158,8 +169,8 @@ def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
         goldStandardSens = open(goldStandardCorpus, encoding="utf-8").readlines()
         initializedSens = open(initializedCorpus, encoding="utf-8").readlines()
 
-    initializedSens = split_corpus_list_with_shad(initializedSens)
-    goldStandardSens = split_corpus_list_with_shad(goldStandardSens)
+    # initializedSens = split_corpus_list_with_shad(initializedSens)
+    # goldStandardSens = split_corpus_list_with_shad(goldStandardSens)
 
     objects: Dict[str, Dict[str, list]] = {}  # objects = {}
 
