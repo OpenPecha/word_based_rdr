@@ -4,6 +4,8 @@ from src.word_segmentation_rules_generator.tagger.tagger import split_by_TSEK
 
 from ..RDRPOSTagger.Utility.Utils import getWordTag
 
+cql_rules_generated = []
+
 
 def tagged_string_to_word_tag_list(tagged_string):
     word_list = []
@@ -41,7 +43,7 @@ def make_split_cql_rule(
         matchcql += "[text={}] ".format("".join(syllable_word_list[i]))
 
     new_cql_rule = "\t".join([matchcql, index, operation, replacecql])
-    print(new_cql_rule)
+    cql_rules_generated.append(new_cql_rule)
 
 
 def split_inner_list(lst, i, j):
@@ -125,7 +127,7 @@ def make_merge_cql_rule(
         matchcql += "[text={}] ".format("".join(syllable_word_list[i]))
 
     new_cql_rule = "\t".join([matchcql, index, operation, replacecql])
-    print(new_cql_rule)
+    cql_rules_generated.append(new_cql_rule)
 
 
 def merge_inner_lists(lst, i):
@@ -248,4 +250,4 @@ def split_merge_cql(tagged_string):
     word_list, tag_list = tagged_string_to_word_tag_list(tagged_string)
     tag_split_list = split_tag_list_with_index(tag_list)
     find_words_for_split_merge(tag_split_list, word_list, tag_list)
-    # return tag_split_list
+    # cql_rules_generated
