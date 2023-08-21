@@ -25,6 +25,7 @@ def eval_rdr_result(
 def eval_rdr_known_unknown_result(
     goldStandardCorpus="TIB_train_maxmatched_tagged.txt",
     taggedCorpus="TIB_train_maxmatched.txt.TAGGED",
+    fulldictionary="TIB_train_maxmatched_tagged.txt.DICT",
 ):
     """
     Input: Two files i)goldStandardCorpus: taggedfile from tagger.py based on botok maxmatch and gold corpus
@@ -38,7 +39,6 @@ def eval_rdr_known_unknown_result(
     taggedCorpus_relative_path = "../data/" + taggedCorpus
     taggedCorpus_file_path = os.path.join(current_dir, taggedCorpus_relative_path)
 
-    fulldictionary = "TIB_train_maxmatched_tagged.txt.DICT"
     fulldict_relative_path = "../data/" + fulldictionary
     fulldict_file_path = os.path.join(current_dir, fulldict_relative_path)
 
