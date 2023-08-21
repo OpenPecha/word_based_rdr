@@ -12,6 +12,7 @@ from src.word_segmentation_rules_generator.comparator.comparator import (  # noq
     is_equal_string_length,
 )
 from src.word_segmentation_rules_generator.eval_rdr_result.eval_rdr_result import (  # noqa
+    eval_rdr_known_unknown_result,
     eval_rdr_result,
 )
 from src.word_segmentation_rules_generator.max_matcher.max_matcher import (  # noqa
@@ -52,14 +53,38 @@ def pipeline(data):
     tagged_content = tag_rdr(
         botok_output, trained_file + ".RDR", trained_file + ".DICT"
     )
-    tagged_file_path = "../data/TIB_train_maxmatched_temp.txt"
+    tagged_file_path = "../data/TIB_train_maxmatched_tagged_temp.txt"
     with open(tagged_file_path, "w", encoding="utf-8") as file:
         file.write(tagged_content)
 
     accuracy_result = eval_rdr_result(
-        "TIB_train_temp.txt", "TIB_train_maxmatched_temp.txt"
+        "TIB_train_temp.txt", "TIB_train_maxmatched_tagged_temp.txt"
     )
     print(accuracy_result)
+    (
+        training_countKN,
+        training_countUNKN,
+        training_numwords,
+        known_training_acc,
+        unknown_training_acc,
+        overall_training_acc,
+    ) = eval_rdr_known_unknown_result(
+        "TIB_train_temp.txt",
+        "TIB_train_maxmatched_tagged_temp.txt",
+        "TIB_train_temp.txt.DICT",
+    )
+    print(
+        "Training data values:> ",
+        training_countKN,
+        training_countUNKN,
+        training_numwords,
+    )
+    print(
+        "Training accuracy Value:> ",
+        known_training_acc,
+        unknown_training_acc,
+        overall_training_acc,
+    )
 
 
 if __name__ == "__main__":
