@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 
 from botok import TSEK
 
@@ -116,4 +117,6 @@ def gold_corpus_2_tagger(file_string):
 
 
 if __name__ == "__main__":
-    pass
+    file_string = Path("../data/TIB_train.txt").read_text(encoding="utf-8")
+    modified_string = file_2_botok(file_string)
+    print(modified_string)

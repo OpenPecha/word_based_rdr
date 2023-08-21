@@ -46,8 +46,8 @@ def tag_rdr(
     """
     current_dir = os.path.dirname(__file__)
     # file_relative_path = "../data/" + file_to_tag
-    rdr_rules_relative_path = "../resources/" + RDR_rules
-    RDR_dictionary_relative_path = "../resources/" + RDR_dictionary
+    rdr_rules_relative_path = "../data/" + RDR_rules
+    RDR_dictionary_relative_path = "../data/" + RDR_dictionary
 
     # file_path = os.path.join(current_dir, file_relative_path)
     rdr_rules_path = os.path.join(current_dir, rdr_rules_relative_path)
