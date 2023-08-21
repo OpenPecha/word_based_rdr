@@ -65,6 +65,9 @@ def computeAccuracies(fullDictFile, goldStandardCorpus, taggedCorpus):
         numwords += 1
         word1, tag1 = getWordTag(tagged[i])
         word2, tag2 = getWordTag(goldStandard[i])
+        pattern = r"[་]+"
+        word1 = re.sub(pattern, "་", word1)
+        word2 = re.sub(pattern, "་", word2)
         if word1 != word2 and word1 != "''" and word2 != "''":
             print(
                 "Words are not the same in gold standard and tagged corpora, at the index "
@@ -85,9 +88,21 @@ def computeAccuracies(fullDictFile, goldStandardCorpus, taggedCorpus):
                 countCorrectUNKN += 1
 
     if countUNKN == 0:
-        return countCorrectKN * 100.0 / countKN, 0.0, count * 100.0 / numwords
+        # return countCorrectKN * 100.0 / countKN, 0.0, count * 100.0 / numwords
+        return (
+            countKN,
+            0,
+            numwords,
+            countCorrectKN * 100.0 / countKN,
+            "No unknown words",
+            count * 100.0 / numwords,
+        )
+
     else:
         return (
+            countKN,
+            countUNKN,
+            numwords,
             countCorrectKN * 100.0 / countKN,
             countCorrectUNKN * 100.0 / countUNKN,
             count * 100.0 / numwords,
