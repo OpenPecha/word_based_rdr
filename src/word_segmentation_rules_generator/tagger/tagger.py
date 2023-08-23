@@ -1,12 +1,21 @@
 import re
+import sys
+from pathlib import Path
 
 from botok import TSEK
 
-from src.word_segmentation_rules_generator.preprocessing.preprocessor import (
+# Add the root directory of your project to sys.path
+root_path = (
+    Path(__file__).resolve().parents[3]
+)  # Adjust the number of parents as needed
+sys.path.append(str(root_path))
+
+from src.word_segmentation_rules_generator.comparator.comparator import (  # noqa
+    comparator,
+)
+from src.word_segmentation_rules_generator.preprocessing.preprocessor import (  # noqa
     adjust_spaces,
 )
-
-from ..comparator.comparator import comparator
 
 
 def split_by_TSEK(string_to_split):
@@ -201,4 +210,7 @@ def tagger(file_string):
 
 
 if __name__ == "__main__":
-    pass
+    file_string = Path("../data/TIB_test.txt").read_text(encoding="utf-8")
+    tagged_output = tagger(file_string)
+    with open("../data/TIB_test_maxmatched_tagged.txt", "w", encoding="utf-8") as file:
+        file.write(tagged_output)
