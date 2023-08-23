@@ -60,7 +60,7 @@ def rdr_2_replace_matcher(string):
 
         if object_word != "":
             add_word_seg_tag(word_tag_dict, object_word, object_seg_tag)
-    print(word_tag_dict)
+    # print(word_tag_dict)
 
     cql = format_rules(find_rules_output)
 
