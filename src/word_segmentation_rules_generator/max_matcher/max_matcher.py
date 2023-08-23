@@ -1,8 +1,19 @@
 import re
+import sys
+from pathlib import Path
 
 from botok import Text
 
-from ..preprocessing.preprocessor import adjust_spaces, file_2_botok
+# Add the root directory of your project to sys.path
+root_path = (
+    Path(__file__).resolve().parents[3]
+)  # Adjust the number of parents as needed
+sys.path.append(str(root_path))
+
+from src.word_segmentation_rules_generator.preprocessing.preprocessor import (  # noqa
+    adjust_spaces,
+    file_2_botok,
+)
 
 
 def botok_max_matcher(file_string):
@@ -25,4 +36,6 @@ def botok_max_matcher(file_string):
 
 
 if __name__ == "__main__":
-    pass
+    word = "༄༅། །རྒྱལ་པོ་ ལ་ གཏམ་ བྱ་བ་ རིན་པོ་ཆེ འི་ ཕྲེང་་་བ། ལ་ ལ་ལ་ ལ་ ལ་བ་ ཡོད། དཔལ། དགེའོ་ བཀྲ་ཤིས་ ཤོག།"
+    botok_output = botok_max_matcher(word)
+    print(botok_output)

@@ -13,6 +13,11 @@ test_split_merge_function.py
 output.txt
 full_code_flow.py
 test_split_merge.py
+tests_temp.py
+train_tag_rdr.py
+rdr_to_cql.py
+print_pos.py
+test_cql.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

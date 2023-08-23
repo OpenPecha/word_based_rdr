@@ -1,12 +1,20 @@
 import os
+import sys
+from pathlib import Path
 
-from pybo.rdr.rdr_2_replace_matcher import rdr_2_replace_matcher
+# Add the root directory of your project to sys.path
+root_path = (
+    Path(__file__).resolve().parents[3]
+)  # Adjust the number of parents as needed
+sys.path.append(str(root_path))
+
+from src.word_segmentation_rules_generator.rdr_2_cql.rdr_2_replace_matcher import (  # noqa
+    rdr_2_replace_matcher,
+)
 
 
 def rdr_2_cql_string(rdr_rules_string):
     cql_rules = rdr_2_replace_matcher(rdr_rules_string)
-    # in the code rdr_2_replace_matcher, there been done pos but here we will need word tag
-    cql_rules = cql_rules.replace("pos", "seg_tag")
     return cql_rules
 
 
@@ -48,3 +56,7 @@ def append_new_cql_rules_to_main(new_cql_rules, destination_file):
         print("One of the files does not exist.")
     except Exception as e:
         print("An error occurred:", str(e))
+
+
+if __name__ == "__main__":
+    rdr_2_cql_file()

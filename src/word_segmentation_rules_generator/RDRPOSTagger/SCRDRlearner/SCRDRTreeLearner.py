@@ -1,8 +1,53 @@
 from typing import Dict
 
+from ordered_set import OrderedSet
+
 from .Node import Node
 from .Object import getObjectDictionary
 from .SCRDRTree import SCRDRTree
+
+
+def make_rules(index, end_index, current_rule, wordrules, posrules):
+    if index == 2 and index == end_index - 1:
+        return [
+            # current_rule + wordrules[index],
+            current_rule
+            + wordrules[index]
+            + " and "
+            + posrules[index],
+        ]
+    if index == end_index - 1:
+        return [
+            current_rule + posrules[index],
+            current_rule + wordrules[index],
+            current_rule + wordrules[index] + " and " + posrules[index],
+        ]
+
+    pos_rules = []
+    if index != 2:
+        pos_rules = make_rules(
+            index + 1,
+            end_index,
+            current_rule + posrules[index] + " and ",
+            wordrules,
+            posrules,
+        )
+    word_rules = make_rules(
+        index + 1,
+        end_index,
+        current_rule + wordrules[index] + " and ",
+        wordrules,
+        posrules,
+    )
+
+    word_and_pos_rules = make_rules(
+        index + 1,
+        end_index,
+        current_rule + wordrules[index] + " and " + posrules[index] + " and ",
+        wordrules,
+        posrules,
+    )
+    return pos_rules + word_rules + word_and_pos_rules
 
 
 # Generate concrete rules based on input object of 5-word window context object
@@ -18,93 +63,37 @@ def generateRules(object):
     # 5. Previous 2nd word
     rule5 = 'object.prevWord2 == "' + object.prevWord2 + '"'
 
-    # 6. Current word and next 1st word
-    rule6 = rule1 + " and " + rule2
-    # 7. Previous 1st word and current word
-    rule7 = rule4 + " and " + rule1
-    # 11. Previous 1st word and next 1st word
-    rule11 = rule4 + " and " + rule2
-    # 29. Next 1st word and next 2nd word
-    # rule29 = rule2 + " and " + rule3
-    # 30. Previous 2nd word and previous 1st word
-    # rule30 = rule5 + " and " + rule4
-    # 19. Current word and next 2nd word
-    rule19 = rule1 + " and " + rule3
-    # 20. Previous 2nd word and current word
-    rule20 = rule5 + " and " + rule1
+    rule6 = 'object.pos == "' + object.pos + '"'
 
-    # 8. Current word, next 1st word and next 2nd word
-    rule8 = rule6 + " and " + rule3
-    # 9. Previous 2nd word, previous 1st word and current word
-    rule9 = rule5 + " and " + rule7
-    # 10. Previous 1st word, current word and next 1st word
-    rule10 = rule4 + " and " + rule6
+    rule7 = 'object.nextPos1 == "' + object.nextPos1 + '"'
 
-    # # 12. Next 1st tag
-    # rule12 = 'object.nextTag1 == "' + object.nextTag1 + '"'
-    # # 13. Next 2nd tag
-    # rule13 = 'object.nextTag2 == "' + object.nextTag2 + '"'
-    # # 14. Previous 1st tag
-    # rule14 = 'object.prevTag1 == "' + object.prevTag1 + '"'
-    # # 15. Previous 2nd tag
-    # rule15 = 'object.prevTag2 == "' + object.prevTag2 + '"'
-    # # 16. Next 1st tag and next 2nd tag
-    # rule16 = rule12 + " and " + rule13
-    # # 17. Previous 2nd tag and previous 1st tag
-    # rule17 = rule15 + " and " + rule14
-    # # 18. Previous 1st tag and next 1st tag
-    # rule18 = rule14 + " and " + rule12
+    rule8 = 'object.nextPos2 == "' + object.nextPos2 + '"'
 
-    # # 21. Current word and next 1st tag
-    # rule21 = rule1 + " and " + rule12
-    # # 22. Current word and previous 1st tag
-    # rule22 = rule14 + " and " + rule1
-    # # 23. Previous 1st tag, current word and next 1st tag
-    # rule23 = rule14 + " and " + rule21
-    # # 24. Current word and 2 next tags.
-    # rule24 = rule1 + " and " + rule16
-    # # 25. 2 previous tags and current word
-    # rule25 = rule17 + " and " + rule1
-    # 26. 2-character suffix
-    # rule26 = "object.suffixL2 == \"" + object.suffixL2 + "\""
-    # # 27. 3-character suffix
-    # rule27 = "object.suffixL3 == \"" + object.suffixL3 + "\""
-    # # 28. 4-character suffix
-    # rule28 = "object.suffixL4 == \"" + object.suffixL4 + "\""
+    rule9 = 'object.prevPos1 == "' + object.prevPos1 + '"'
+
+    rule10 = 'object.prevPos2 == "' + object.prevPos2 + '"'
 
     rules = []
-    rules.append(rule1)
-    rules.append(rule2)
-    rules.append(rule3)
-    rules.append(rule4)
-    rules.append(rule5)
-    rules.append(rule6)
-    rules.append(rule7)
-    rules.append(rule8)
-    rules.append(rule9)
-    rules.append(rule10)
-    rules.append(rule11)
-    # rules.append(rule12)
-    # rules.append(rule13)
-    # rules.append(rule14)
-    # rules.append(rule15)
-    # rules.append(rule16)
-    # rules.append(rule17)
-    # rules.append(rule18)
-    rules.append(rule19)
-    rules.append(rule20)
-    # rules.append(rule21)
-    # rules.append(rule22)
-    # rules.append(rule23)
-    # rules.append(rule24)
-    # rules.append(rule25)
-    # rules.append(rule26)
-    # rules.append(rule27)
-    # rules.append(rule28)
-    # rules.append(rule29)
-    # rules.append(rule30)
+    wordrules = [rule5, rule4, rule1, rule2, rule3]
+    posrules = [rule10, rule9, rule6, rule7, rule8]
+    object_word_list = [
+        object.prevWord2,
+        object.prevWord1,
+        object.word,
+        object.nextWord1,
+        object.nextWord2,
+    ]
 
-    rules_set_dtype = set(rules)
+    for i in range(0, 3):
+        if object_word_list[i] != "":
+            if object_word_list[4] != "":
+                rules.extend(make_rules(i, 5, "", wordrules, posrules))
+            if object_word_list[3] != "":
+                rules.extend(make_rules(i, 4, "", wordrules, posrules))
+            rules.extend(make_rules(i, 3, "", wordrules, posrules))
+
+    # rules_set_dtype = set(rules)
+    rules_set_dtype = OrderedSet(rules)
     return rules_set_dtype
 
 

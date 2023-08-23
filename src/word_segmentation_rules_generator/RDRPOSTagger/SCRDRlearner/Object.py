@@ -1,10 +1,15 @@
+import re
 from typing import Dict, List, Optional
+
+from ..Utility.Get_token_attributes import Get_CONTENT_POS_attributes
+from ..Utility.String_Manipulation import Remove_tag_in_String
 
 
 class Object:
     attributes = [
         "word",
         "tag",
+        "pos",
         "prevWord2",
         "prevWord1",
         "nextWord1",
@@ -12,7 +17,11 @@ class Object:
         "prevTag2",
         "prevTag1",
         "nextTag1",
-        "nextTag2"
+        "nextTag2",
+        "prevPos2",
+        "prevPos1",
+        "nextPos1",
+        "nextPos2"
         # "suffixL2",
         # "suffixL3",
         # "suffixL4",
@@ -70,10 +79,12 @@ def getWordTag(wordTag):
     return word, tag
 
 
-def getObject(wordTags, index):  # Sequence of "Word/Tag"
+def getObject(wordTags, wordPOS, index):  # Sequence of "Word/Tag"
     word, tag = getWordTag(wordTags[index])
-    preWord1 = preTag1 = preWord2 = preTag2 = ""
-    nextWord1 = nextTag1 = nextWord2 = nextTag2 = ""
+    pos = wordPOS[index]
+    preWord1 = preTag1 = prePos1 = preWord2 = preTag2 = prePos2 = ""
+    nextWord1 = nextTag1 = nextPos1 = nextWord2 = nextTag2 = nextPos2 = ""
+
     # suffixL2 = suffixL3 = suffixL4 = ""
 
     # decodedW = word
@@ -85,16 +96,21 @@ def getObject(wordTags, index):  # Sequence of "Word/Tag"
 
     if index > 0:
         preWord1, preTag1 = getWordTag(wordTags[index - 1])
+        prePos1 = wordPOS[index - 1]
     if index > 1:
         preWord2, preTag2 = getWordTag(wordTags[index - 2])
+        prePos2 = wordPOS[index - 2]
     if index < len(wordTags) - 1:
         nextWord1, nextTag1 = getWordTag(wordTags[index + 1])
+        nextPos1 = wordPOS[index + 1]
     if index < len(wordTags) - 2:
         nextWord2, nextTag2 = getWordTag(wordTags[index + 2])
+        nextPos2 = wordPOS[index + 2]
 
     return Object(
         word,
         tag,
+        pos,
         preWord2,
         preWord1,
         nextWord1,
@@ -102,14 +118,28 @@ def getObject(wordTags, index):  # Sequence of "Word/Tag"
         preTag2,
         preTag1,
         nextTag1,
-        nextTag2
+        nextTag2,
+        prePos2,
+        prePos1,
+        nextPos1,
+        nextPos2
         # suffixL2,
         # suffixL3,
         # suffixL4,
     )
 
 
+def add_newline_to_shad(Corpus_string):
+    pattern = r"([^ ]*།[^ ]*)"
+    replacement = r"\1\n"
+    new_Corpus = re.sub(pattern, replacement, Corpus_string)
+    return new_Corpus
+
+
 def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
+    goldStandardCorpus = add_newline_to_shad(goldStandardCorpus)
+    initializedCorpus = add_newline_to_shad(initializedCorpus)
+
     if string_argument:
         goldStandardSens = goldStandardCorpus.splitlines()
         initializedSens = initializedCorpus.splitlines()
@@ -122,6 +152,10 @@ def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
     j = 0
     for i in range(len(initializedSens)):
         init = initializedSens[i].strip()
+        # Getting pos tag attributes in a list
+        init_without_tags = Remove_tag_in_String(init)
+        _, pos_list = Get_CONTENT_POS_attributes(init_without_tags)
+
         if len(init) == 0:
             continue
 
@@ -142,6 +176,9 @@ def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
         )
 
         for k in range(len(initWordTags)):
+            initWordTags[k] = initWordTags[k].replace("_", " ")
+            goldWordTags[k] = goldWordTags[k].replace("_", " ")
+
             initWord, initTag = getWordTag(initWordTags[k])
             goldWord, correctTag = getWordTag(goldWordTags[k])
 
@@ -164,7 +201,7 @@ def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
             if correctTag not in objects[initTag].keys():
                 objects[initTag][correctTag] = []
 
-            objects[initTag][correctTag].append(getObject(initWordTags, k))
+            objects[initTag][correctTag].append(getObject(initWordTags, pos_list, k))
 
     return objects
 
