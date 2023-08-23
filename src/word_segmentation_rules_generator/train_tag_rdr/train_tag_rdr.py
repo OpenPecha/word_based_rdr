@@ -1,7 +1,19 @@
 import os
+import sys
+from pathlib import Path
 
-from ..RDRPOSTagger.pSCRDRtagger.ExtRDRPOSTagger import ExtRDR_RUN
-from ..RDRPOSTagger.pSCRDRtagger.RDRPOSTagger import run
+# Add the root directory of your project to sys.path
+root_path = (
+    Path(__file__).resolve().parents[3]
+)  # Adjust the number of parents as needed
+sys.path.append(str(root_path))
+
+from src.word_segmentation_rules_generator.RDRPOSTagger.pSCRDRtagger.ExtRDRPOSTagger import (  # noqa
+    ExtRDR_RUN,
+)
+from src.word_segmentation_rules_generator.RDRPOSTagger.pSCRDRtagger.RDRPOSTagger import (  # noqa
+    run,
+)
 
 
 def train_rdr(file_to_train_tagged="TIB_train_maxmatched_tagged.txt", THRESHOLD=(4, 4)):
@@ -84,3 +96,8 @@ def tag_file_rdr(
             file.write(rdr_tagged_output)
     else:
         return rdr_tagged_output
+
+
+if __name__ == "__main__":
+    # train_rdr("TIB_test_maxmatched_tagged.txt")
+    tag_file_rdr()
