@@ -10,23 +10,19 @@ from .SCRDRTree import SCRDRTree
 def make_rules(index, end_index, current_rule, wordrules, posrules):
     if index == 2 and index == end_index - 1:
         return [
-            current_rule + wordrules[index],
-            current_rule + wordrules[index] + " and " + posrules[index],
+            # current_rule + wordrules[index],
+            current_rule
+            + wordrules[index]
+            + " and "
+            + posrules[index],
         ]
     if index == end_index - 1:
         return [
-            current_rule + wordrules[index],
             current_rule + posrules[index],
+            current_rule + wordrules[index],
             current_rule + wordrules[index] + " and " + posrules[index],
         ]
 
-    word_rules = make_rules(
-        index + 1,
-        end_index,
-        current_rule + wordrules[index] + " and ",
-        wordrules,
-        posrules,
-    )
     pos_rules = []
     if index != 2:
         pos_rules = make_rules(
@@ -36,6 +32,14 @@ def make_rules(index, end_index, current_rule, wordrules, posrules):
             wordrules,
             posrules,
         )
+    word_rules = make_rules(
+        index + 1,
+        end_index,
+        current_rule + wordrules[index] + " and ",
+        wordrules,
+        posrules,
+    )
+
     word_and_pos_rules = make_rules(
         index + 1,
         end_index,
@@ -43,7 +47,7 @@ def make_rules(index, end_index, current_rule, wordrules, posrules):
         wordrules,
         posrules,
     )
-    return word_rules + pos_rules + word_and_pos_rules
+    return pos_rules + word_rules + word_and_pos_rules
 
 
 # Generate concrete rules based on input object of 5-word window context object
@@ -82,11 +86,11 @@ def generateRules(object):
 
     for i in range(0, 3):
         if object_word_list[i] != "":
-            rules.extend(make_rules(i, 3, "", wordrules, posrules))
-            if object_word_list[3] != "":
-                rules.extend(make_rules(i, 4, "", wordrules, posrules))
             if object_word_list[4] != "":
                 rules.extend(make_rules(i, 5, "", wordrules, posrules))
+            if object_word_list[3] != "":
+                rules.extend(make_rules(i, 4, "", wordrules, posrules))
+            rules.extend(make_rules(i, 3, "", wordrules, posrules))
 
     # rules_set_dtype = set(rules)
     rules_set_dtype = OrderedSet(rules)
