@@ -144,7 +144,7 @@ def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
 
     # Getting values for POS values
     init_without_tags = Remove_tag_in_String(initializedCorpus)
-    _, POS_list = Get_CONTENT_POS_attributes(init_without_tags)
+    POS_list = Get_CONTENT_POS_attributes(init_without_tags)
 
     goldStandardCorpus = add_newline_to_shad(goldStandardCorpus)
     initializedCorpus = add_newline_to_shad(initializedCorpus)

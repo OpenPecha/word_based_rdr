@@ -5,13 +5,11 @@ from botok.config import Config
 
 
 def Get_CONTENT_POS_attributes(string_text):
-    content_list = []
     pos_list = []
     tokens = Tokenize_words(string_text)
     for token in tokens:
-        content_list.append(token.text)
         pos_list.append(token.pos)
-    return content_list, pos_list
+    return pos_list
 
 
 def Tokenize_words(string_text):
