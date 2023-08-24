@@ -137,15 +137,15 @@ def add_newline_to_shad(Corpus_string):
 
 
 def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
+    if not string_argument:
+        goldStandardCorpus = open(goldStandardCorpus, encoding="utf-8").read()
+        initializedCorpus = open(initializedCorpus, encoding="utf-8").read()
+
     goldStandardCorpus = add_newline_to_shad(goldStandardCorpus)
     initializedCorpus = add_newline_to_shad(initializedCorpus)
 
-    if string_argument:
-        goldStandardSens = goldStandardCorpus.splitlines()
-        initializedSens = initializedCorpus.splitlines()
-    else:
-        goldStandardSens = open(goldStandardCorpus, encoding="utf-8").readlines()
-        initializedSens = open(initializedCorpus, encoding="utf-8").readlines()
+    goldStandardSens = goldStandardCorpus.splitlines()
+    initializedSens = initializedCorpus.splitlines()
 
     objects: Dict[str, Dict[str, list]] = {}  # objects = {}
 
