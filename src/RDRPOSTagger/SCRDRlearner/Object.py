@@ -137,9 +137,14 @@ def add_newline_to_shad(Corpus_string):
 
 
 def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
+
     if not string_argument:
         goldStandardCorpus = open(goldStandardCorpus, encoding="utf-8").read()
         initializedCorpus = open(initializedCorpus, encoding="utf-8").read()
+
+    # Getting values for POS values
+    init_without_tags = Remove_tag_in_String(initializedCorpus)
+    _, POS_list = Get_CONTENT_POS_attributes(init_without_tags)
 
     goldStandardCorpus = add_newline_to_shad(goldStandardCorpus)
     initializedCorpus = add_newline_to_shad(initializedCorpus)
@@ -150,11 +155,9 @@ def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
     objects: Dict[str, Dict[str, list]] = {}  # objects = {}
 
     j = 0
+    counter = 0
     for i in range(len(initializedSens)):
         init = initializedSens[i].strip()
-        # Getting pos tag attributes in a list
-        init_without_tags = Remove_tag_in_String(init)
-        _, pos_list = Get_CONTENT_POS_attributes(init_without_tags)
 
         if len(init) == 0:
             continue
@@ -174,6 +177,9 @@ def getObjectDictionary(initializedCorpus, goldStandardCorpus, string_argument):
         goldWordTags = (
             gold.replace("“", "''").replace("”", "''").replace('"', "''").split()
         )
+
+        pos_list = POS_list[counter : counter + len(initWordTags)]  # noqa
+        counter += len(initWordTags)
 
         for k in range(len(initWordTags)):
             initWordTags[k] = initWordTags[k].replace("_", " ")
