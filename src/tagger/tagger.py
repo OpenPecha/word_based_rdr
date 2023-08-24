@@ -10,12 +10,8 @@ root_path = (
 )  # Adjust the number of parents as needed
 sys.path.append(str(root_path))
 
-from src.word_segmentation_rules_generator.comparator.comparator import (  # noqa
-    comparator,
-)
-from src.word_segmentation_rules_generator.preprocessing.preprocessor import (  # noqa
-    adjust_spaces,
-)
+from src.comparator.comparator import comparator  # noqa
+from src.preprocessing.preprocessor import adjust_spaces  # noqa
 
 
 def split_by_TSEK(string_to_split):

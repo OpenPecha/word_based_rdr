@@ -1,10 +1,8 @@
 import os
 import re
 
-from src.word_segmentation_rules_generator.preprocessing.preprocessor import (
-    adjust_spaces,
-)
-from src.word_segmentation_rules_generator.tagger.tagger import split_by_TSEK
+from src.preprocessing.preprocessor import adjust_spaces
+from src.tagger.tagger import split_by_TSEK
 
 
 def split_into_word_tag_list(tagged_file="TIB_test_maxmatched.txt.TAGGED"):

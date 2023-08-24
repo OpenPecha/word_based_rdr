@@ -10,10 +10,7 @@ root_path = (
 )  # Adjust the number of parents as needed
 sys.path.append(str(root_path))
 
-from src.word_segmentation_rules_generator.preprocessing.preprocessor import (  # noqa
-    adjust_spaces,
-    file_2_botok,
-)
+from src.preprocessing.preprocessor import adjust_spaces, file_2_botok  # noqa
 
 
 def botok_max_matcher(file_string):

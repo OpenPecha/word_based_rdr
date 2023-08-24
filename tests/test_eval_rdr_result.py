@@ -1,6 +1,4 @@
-from src.word_segmentation_rules_generator.eval_rdr_result.eval_rdr_result import (
-    eval_rdr_result,
-)
+from src.eval_rdr_result.eval_rdr_result import eval_rdr_result
 
 
 def test_eval_rdr_result():

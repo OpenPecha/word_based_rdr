@@ -8,9 +8,7 @@ root_path = (
 )  # Adjust the number of parents as needed
 sys.path.append(str(root_path))
 
-from src.word_segmentation_rules_generator.rdr_2_cql.rdr_2_replace_matcher import (  # noqa
-    rdr_2_replace_matcher,
-)
+from src.rdr_2_cql.rdr_2_replace_matcher import rdr_2_replace_matcher  # noqa
 
 
 def rdr_2_cql_string(rdr_rules_string):

@@ -1,6 +1,6 @@
 import copy
 
-from src.word_segmentation_rules_generator.tagger.tagger import split_by_TSEK
+from src.tagger.tagger import split_by_TSEK
 
 from ..RDRPOSTagger.Utility.Utils import getWordTag
 

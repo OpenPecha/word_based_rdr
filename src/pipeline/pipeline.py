@@ -8,25 +8,15 @@ root_path = (
 sys.path.append(str(root_path))
 
 # Now import the modules from your project
-from src.word_segmentation_rules_generator.comparator.comparator import (  # noqa
-    is_equal_string_length,
-)
-from src.word_segmentation_rules_generator.eval_rdr_result.eval_rdr_result import (  # noqa
+from src.comparator.comparator import is_equal_string_length  # noqa
+from src.eval_rdr_result.eval_rdr_result import (  # noqa
     eval_rdr_known_unknown_result,
     eval_rdr_result,
 )
-from src.word_segmentation_rules_generator.max_matcher.max_matcher import (  # noqa
-    botok_max_matcher,
-)
-from src.word_segmentation_rules_generator.preprocessing.preprocessor import (  # noqa
-    file_2_botok,
-    gold_corpus_2_tagger,
-)
-from src.word_segmentation_rules_generator.tagger.tagger import tagger  # noqa
-from src.word_segmentation_rules_generator.train_tag_rdr.train_tag_rdr import (  # noqa
-    tag_rdr,
-    train_rdr,
-)
+from src.max_matcher.max_matcher import botok_max_matcher  # noqa
+from src.preprocessing.preprocessor import file_2_botok, gold_corpus_2_tagger  # noqa
+from src.tagger.tagger import tagger  # noqa
+from src.train_tag_rdr.train_tag_rdr import tag_rdr, train_rdr  # noqa
 
 
 def pipeline(data):

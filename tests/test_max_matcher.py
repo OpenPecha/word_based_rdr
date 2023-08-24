@@ -1,6 +1,4 @@
-from src.word_segmentation_rules_generator.max_matcher.max_matcher import (
-    botok_max_matcher,
-)
+from src.max_matcher.max_matcher import botok_max_matcher
 
 
 # The input is a gold corpus, but the string is preprocessed(no spaces) before botok does max match, so there

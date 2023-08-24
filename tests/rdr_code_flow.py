@@ -1,15 +1,10 @@
 import os
 import sys
 
-from src.word_segmentation_rules_generator.max_matcher.max_matcher import (
-    botok_max_matcher,
-)
-from src.word_segmentation_rules_generator.rdr_2_cql.rdr_2_cql import rdr_2_cql_string
-from src.word_segmentation_rules_generator.tagger.tagger import tagger
-from src.word_segmentation_rules_generator.train_tag_rdr.train_tag_rdr import (
-    tag_rdr,
-    train_with_external_rdr,
-)
+from src.max_matcher.max_matcher import botok_max_matcher
+from src.rdr_2_cql.rdr_2_cql import rdr_2_cql_string
+from src.tagger.tagger import tagger
+from src.train_tag_rdr.train_tag_rdr import tag_rdr, train_with_external_rdr
 
 
 def print_code_flow():
