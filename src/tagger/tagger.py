@@ -6,7 +6,7 @@ from botok import TSEK
 
 # Add the root directory of your project to sys.path
 root_path = (
-    Path(__file__).resolve().parents[3]
+    Path(__file__).resolve().parents[2]
 )  # Adjust the number of parents as needed
 sys.path.append(str(root_path))
 
