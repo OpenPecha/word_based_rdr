@@ -38,8 +38,9 @@ def split_merge_cql(rdr_string):
                     object_word_index = i + 1
                 attribute_condition_list.append(curr_rdr_condition[j])
             rdr_condition_list.append(attribute_condition_list)
-        print(rdr_conclusion)
+        print(rdr_condition_list)
         print(object_word_index)
+        print(rdr_conclusion)
     return rdr_rules
 
 

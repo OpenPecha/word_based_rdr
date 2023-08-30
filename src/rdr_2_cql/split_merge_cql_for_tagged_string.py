@@ -251,3 +251,8 @@ def split_merge_cql(tagged_string):
     tag_split_list = split_tag_list_with_index(tag_list)
     find_words_for_split_merge(tag_split_list, word_list, tag_list)
     # cql_rules_generated
+
+
+if __name__ == "__main__":
+    tagged_string = "ལ་ལ་/BB ལ་ལ་/IB"
+    split_merge_cql(tagged_string)

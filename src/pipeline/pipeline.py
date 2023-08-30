@@ -3,7 +3,7 @@ from pathlib import Path
 
 # Add the root directory of your project to sys.path
 root_path = (
-    Path(__file__).resolve().parents[3]
+    Path(__file__).resolve().parents[2]
 )  # Adjust the number of parents as needed
 sys.path.append(str(root_path))
 
@@ -34,16 +34,16 @@ def pipeline(data):
     # print(tagger_output)
 
     trained_file = "TIB_train_temp.txt"
-    trained_file_path = "../data/" + trained_file
+    trained_file_path = "src/data/" + trained_file
     with open(trained_file_path, "w", encoding="utf-8") as file:
         file.write(tagger_output)
 
-    train_rdr(trained_file_path)
+    train_rdr(trained_file)
 
     tagged_content = tag_rdr(
         botok_output, trained_file + ".RDR", trained_file + ".DICT"
     )
-    tagged_file_path = "../data/TIB_train_maxmatched_tagged_temp.txt"
+    tagged_file_path = "src/data/TIB_train_maxmatched_tagged_temp.txt"
     with open(tagged_file_path, "w", encoding="utf-8") as file:
         file.write(tagged_content)
 
@@ -78,5 +78,5 @@ def pipeline(data):
 
 
 if __name__ == "__main__":
-    file_string = Path("../data/TIB_gold.txt").read_text(encoding="utf-8")
+    file_string = Path("src/data/TIB_gold.txt").read_text(encoding="utf-8")
     pipeline(file_string)
