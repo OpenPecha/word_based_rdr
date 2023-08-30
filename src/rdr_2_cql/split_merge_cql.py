@@ -8,6 +8,8 @@ root_path = (
 sys.path.append(str(root_path))
 
 from src.rdr_2_cql.rdr_2_replace_matcher import find_levels, find_rules  # noqa
+from src.tagger.tagger import split_by_TSEK  # noqa
+from src.Utility.get_POS import get_POS  # noqa
 
 
 def make_split_cql_rule(rdr_condition_list, object_word_index, rdr_conclusion):
@@ -17,15 +19,6 @@ def make_split_cql_rule(rdr_condition_list, object_word_index, rdr_conclusion):
     object_word_index: 0
     rdr_conclusion: 'BB'
     """
-    # Get the value for object.word
-    object_word = next(  # noqa
-        (
-            attr_value[1]
-            for attr_value in rdr_condition_list[object_word_index]
-            if attr_value[0] == "object.word"
-        ),
-        None,
-    )
 
     """
     each cql rule should be as follows: <matchcql>\t<index>\t<operation>\t<replacecql>
@@ -45,11 +38,37 @@ def make_split_cql_rule(rdr_condition_list, object_word_index, rdr_conclusion):
                 matchcql += f"pos={rdr_attribute[1]}"
         matchcql += "] "
 
+    # Get the value for object.word
+    object_word = next(  # noqa
+        (
+            attr_value[1]
+            for attr_value in rdr_condition_list[object_word_index]
+            if attr_value[0] == "object.word"
+        ),
+        None,
+    )
+
+    object_word_list = split_by_TSEK(object_word)
+    rdr_conclusion_list = list(rdr_conclusion)
+
+    splited_left_word = splited_right_word = ""
+    splited_left_pos = splited_right_pos = ""
+    for i in range(1, len(rdr_condition_list)):
+        if rdr_conclusion_list[i] in ["B", "X"]:
+            splited_left_word = "".join(object_word_list[:i])
+            splited_right_word = "".join(object_word_list[i:])
+            break
+
     matching_index = object_word_index + 1
-    splitting_index = ""
+    splitting_index = len(splited_left_word)
     index = f"{matching_index}-{splitting_index}"
+
+    # Getting POS tag of the splited words
+    splited_left_pos = get_POS(splited_left_word)
+    splited_right_pos = get_POS(splited_right_word)
+
     operation = "::"
-    replacecql = "[] []"
+    replacecql = f"[pos={splited_left_pos}] [pos={splited_right_pos}]"
 
     new_cql_rule = "\t".join([matchcql, index, operation, replacecql])
     return new_cql_rule

@@ -1,6 +1,7 @@
 import re
+from pathlib import Path
 
-from botok import Config
+from botok.config import Config
 from botok.textunits.bosyl import BoSyl
 from botok.tries.trie import Trie
 
@@ -21,7 +22,7 @@ def split_by_TSEK_without_TsekConcat(word_string):
 
 
 def get_POS(word_string):
-    config = Config()
+    config = Config(dialect_name="general", base_path=Path.home())
     trie = Trie(
         BoSyl,
         profile=config.profile,
