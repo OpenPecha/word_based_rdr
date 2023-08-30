@@ -1,8 +1,15 @@
 import copy
+import sys
+from pathlib import Path
 
-from src.tagger.tagger import split_by_TSEK
+# Add the root directory of your project to sys.path
+root_path = (
+    Path(__file__).resolve().parents[2]
+)  # Adjust the number of parents as needed
+sys.path.append(str(root_path))
 
-from ..RDRPOSTagger.Utility.Utils import getWordTag
+from src.RDRPOSTagger.Utility.Utils import getWordTag  # noqa
+from src.tagger.tagger import split_by_TSEK  # noqa
 
 cql_rules_generated = []
 
