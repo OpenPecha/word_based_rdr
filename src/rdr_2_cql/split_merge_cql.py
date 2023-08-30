@@ -34,7 +34,17 @@ def make_split_cql_rule(rdr_condition_list, object_word_index, rdr_conclusion):
     ["ལ་"] ["ལ་"] ["ལ་ལ་"]	3-2	::	[] []
     ["ལ་"] ["ལ་"] ["ལ་"] ["ལ་"]	2	+	[]
     """
+
     matchcql = ""
+    for rdr_condition in rdr_condition_list:
+        matchcql += "["
+        for rdr_attribute in rdr_condition:
+            if "word" in rdr_attribute[0] or "Word" in rdr_attribute[0]:
+                matchcql += f"{rdr_attribute[1]}"
+            elif "pos" in rdr_attribute[0] or "Pos" in rdr_attribute[0]:
+                matchcql += f"pos={rdr_attribute[1]}"
+        matchcql += "] "
+
     matching_index = object_word_index + 1
     splitting_index = ""
     index = f"{matching_index}-{splitting_index}"
