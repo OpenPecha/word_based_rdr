@@ -10,6 +10,41 @@ sys.path.append(str(root_path))
 from src.rdr_2_cql.rdr_2_replace_matcher import find_levels, find_rules  # noqa
 
 
+def make_split_cql_rule(rdr_condition_list, object_word_index, rdr_conclusion):
+    """
+    Example for the arguments
+    rdr_condition_list:  [[('object.word', '"ལ་ལ་"')], [('object.nextWord', '"ལ་ལ་"')]]
+    object_word_index: 0
+    rdr_conclusion: 'BB'
+    """
+    # Get the value for object.word
+    object_word = next(  # noqa
+        (
+            attr_value[1]
+            for attr_value in rdr_condition_list[object_word_index]
+            if attr_value[0] == "object.word"
+        ),
+        None,
+    )
+
+    """
+    each cql rule should be as follows: <matchcql>\t<index>\t<operation>\t<replacecql>
+    cql example :
+    ["ལ་ལ་"] ["ལ་ལ་"]	1-2	::	[] []
+    ["ལ་"] ["ལ་"] ["ལ་ལ་"]	3-2	::	[] []
+    ["ལ་"] ["ལ་"] ["ལ་"] ["ལ་"]	2	+	[]
+    """
+    matchcql = ""
+    matching_index = object_word_index + 1
+    splitting_index = ""
+    index = f"{matching_index}-{splitting_index}"
+    operation = "::"
+    replacecql = "[] []"
+
+    new_cql_rule = "\t".join([matchcql, index, operation, replacecql])
+    return new_cql_rule
+
+
 def split_merge_cql(rdr_string):
     rdr_rules = find_rules(find_levels(rdr_string))
     for rdr_rule in rdr_rules:
@@ -35,12 +70,13 @@ def split_merge_cql(rdr_string):
                 if curr_rdr_condition[j][0] == "object.tag":
                     continue
                 if curr_rdr_condition[j][0] == "object.word":
-                    object_word_index = i + 1
+                    object_word_index = i
                 attribute_condition_list.append(curr_rdr_condition[j])
             rdr_condition_list.append(attribute_condition_list)
-        print(rdr_condition_list)
-        print(object_word_index)
-        print(rdr_conclusion)
+        cql_rule = make_split_cql_rule(
+            rdr_condition_list, object_word_index, rdr_conclusion
+        )
+        print(cql_rule)
     return rdr_rules
 
 
