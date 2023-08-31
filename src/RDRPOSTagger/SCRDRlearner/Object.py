@@ -130,8 +130,9 @@ def getObject(wordTags, wordPOS, index):  # Sequence of "Word/Tag"
 
 
 def add_newline_to_shad(Corpus_string):
-    pattern = r"([^ ]*།[^ ]*)"
-    replacement = r"\1\n"
+    # add \n after a word tag pair where shad is present
+    pattern = r"([^ ]*།[^ /BIUXY]*)(/[BIUXY]+)(\s*)([^\\n])"
+    replacement = r"\1\2\n\4"
     new_Corpus = re.sub(pattern, replacement, Corpus_string)
     return new_Corpus
 
