@@ -41,12 +41,22 @@ def get_POS(word_string):
         and "senses" in current_node.data
         and current_node.data["senses"]
     ):
-        word_pos = current_node.data["senses"][0]["pos"]
+        max_freq = -1
+        word_pos = ""
+        for curr_node_sense in current_node.data["senses"]:
+            if not curr_node_sense["freq"] and max_freq == -1:
+                max_freq = 1
+                word_pos = curr_node_sense["pos"]
+                continue
+            if curr_node_sense["freq"] > max_freq:
+                max_freq = curr_node_sense["freq"]
+                word_pos = curr_node_sense["pos"]
+
         return word_pos
 
     return NO_POS
 
 
 if __name__ == "__main__":
-    word_pos = get_POS("ལ་ལ་")
+    word_pos = get_POS("ཆོས་")
     print(word_pos)
