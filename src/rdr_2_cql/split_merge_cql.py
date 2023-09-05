@@ -74,16 +74,26 @@ def make_split_cql_rule(rdr_condition_list, object_word_index, rdr_conclusion):
     return new_cql_rule
 
 
-def split_merge_cql(rdr_string):
+def filter_neccessary_rdr_rules(rdr_string):
     rdr_rules = find_rules(find_levels(rdr_string))
+
+    # Deleting the first rdr rules which is unneccessary
+    # 	object.tag == "U" : object.conclusion = "U" (looks like this in the .RDR)
+    del rdr_rules[0]
+    tuple_to_remove = ("object.tag", '"U"')
+
+    # Deleting the unnecessary 'object.tag' attribute
+    for index in range(len(rdr_rules)):
+        rdr_rules[index]["test"][0].remove(tuple_to_remove)
+
+    return rdr_rules
+
+
+def split_merge_cql(rdr_string):
+    rdr_rules = filter_neccessary_rdr_rules(rdr_string)
     for rdr_rule in rdr_rules:
         rdr_condition = rdr_rule["test"]
         rdr_conclusion = rdr_rule["ccl"][0][0][1]
-
-        # Checking for Tag intro (not an actual rule)
-        # 	object.tag == "U" : object.conclusion = "U" (looks like this in the .RDR)
-        if len(rdr_condition) == 1 and len(rdr_condition[0]) == 1:
-            continue
 
         condition_count = len(rdr_condition)
 
