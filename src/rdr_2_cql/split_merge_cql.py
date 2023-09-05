@@ -1,5 +1,7 @@
 import sys
+from itertools import combinations
 from pathlib import Path
+from typing import Dict, List
 
 # Add the root directory of your project to sys.path
 root_path = (
@@ -74,6 +76,35 @@ def make_split_cql_rule(rdr_condition_list, object_word_index, rdr_conclusion):
     return new_cql_rule
 
 
+def find_combinations_of_matches(list_of_dicts):
+    # Create a dictionary to group frozensets of dictionaries by their hash values
+
+    dict_matched_groups: List[Dict] = []
+    dict_matched_indices: List[List[int]] = []
+
+    for idx, curr_dict in enumerate(list_of_dicts):
+        # Convert the dictionary to a frozenset to make it hashable
+
+        if curr_dict in dict_matched_groups:
+            matched_index = dict_matched_groups.index(curr_dict)
+            dict_matched_indices[matched_index].append(idx)
+        else:
+            dict_matched_groups.append(curr_dict)
+            dict_matched_indices.append([idx])
+
+    # Find all combinations of indices where dictionaries are the same
+    all_combinations = []
+    for indices in dict_matched_indices:
+        if len(indices) >= 2:
+            for r in range(
+                2, len(indices) + 1
+            ):  # Consider combinations of size 2, 3, and so on
+                for combination in combinations(indices, r):
+                    all_combinations.append(combination)
+
+    return all_combinations
+
+
 def filter_neccessary_rdr_rules(rdr_string):
     rdr_rules = find_rules(find_levels(rdr_string))
 
@@ -87,6 +118,10 @@ def filter_neccessary_rdr_rules(rdr_string):
     sorted_rdr_condition_storage = []
     sorted_rdr_conclusion_storage = []
 
+    # In this code, what we are trying to achieve is, check for matches of rdr rules
+    # EG: take look for following two rdr rules, those two should be matched together along with their tag
+    # object.word == "ལ་ལ་" and object.nextWord1 == "ལ་ལ་" : object.conclusion = "BB"
+    # object.prevWord1 == "ལ་ལ་" and object.word == "ལ་ལ་" : object.conclusion = "IB"
     for rdr_rule in rdr_rules:
         # Deleting the unnecessary 'object.tag' attribute
         rdr_rule["test"][0].remove(tuple_to_remove)
@@ -109,13 +144,15 @@ def filter_neccessary_rdr_rules(rdr_string):
                 sorted_rdr_conclusion_storage.append(
                     (attr_counter, rdr_rule["ccl"][0][0][1])
                 )
-            attrs_storage = []
+            attrs_storage = {}
             for attr_tuple in curr_index_attributes:
                 if "word" in attr_tuple[0].lower():
-                    attrs_storage.append(("TEXT", attr_tuple[1]))
+                    # attrs_storage.append(("TEXT", attr_tuple[1]))
+                    attrs_storage["TEXT"] = attr_tuple[1]
                     continue
                 if "pos" in attr_tuple[0].lower():
-                    attrs_storage.append(("POS", attr_tuple[1]))
+                    # attrs_storage.append(("POS", attr_tuple[1]))
+                    attrs_storage["POS"] = attr_tuple[1]
 
             rdr_condition_storage[attr_counter] = attrs_storage
             attr_counter += 1
@@ -125,14 +162,22 @@ def filter_neccessary_rdr_rules(rdr_string):
     print(sorted_rdr_condition_storage)
     print(sorted_rdr_conclusion_storage)
 
+    matched_indices = find_combinations_of_matches(sorted_rdr_condition_storage)
+    print(matched_indices)
+
     return rdr_rules
 
 
 def split_merge_cql(rdr_string):
-    rdr_rules = filter_neccessary_rdr_rules(rdr_string)
+    rdr_rules = find_rules(find_levels(rdr_string))
     for rdr_rule in rdr_rules:
         rdr_condition = rdr_rule["test"]
         rdr_conclusion = rdr_rule["ccl"][0][0][1]
+
+        # Checking for Tag intro (not an actual rule)
+        # 	object.tag == "U" : object.conclusion = "U" (looks like this in the .RDR)
+        if len(rdr_condition) == 1 and len(rdr_condition[0]) == 1:
+            continue
 
         condition_count = len(rdr_condition)
 
