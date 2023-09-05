@@ -110,5 +110,5 @@ def split_merge_cql(rdr_string):
 
 
 if __name__ == "__main__":
-    rdr_string = Path("src/data/rdr_rules.txt").read_text(encoding="utf-8")
+    rdr_string = Path("src/data/TIB_demo.RDR").read_text(encoding="utf-8")
     rdr_rules = split_merge_cql(rdr_string)

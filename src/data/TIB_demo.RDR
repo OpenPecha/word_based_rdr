@@ -1,0 +1,4 @@
+True : object.conclusion = "NN"
+	object.tag == "U" : object.conclusion = "U"
+		object.word == "ལ་ལ་" and object.nextWord1 == "ལ་ལ་" : object.conclusion = "BB"
+		object.prevWord1 == "ལ་ལ་" and object.word == "ལ་ལ་" : object.conclusion = "IB"

@@ -59,6 +59,12 @@ def pipeline(data):
     external_tagger_output = re.sub(pattern, replacement, tagger_output)
     rdr_rules = train_with_external_rdr(tagger_output, external_tagger_output, (3, 2))
 
+    # Writing rdr rules to a file
+    file_path = Path("src/data/TIB_demo.RDR")
+    with open(file_path, "w", encoding="utf-8") as file:
+        file.write(rdr_rules)
+
+    # Printing rdr rules
     print(rdr_rules)
 
 
