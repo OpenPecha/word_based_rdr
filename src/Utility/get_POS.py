@@ -23,6 +23,13 @@ def split_by_TSEK_without_TsekConcat(word_string):
 
 
 def get_POS(word_string):
+    # First we try to find the POS from botok Word Tokenizer, (Tries to eliminate senses of lemma and returns it)
+    POS_from_Word_Tokenizer = get_POS_through_Word_Tokenizer(word_string)
+    if POS_from_Word_Tokenizer:
+        return POS_from_Word_Tokenizer
+
+    # If we are not able to find POS from above method,
+    # Then we select the sense with most freq,
     config = Config(dialect_name="general", base_path=Path.home())
     trie = Trie(
         BoSyl,
@@ -113,11 +120,10 @@ def get_POS_through_Word_Tokenizer(string):
                 max_freq = curr_token_sense["freq"]
                 word_pos = curr_token_sense["pos"]
         return word_pos
-    return get_POS("string")
+    return False
 
 
 if __name__ == "__main__":
-    word_pos = get_POS_through_Word_Tokenizer("ཆོས་")
+    # word_pos = get_POS_through_Word_Tokenizer("ཆོས་")
+    word_pos = get_POS("ཆོས་")
     print(word_pos)
-
-    # print(word_pos)
