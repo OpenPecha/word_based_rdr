@@ -80,11 +80,40 @@ def filter_neccessary_rdr_rules(rdr_string):
     # Deleting the first rdr rules which is unneccessary
     # 	object.tag == "U" : object.conclusion = "U" (looks like this in the .RDR)
     del rdr_rules[0]
+
+    # Unneccessary tuple
     tuple_to_remove = ("object.tag", '"U"')
 
-    # Deleting the unnecessary 'object.tag' attribute
-    for index in range(len(rdr_rules)):
-        rdr_rules[index]["test"][0].remove(tuple_to_remove)
+    filtered_rdr_rules = []
+
+    for rdr_rule in rdr_rules:
+        # Deleting the unnecessary 'object.tag' attribute
+        rdr_rule["test"][0].remove(tuple_to_remove)
+
+        # Getting the index of attributes of rdr rules
+        rdr_attributes_indices = list(rdr_rule["test"].keys())
+        rdr_attributes_indices.sort()
+
+        attr_counter = 0
+        rdr_condition_storage = {}
+        # rdr_conclusion_storage = {}
+        # Looping through each rdr_condition
+        for attrs_index in rdr_attributes_indices:
+            curr_index_attributes = rdr_rule["test"][attrs_index]
+
+            attrs_storage = []
+            for attr_tuple in curr_index_attributes:
+                if "word" in attr_tuple[0].lower():
+                    attrs_storage.append(("TEXT", attr_tuple[1]))
+                    continue
+                if "pos" in attr_tuple[0].lower():
+                    attrs_storage.append(("POS", attr_tuple[1]))
+
+            rdr_condition_storage[attr_counter] = attrs_storage
+            attr_counter += 1
+
+        filtered_rdr_rules.append(rdr_condition_storage)
+    print(filtered_rdr_rules)
 
     return rdr_rules
 
@@ -121,4 +150,5 @@ def split_merge_cql(rdr_string):
 
 if __name__ == "__main__":
     rdr_string = Path("src/data/TIB_demo.RDR").read_text(encoding="utf-8")
-    rdr_rules = split_merge_cql(rdr_string)
+    # rdr_rules = split_merge_cql(rdr_string)
+    rdr_rules = filter_neccessary_rdr_rules(rdr_string)
