@@ -84,7 +84,8 @@ def filter_neccessary_rdr_rules(rdr_string):
     # Unneccessary tuple
     tuple_to_remove = ("object.tag", '"U"')
 
-    filtered_rdr_rules = []
+    sorted_rdr_condition_storage = []
+    sorted_rdr_conclusion_storage = []
 
     for rdr_rule in rdr_rules:
         # Deleting the unnecessary 'object.tag' attribute
@@ -96,11 +97,18 @@ def filter_neccessary_rdr_rules(rdr_string):
 
         attr_counter = 0
         rdr_condition_storage = {}
-        # rdr_conclusion_storage = {}
         # Looping through each rdr_condition
+        # attrs_index = -1, for object.prevWord1 and object.prevPos1
+        # attrs_index = 0, for object.word and object.pos
+        # attrs_index=1, for object.nextWord1 and object.nextPos1:
         for attrs_index in rdr_attributes_indices:
             curr_index_attributes = rdr_rule["test"][attrs_index]
 
+            # When attrs_index 0 comes, store the tag value
+            if attrs_index == 0:
+                sorted_rdr_conclusion_storage.append(
+                    (attr_counter, rdr_rule["ccl"][0][0][1])
+                )
             attrs_storage = []
             for attr_tuple in curr_index_attributes:
                 if "word" in attr_tuple[0].lower():
@@ -112,8 +120,10 @@ def filter_neccessary_rdr_rules(rdr_string):
             rdr_condition_storage[attr_counter] = attrs_storage
             attr_counter += 1
 
-        filtered_rdr_rules.append(rdr_condition_storage)
-    print(filtered_rdr_rules)
+        sorted_rdr_condition_storage.append(rdr_condition_storage)
+
+    print(sorted_rdr_condition_storage)
+    print(sorted_rdr_conclusion_storage)
 
     return rdr_rules
 
