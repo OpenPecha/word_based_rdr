@@ -1,3 +1,4 @@
+import re
 import sys
 from pathlib import Path
 
@@ -16,67 +17,51 @@ from src.eval_rdr_result.eval_rdr_result import (  # noqa
 from src.max_matcher.max_matcher import botok_max_matcher  # noqa
 from src.preprocessing.preprocessor import file_2_botok, gold_corpus_2_tagger  # noqa
 from src.tagger.tagger import tagger  # noqa
-from src.train_tag_rdr.train_tag_rdr import tag_rdr, train_rdr  # noqa
+from src.train_tag_rdr.train_tag_rdr import train_with_external_rdr  # noqa
 
 
 def pipeline(data):
+    # The input data should be the gold corpus such that word segmented with spaces
     gold_corpus = data
+    # Some data processing on gold corpus to have similar compare with botok output
     gold_corpus_2_tagger_input = gold_corpus_2_tagger(data)  # noqa
 
+    # The gold corpus data is put together with no space allowed before sending to botok
     botok_input = file_2_botok(data)
+    # Sending to botok and getting the maxmatched output
     botok_output = botok_max_matcher(botok_input)
 
+    # This checks if the processing steps has done correctly and has equal string before sending to the tagger
     is_equal_string_length_result = is_equal_string_length(  # noqa
         gold_corpus, botok_output
     )
 
+    # Sending the data to tagger,
+    # In this step, all the above steps is done in tagger function, thats why previous variables has not been
+    # passed as an argument
     tagger_output = tagger(data)
-    # print(tagger_output)
 
-    trained_file = "TIB_train_temp.txt"
-    trained_file_path = "src/data/" + trained_file
-    with open(trained_file_path, "w", encoding="utf-8") as file:
-        file.write(tagger_output)
+    # For External RDR, three arguments are needed
+    # i) Tagged gold corpus: output from the tagger is given
+    # ii) Tagged corpus by external tagger: output from botok
+    # iii)Threshold value
 
-    train_rdr(trained_file)
+    # Eg with a simple sentence:
+    # data = 'ལ་ ལ་ལ་ ལ་ ལ་བ་ ཡོད་'
+    # botok_output = 'ལ་ལ་ ལ་ལ་ ལ་བ་ ཡོད་'
+    # tagger_output = 'ལ་ལ་\BB ལ་ལ་\BB ལ་བ་\U ཡོད་\U'
+    # exteral_tagger_output = 'ལ་ལ་\U ལ་ལ་\U ལ་བ་\U ཡོད་\U'
 
-    tagged_content = tag_rdr(
-        botok_output, trained_file + ".RDR", trained_file + ".DICT"
-    )
-    tagged_file_path = "src/data/TIB_train_maxmatched_tagged_temp.txt"
-    with open(tagged_file_path, "w", encoding="utf-8") as file:
-        file.write(tagged_content)
+    # Here all the tags are bieng replaced by 'U' because the word splited in tagger_output is from botok and
+    # according to them, all the words are segmented perfectly
+    pattern = r"/[BIUXY]+"
+    replacement = r"/U"
+    external_tagger_output = re.sub(pattern, replacement, tagger_output)
+    rdr_rules = train_with_external_rdr(tagger_output, external_tagger_output, (3, 2))
 
-    accuracy_result = eval_rdr_result(
-        "TIB_train_temp.txt", "TIB_train_maxmatched_tagged_temp.txt"
-    )
-    print(accuracy_result)
-    (
-        training_countKN,
-        training_countUNKN,
-        training_numwords,
-        known_training_acc,
-        unknown_training_acc,
-        overall_training_acc,
-    ) = eval_rdr_known_unknown_result(
-        "TIB_train_temp.txt",
-        "TIB_train_maxmatched_tagged_temp.txt",
-        "TIB_train_temp.txt.DICT",
-    )
-    print(
-        "Training data values:> ",
-        training_countKN,
-        training_countUNKN,
-        training_numwords,
-    )
-    print(
-        "Training accuracy Value:> ",
-        known_training_acc,
-        unknown_training_acc,
-        overall_training_acc,
-    )
+    print(rdr_rules)
 
 
 if __name__ == "__main__":
-    file_string = Path("src/data/TIB_gold.txt").read_text(encoding="utf-8")
+    file_string = Path("src/data/TIB_demo.txt").read_text(encoding="utf-8")
     pipeline(file_string)
