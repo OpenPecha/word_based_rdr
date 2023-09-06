@@ -105,8 +105,49 @@ def find_combinations_of_matches(list_of_dicts):
     return all_combinations
 
 
+def check_for_tag_rule_condition(matched_indices, rdr_conclusion_storage):
+    # matched_indices: list of tuples [(0,1), (3,6)]
+    # rdr_conclusion_storage: list of tuples [(0,'"B"'),((0,'"B"'))]
+    for match_index_tuple in matched_indices:
+        matched_rdr_conclusion = []
+        for matched_index in match_index_tuple:
+            matched_rdr_conclusion.append(rdr_conclusion_storage[matched_index])
+        print(matched_rdr_conclusion, "    ", match_index_tuple)
+
+
 def filter_neccessary_rdr_rules(rdr_string):
-    rdr_rules = find_rules(find_levels(rdr_string))
+
+    # Gets rdr rules with levels  <---Level 0
+    # True : object.conclusion = "NN"   <---Level 1
+    #        object.tag == "U" : object.conclusion = "U"    <---Level 2
+    #                object.word == "མི་" and object.pos == "VERB" : object.conclusion = "B" <---Level 3
+    # 		                  object.word == "མི་" and object.nextWord1 == "ཕན་" : object.conclusion = "U"   <---Level 4
+    rdr_rules_with_levels = find_levels(rdr_string)
+    rdr_rules_count = len(rdr_rules_with_levels)
+    index = 0
+
+    # In this function we putting rules with more than level 2 above the level 2, for split merge
+    while index < rdr_rules_count:
+        rdr_level = rdr_rules_with_levels[index]
+        if rdr_level[0] > 2:
+            start_index = index - 1
+            end_index = index
+            while rdr_rules_with_levels[end_index][0] > 2:
+                end_index += 1
+            end_index -= 1
+            # Reversing the rules
+            rdr_rules_with_levels[
+                start_index : end_index + 1  # noqa
+            ] = rdr_rules_with_levels[
+                start_index : end_index + 1  # noqa
+            ][
+                ::-1
+            ]
+            index = end_index + 1
+        else:
+            index += 1
+
+    rdr_rules = find_rules(rdr_rules_with_levels)
 
     # Deleting the first rdr rules which is unneccessary
     # 	object.tag == "U" : object.conclusion = "U" (looks like this in the .RDR)
@@ -159,13 +200,13 @@ def filter_neccessary_rdr_rules(rdr_string):
 
         sorted_rdr_condition_storage.append(rdr_condition_storage)
 
-    print(sorted_rdr_condition_storage)
-    print(sorted_rdr_conclusion_storage)
-
+    # Recieves indices where the rdr condition matches (list of tuples)
     matched_indices = find_combinations_of_matches(sorted_rdr_condition_storage)
-    print(matched_indices)
 
-    return rdr_rules
+    # result = check_for_tag_rule_condition(
+    #     matched_indices, sorted_rdr_conclusion_storage
+    # )
+    return matched_indices
 
 
 def split_merge_cql(rdr_string):
@@ -204,6 +245,8 @@ def split_merge_cql(rdr_string):
 
 
 if __name__ == "__main__":
-    rdr_string = Path("src/data/TIB_demo.RDR").read_text(encoding="utf-8")
+    rdr_string = Path("src/data/TIB_train_maxmatched_tagged.txt.RDR").read_text(
+        encoding="utf-8"
+    )
     # rdr_rules = split_merge_cql(rdr_string)
     rdr_rules = filter_neccessary_rdr_rules(rdr_string)
