@@ -65,6 +65,31 @@ def train_file_with_external_rdr(
     return result
 
 
+def tag_with_ExtRDR(
+    string_to_tag,
+    RDR_rules="TIB_train_maxmatched_tagged.txt.RDR",
+):
+    """
+    Input : String that is already went through botok max matched algorithm and word segmented,
+    Output: file tagged acccording to the RDR model rules and dictionary.
+    Important note: File should be in the folder 'data', and output in 'resources'
+    """
+    current_dir = os.path.dirname(__file__)
+    # file_relative_path = "../data/" + file_to_tag
+    rdr_rules_relative_path = "../data/" + RDR_rules
+
+    # file_path = os.path.join(current_dir, file_relative_path)
+    rdr_rules_path = os.path.join(current_dir, rdr_rules_relative_path)
+
+    function_arguments = [
+        "ExtRDRPOSTagger.py",
+        "tag",
+        rdr_rules_path,
+        string_to_tag,
+    ]
+    return ExtRDR_RUN(function_arguments)
+
+
 def tag_rdr(
     string_to_tag,
     RDR_rules="TIB_train_maxmatched_tagged.txt.RDR",
@@ -118,10 +143,13 @@ def tag_file_rdr(
 
 
 if __name__ == "__main__":
-    result = train_file_with_external_rdr("TIB_gold_tagged.txt", (3, 2))
-    print(result)
-    with open("demo.txt", "w", encoding="utf-8") as file:
-        file.write(result)
+    tag_with_ExtRDR(
+        r"src\data\TIB_short_test_maxmatched.txt", "TIB_train_maxmatched_tagged.txt.RDR"
+    )
+    # result = train_file_with_external_rdr("TIB_test_maxmatched_tagged.txt", (3, 2))
+    # print(result)
+    # with open("src/data/TIB_test_maxmatched_tagged.txt.RDR", "w", encoding="utf-8") as file:
+    #     file.write(result)
     # train_rdr("TIB_train_maxmatched_tagged.txt")
     # tag_file_rdr()
     # train_file_with_external_rdr()

@@ -1,10 +1,12 @@
 # import sys
-from multiprocessing import Pool
+# from multiprocessing import Pool
+import re
 
 from ..SCRDRlearner.Object import FWObject, getWordTag
 from ..SCRDRlearner.SCRDRTree import SCRDRTree
 from ..SCRDRlearner.SCRDRTreeLearner import SCRDRTreeLearner
-from ..Utility.Config import NUMBER_OF_PROCESSES  # , THRESHOLD
+
+# from ..Utility.Config import NUMBER_OF_PROCESSES  # , THRESHOLD
 
 # os.chdir("../")
 # sys.setrecursionlimit(100000)
@@ -36,12 +38,23 @@ class ExtRDRPOSTagger(SCRDRTree):
         return " ".join(sen)
 
     def tagInitializedCorpus(self, inputFile):
-        lines = open(inputFile, encoding="utf-8").readlines()
+        initializedCorpus = open(inputFile, encoding="utf-8").read()
+        pattern = r"\s"
+        replacement = r"/U "
+        initializedCorpus_lines = re.sub(
+            pattern, replacement, initializedCorpus
+        ).splitlines()
         # Change the value of NUMBER_OF_PROCESSES to obtain faster tagging process!
-        pool = Pool(processes=NUMBER_OF_PROCESSES)
-        taggedLines = pool.map(
-            unwrap_self_ExtRDRPOSTagger, zip([self] * len(lines), lines)
-        )
+        # pool = Pool(processes=NUMBER_OF_PROCESSES)
+        # taggedLines = pool.map(
+        #     unwrap_self_ExtRDRPOSTagger, zip([self] * len(lines), lines)
+        # )
+
+        taggedLines = []
+        for line in initializedCorpus_lines:
+            taggedLine = self.tagInitializedSentence(line)
+            taggedLines.append(taggedLine)
+
         out = open(inputFile + ".TAGGED", "w", encoding="utf-8")
         for line in taggedLines:
             out.write(line + "\n")
