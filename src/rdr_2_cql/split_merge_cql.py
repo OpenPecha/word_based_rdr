@@ -12,6 +12,7 @@ sys.path.append(str(root_path))
 from src.rdr_2_cql.rdr_2_replace_matcher import find_levels, find_rules  # noqa
 from src.tagger.tagger import split_by_TSEK  # noqa
 from src.Utility.get_POS import get_POS  # noqa
+from src.Utility.split_by_TSEK import split_by_TSEK  # noqa
 
 
 def make_split_cql_rule(rdr_condition_list, object_word_index, rdr_conclusion):
@@ -202,6 +203,8 @@ def filter_only_neccessary_rdr_rules(rdr_string):
     # Recieves indices where the rdr condition matches (list of tuples, tuples containing the matched elements together)
     matched_indices = find_combinations_of_matches(sorted_rdr_condition_storage)
 
+    matched_indices.append((33,))
+    matched_indices.append((4,))
     # Filtering rules that were only on the matched_indices
     final_filtered_rdr_rules = []
     for matched_index_tuple in matched_indices:
@@ -221,37 +224,63 @@ def filter_only_neccessary_rdr_rules(rdr_string):
 
 
 def split_merge_cql(rdr_string):
-    rdr_rules = find_rules(find_levels(rdr_string))
-    for rdr_rule in rdr_rules:
-        rdr_condition = rdr_rule["test"]
-        rdr_conclusion = rdr_rule["ccl"][0][0][1]
+    rdr_rules = filter_only_neccessary_rdr_rules(rdr_string)
+    for idx, rdr_rule in enumerate(rdr_rules):
+        rdr_condition = rdr_rule[0]
+        rdr_conclusion = rdr_rule[1]
 
-        # Checking for Tag intro (not an actual rule)
-        # 	object.tag == "U" : object.conclusion = "U" (looks like this in the .RDR)
-        if len(rdr_condition) == 1 and len(rdr_condition[0]) == 1:
+        # Sorting the rdr conclusion based on the index, element
+        rdr_conclusion = sorted(rdr_conclusion, key=lambda x: x[0])
+
+        # If the particular rules doesn't has proper format
+        is_unnecessary_rule = False
+
+        for rdr_conclusion_tuple in rdr_conclusion:
+            rdr_conclusion_tag = rdr_conclusion_tuple[1]
+
+            # Getting tag of each syls for checking if affix rules generation is needed
+            # rdr_condition_syls = ['"ངེས་', 'པར་'],
+            # rdr_conclusion_tag_list = ['B', 'Y']
+            rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["TEXT"]
+            rdr_condition_syls = split_by_TSEK(rdr_condition_text)
+
+            rdr_conclusion_tag_list = list(rdr_conclusion_tag)
+
+            # Cleaning empty elements after conversion from word to syls
+            rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
+            rdr_conclusion_tag_list = [
+                x for x in rdr_conclusion_tag_list if x != "" and x != '"'
+            ]
+
+            # check if each syllables has their corresponding tag
+            if len(rdr_condition_syls) != len(rdr_conclusion_tag_list):
+                is_unnecessary_rule = True
+                break
+
+            # Checking for affix rules generation
+            need_affix_rule_generation = False
+
+            for idx_for_affix, curr_syl in enumerate(rdr_condition_syls):
+                if "-" in curr_syl and rdr_conclusion_tag_list[idx_for_affix] not in [
+                    "X",
+                    "Y",
+                ]:
+                    need_affix_rule_generation = True
+                    break
+                if "-" not in curr_syl and rdr_conclusion_tag_list in ["X", "Y"]:
+                    need_affix_rule_generation = True
+                    break
+            if need_affix_rule_generation:
+                print(
+                    "Need affix rule generation: ",
+                    rdr_condition_text,
+                    rdr_conclusion_tag,
+                )
+
+        # if the rule is not proper, jumps to next rule
+        if is_unnecessary_rule:
             continue
 
-        condition_count = len(rdr_condition)
-
-        # Store rdr condition aside from tag
-        rdr_condition_list = []
-        # Store the index where object.word is present
-        object_word_index = -1
-        for i in range(condition_count):
-            curr_rdr_condition = rdr_condition[i]
-            attribute_condition_count = len(curr_rdr_condition)
-            attribute_condition_list = []
-            for j in range(attribute_condition_count):
-                if curr_rdr_condition[j][0] == "object.tag":
-                    continue
-                if curr_rdr_condition[j][0] == "object.word":
-                    object_word_index = i
-                attribute_condition_list.append(curr_rdr_condition[j])
-            rdr_condition_list.append(attribute_condition_list)
-        cql_rule = make_split_cql_rule(
-            rdr_condition_list, object_word_index, rdr_conclusion
-        )
-        print(cql_rule)
     return rdr_rules
 
 
@@ -259,6 +288,5 @@ if __name__ == "__main__":
     rdr_string = Path("src/data/TIB_train_maxmatched_tagged.txt.RDR").read_text(
         encoding="utf-8"
     )
-    # rdr_rules = split_merge_cql(rdr_string)
-    rdr_rules = filter_only_neccessary_rdr_rules(rdr_string)
-    print(rdr_rules)
+    rdr_rules = split_merge_cql(rdr_string)
+    # print(rdr_rules)
