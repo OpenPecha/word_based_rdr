@@ -6,23 +6,37 @@ from .Node import Node
 from .Object import getObjectDictionary
 from .SCRDRTree import SCRDRTree
 
+NO_POS = "NO_POS"
+empty_POS = ""
 
-def make_rules(index, start_index, end_index, current_rule, wordrules, posrules):
+
+def make_rules(
+    index, start_index, end_index, current_rule, wordrules, posrules, object_pos_list
+):
     if start_index == 2 and index == 2 and index == end_index - 1:
-        return [
-            current_rule + wordrules[index] + " and " + posrules[index],
-        ]
+        if object_pos_list[index] not in [NO_POS, empty_POS]:
+            return [
+                current_rule + wordrules[index] + " and " + posrules[index],
+            ]
+        else:
+            return [current_rule + wordrules[index]]
     if index == 2 and index == end_index - 1:
-        return [
-            current_rule + wordrules[index],
-            current_rule + wordrules[index] + " and " + posrules[index],
-        ]
+        if object_pos_list[index] not in [NO_POS, empty_POS]:
+            return [
+                current_rule + wordrules[index],
+                current_rule + wordrules[index] + " and " + posrules[index],
+            ]
+        else:
+            return [current_rule + wordrules[index]]
     if index == end_index - 1:
-        return [
-            current_rule + posrules[index],
-            current_rule + wordrules[index],
-            current_rule + wordrules[index] + " and " + posrules[index],
-        ]
+        if object_pos_list[index] not in [NO_POS, empty_POS]:
+            return [
+                current_rule + posrules[index],
+                current_rule + wordrules[index],
+                current_rule + wordrules[index] + " and " + posrules[index],
+            ]
+        else:
+            return [current_rule + wordrules[index]]
 
     pos_rules = []
     if index != 2:
@@ -33,6 +47,7 @@ def make_rules(index, start_index, end_index, current_rule, wordrules, posrules)
             current_rule + posrules[index] + " and ",
             wordrules,
             posrules,
+            object_pos_list,
         )
     word_rules = make_rules(
         index + 1,
@@ -41,16 +56,20 @@ def make_rules(index, start_index, end_index, current_rule, wordrules, posrules)
         current_rule + wordrules[index] + " and ",
         wordrules,
         posrules,
+        object_pos_list,
     )
 
-    word_and_pos_rules = make_rules(
-        index + 1,
-        index,
-        end_index,
-        current_rule + wordrules[index] + " and " + posrules[index] + " and ",
-        wordrules,
-        posrules,
-    )
+    word_and_pos_rules = []
+    if object_pos_list[index] not in [NO_POS, empty_POS]:
+        word_and_pos_rules = make_rules(
+            index + 1,
+            index,
+            end_index,
+            current_rule + wordrules[index] + " and " + posrules[index] + " and ",
+            wordrules,
+            posrules,
+            object_pos_list,
+        )
     return pos_rules + word_rules + word_and_pos_rules
 
 
@@ -88,13 +107,25 @@ def generateRules(object):
         object.nextWord2,
     ]
 
+    object_pos_list = [
+        object.prevPos2,
+        object.prevPos1,
+        object.pos,
+        object.nextPos1,
+        object.nextPos2,
+    ]
+
     for i in range(0, 3):
         if object_word_list[i] != "":
             if object_word_list[4] != "":
-                rules.extend(make_rules(i, i, 5, "", wordrules, posrules))
+                rules.extend(
+                    make_rules(i, i, 5, "", wordrules, posrules, object_pos_list)
+                )
             if object_word_list[3] != "":
-                rules.extend(make_rules(i, i, 4, "", wordrules, posrules))
-            rules.extend(make_rules(i, i, 3, "", wordrules, posrules))
+                rules.extend(
+                    make_rules(i, i, 4, "", wordrules, posrules, object_pos_list)
+                )
+            rules.extend(make_rules(i, i, 3, "", wordrules, posrules, object_pos_list))
 
     # rules_set_dtype = set(rules)
     rules_set_dtype = OrderedSet(rules)

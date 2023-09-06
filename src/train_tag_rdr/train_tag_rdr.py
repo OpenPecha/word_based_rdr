@@ -143,13 +143,14 @@ def tag_file_rdr(
 
 
 if __name__ == "__main__":
-    tag_with_ExtRDR(
-        r"src\data\TIB_short_test_maxmatched.txt", "TIB_train_maxmatched_tagged.txt.RDR"
-    )
-    # result = train_file_with_external_rdr("TIB_test_maxmatched_tagged.txt", (3, 2))
-    # print(result)
-    # with open("src/data/TIB_test_maxmatched_tagged.txt.RDR", "w", encoding="utf-8") as file:
-    #     file.write(result)
-    # train_rdr("TIB_train_maxmatched_tagged.txt")
-    # tag_file_rdr()
-    # train_file_with_external_rdr()
+
+    result = train_file_with_external_rdr("TIB_train_maxmatched_tagged.txt", (3, 2))
+    print(result)
+    with open(
+        "src/data/TIB_train_maxmatched_tagged.txt.RDR", "w", encoding="utf-8"
+    ) as file:
+        file.write(result)
+
+    # tag_with_ExtRDR(
+    #         r"src\data\TIB_short_test_maxmatched.txt", "TIB_train_maxmatched_tagged.txt.RDR"
+    #     )
