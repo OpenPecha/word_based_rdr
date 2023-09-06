@@ -134,7 +134,7 @@ def Re_Arrange_the_ordering(rdr_rules_with_levels):
     return rdr_rules_with_levels
 
 
-def filter_neccessary_rdr_rules(rdr_string):
+def filter_only_neccessary_rdr_rules(rdr_string):
 
     # Gets rdr rules with levels
     # True : object.conclusion = "NN"   <---Level 0
@@ -202,15 +202,22 @@ def filter_neccessary_rdr_rules(rdr_string):
     # Recieves indices where the rdr condition matches (list of tuples, tuples containing the matched elements together)
     matched_indices = find_combinations_of_matches(sorted_rdr_condition_storage)
 
-    unique_matched_indices = list(
-        {item for tuple_ in matched_indices for item in tuple_}
-    )
+    # Filtering rules that were only on the matched_indices
+    final_filtered_rdr_rules = []
+    for matched_index_tuple in matched_indices:
+        curr_rdr_rule_conclusion = []
+        for matched_index in matched_index_tuple:
+            curr_rdr_rule_conclusion.append(
+                sorted_rdr_conclusion_storage[matched_index]
+            )
+        final_filtered_rdr_rules.append(
+            [
+                sorted_rdr_condition_storage[matched_index_tuple[0]],
+                curr_rdr_rule_conclusion,
+            ]
+        )
 
-    for idx, rdr_condition in enumerate(sorted_rdr_condition_storage):
-        if idx not in unique_matched_indices:
-            # Look for conditions
-            print(f"{idx}: {sorted_rdr_conclusion_storage[idx]}: {rdr_condition}")
-    return matched_indices
+    return final_filtered_rdr_rules
 
 
 def split_merge_cql(rdr_string):
@@ -253,4 +260,5 @@ if __name__ == "__main__":
         encoding="utf-8"
     )
     # rdr_rules = split_merge_cql(rdr_string)
-    rdr_rules = filter_neccessary_rdr_rules(rdr_string)
+    rdr_rules = filter_only_neccessary_rdr_rules(rdr_string)
+    print(rdr_rules)
