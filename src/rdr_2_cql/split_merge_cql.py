@@ -11,8 +11,11 @@ sys.path.append(str(root_path))
 
 from src.rdr_2_cql.rdr_2_replace_matcher import find_levels, find_rules  # noqa
 from src.tagger.tagger import split_by_TSEK  # noqa
-from src.Utility.get_POS import get_POS  # noqa
+from src.Utility.get_POS import get_POS, get_word_senses  # noqa
 from src.Utility.split_by_TSEK import split_by_TSEK  # noqa
+
+NO_POS = "NO_POS"
+empty_POS = '"'
 
 
 def make_split_cql_rule(rdr_condition_list, object_word_index, rdr_conclusion):
@@ -235,6 +238,7 @@ def split_merge_cql(rdr_string):
         # If the particular rules doesn't has proper format
         is_unnecessary_rule = False
 
+        # Checking for affix rule generation
         for rdr_conclusion_tuple in rdr_conclusion:
             rdr_conclusion_tag = rdr_conclusion_tuple[1]
 
@@ -257,31 +261,68 @@ def split_merge_cql(rdr_string):
                 is_unnecessary_rule = True
                 break
 
-            # Checking for affix rules generation
             need_affix_rule_generation = False
-
+            # if there is a need for affix modification, this will store index, and operation in tuple
+            affix_modification = []
             for idx_for_affix, curr_syl in enumerate(rdr_condition_syls):
                 if "-" in curr_syl and rdr_conclusion_tag_list[idx_for_affix] not in [
                     "X",
                     "Y",
                 ]:
                     need_affix_rule_generation = True
-                    break
+                    affix_modification.append((idx_for_affix, "OFF"))
+                    continue
                 if "-" not in curr_syl and rdr_conclusion_tag_list in ["X", "Y"]:
                     need_affix_rule_generation = True
-                    break
+                    affix_modification.append((idx_for_affix, "OFF"))
             if need_affix_rule_generation:
-                print(
-                    "Need affix rule generation: ",
-                    rdr_condition_text,
-                    rdr_conclusion_tag,
+                affix_rule = generate_affix_rule(
+                    rdr_condition, rdr_conclusion, affix_modification
                 )
+                print(f"affix rule: {affix_rule}")
 
         # if the rule is not proper, jumps to next rule
         if is_unnecessary_rule:
             continue
 
+        # Checking for split rule generation
+
     return rdr_rules
+
+
+def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
+    """
+    each cql rule should be as follows: <matchcql>\t<index>\t<operation>\t<replacecql>
+    cql example :
+    ["ལ་ལ་"] ["ལ་ལ་"]	1-2	::	[] []
+    ["ལ་"] ["ལ་"] ["ལ་ལ་"]	3-2	::	[] []
+    ["ལ་"] ["ལ་"] ["ལ་"] ["ལ་"]	2	+	[]
+    [""]    1   +   []
+    """
+
+    print(rdr_condition, rdr_conclusion, affix_modification)
+    for idx, afx_modf in affix_modification:
+        word_text = rdr_condition[idx]["TEXT"]
+        word_text = word_text.replace("-", "")[
+            1:-1
+        ]  # removing '-' before passing the string to find POS
+        word_pos = get_POS(word_text)
+        word_senses = get_word_senses(word_text)
+
+        # If there is no word sense present or POS is empty, then no rule is generated
+        if not word_senses or word_pos in [NO_POS, empty_POS]:
+            continue
+
+        # Check from word_senses, which 'pos' matches and modify that attribute 'affixed' as True or False
+
+        for index, curr_word_sense in enumerate(word_senses):
+            if word_pos == curr_word_sense["pos"]:
+                if afx_modf == "OFF":
+                    print("Generate OFF rule")
+                if afx_modf == "ON":
+                    print("Generate ON rule")
+
+    return " "
 
 
 if __name__ == "__main__":

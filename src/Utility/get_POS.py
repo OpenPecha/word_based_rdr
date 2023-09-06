@@ -22,9 +22,35 @@ def split_by_TSEK_without_TsekConcat(word_string):
     return word_tsek_splited_list
 
 
-def get_POS(word_string):
+def get_word_senses(word_string):
+    config = Config(dialect_name="general", base_path=Path.home())
+    trie = Trie(
+        BoSyl,
+        profile=config.profile,
+        main_data=config.dictionary,
+        custom_data=config.adjustments,
+    )
+    syls = split_by_TSEK_without_TsekConcat(word_string)
+    current_node = None
+    for i in range(len(syls)):
+        syl = syls[i]
+        current_node = trie.walk(syl, current_node)
+
+    # Getting POS from all the data from current node
+    if (
+        current_node is not None
+        and "senses" in current_node.data
+        and current_node.data["senses"]
+    ):
+        return current_node.data["senses"]
+    return []
+
+
+def get_POS(word_string, is_first_iteration=True):
     # First we try to find the POS from botok Word Tokenizer, (Tries to eliminate senses of lemma and returns it)
-    POS_from_Word_Tokenizer = get_POS_through_Word_Tokenizer(word_string)
+    POS_from_Word_Tokenizer = get_POS_through_Word_Tokenizer(
+        word_string, is_first_iteration
+    )
     if POS_from_Word_Tokenizer:
         return POS_from_Word_Tokenizer
 
@@ -80,7 +106,7 @@ def remove_duplicates_list_of_dicts(list_of_dicts):
     return unique_list
 
 
-def get_POS_through_Word_Tokenizer(string):
+def get_POS_through_Word_Tokenizer(string, is_first_iteration=True):
     config = Config(dialect_name="general", base_path=Path.home())
     wt = WordTokenizer(config=config)
     token_list = wt.tokenize(string, split_affixes=False)
@@ -94,12 +120,14 @@ def get_POS_through_Word_Tokenizer(string):
         if len(unique_token_senses) == 1:
             return unique_token_senses[0]["pos"]
 
+        if not is_first_iteration:
+            return ""
         # If there are more than one sense for a word, sometimes the sense of lemma is included in the sense
         # EG: the word ཆོས་ , there are 3 senses (given 2 are duplicates), the first sense is of lemma ཆོ་
         # pos: OTHER, freq: 322, affixed: True, lemma: ཆོ་
         # pos: NOUN, freq: 392115, affixed: False,  lemma: ཆོ་
         # pos: NOUN, freq: 392115, affixed: False, lemma: ཆོ་
-        token_lemma_POS = get_POS(token["lemma"])
+        token_lemma_POS = get_POS(token["lemma"], False)
 
         # Removing the sense of lemma
         filtered_token_senses = [
@@ -125,5 +153,6 @@ def get_POS_through_Word_Tokenizer(string):
 
 if __name__ == "__main__":
     # word_pos = get_POS_through_Word_Tokenizer("ཆོས་")
-    word_pos = get_POS("ཆོས་")
+    word_pos = get_POS("ལས་")
     print(word_pos)
+    print(get_word_senses("ལས་"))
