@@ -342,9 +342,37 @@ def split_merge_cql(rdr_string):
                 need_merge_rule_generation = True
                 merge_modification.append(rdr_conclusion_tuple[0])
         if need_merge_rule_generation:
-            print(merge_modification)
+            new_cql_merge_rule = generate_merge_rule(
+                rdr_condition, rdr_conclusion, merge_modification
+            )
+            cql_rules_collection += f"{new_cql_merge_rule}"
 
     return cql_rules_collection
+
+
+def generate_merge_rule(rdr_condition, rdr_conclusion, merge_modification):
+    # Collecting all the cql rule string
+    merge_cql_rules_collection = ""
+    for word_index in merge_modification:
+        match_cql = generate_match_cql_string(rdr_condition, rdr_conclusion)
+        index_cql = str(word_index)
+        operation_cql = "+"
+
+        left_merge_word = rdr_condition[word_index - 1]["text"]
+        right_merge_word = rdr_condition[word_index]["text"]
+        new_merged_word = left_merge_word + right_merge_word
+        new_merged_word = new_merged_word.replace('"', "").replace('"', "")
+        new_merged_word_POS = get_POS(new_merged_word)
+        if new_merged_word_POS in [NO_POS, empty_POS]:
+            replace_cql = "[]"
+        else:
+            replace_cql = f"[pos='{new_merged_word_POS}']"
+        curr_new_cql_rule = "\t".join(
+            [match_cql, index_cql, operation_cql, replace_cql]
+        )
+        merge_cql_rules_collection += f"{curr_new_cql_rule}\n"
+
+    return merge_cql_rules_collection
 
 
 def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
