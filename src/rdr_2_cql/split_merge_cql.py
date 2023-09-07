@@ -279,10 +279,10 @@ def split_merge_cql(rdr_string):
                     need_affix_rule_generation = True
                     affix_modification.append((idx_for_affix, "OFF"))
         if need_affix_rule_generation:
-            affix_rule = generate_affix_rule(
+            new_cql_affix_rule = generate_affix_rule(
                 rdr_condition, rdr_conclusion, affix_modification
             )
-            cql_rules_collection += f"{affix_rule}\n"
+            cql_rules_collection += f"{new_cql_affix_rule}\n"
 
         # if the rule is not proper, jumps to next rule
         if is_unnecessary_rule:
@@ -317,9 +317,53 @@ def split_merge_cql(rdr_string):
                     need_split_rule_generation = True
                     split_modification.append((rdr_conclusion_tuple[0], idx_for_split))
         if need_split_rule_generation:
-            print(split_modification)
-
+            new_cql_split_rule = generate_split_rule(
+                rdr_condition, rdr_conclusion, split_modification
+            )
+            cql_rules_collection += f"{new_cql_split_rule}\n"
     return cql_rules_collection
+
+
+def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
+    # Collecting all the cql rule string
+    split_cql_rules_collection = ""
+    for word_index, syl_index in split_modification:
+        match_cql = generate_match_cql_string(rdr_condition, rdr_conclusion)
+
+        rdr_condition_text = rdr_condition[word_index]["text"]
+        rdr_condition_syls = split_by_TSEK(rdr_condition_text)
+        # Cleaning empty elements after conversion from word to syls
+        rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
+        for idx, text in enumerate(rdr_condition_syls):
+            rdr_condition_syls[idx] = rdr_condition_syls[idx].replace('"', "")
+            rdr_condition_syls[idx] = rdr_condition_syls[idx].replace('"', "")
+
+        char_index = len("".join(rdr_condition_syls[: word_index + 1]))
+        index_cql = f"{word_index+1}-{char_index}"
+        operation_cql = "::"
+
+        left_splited_word_POS = get_POS("".join(rdr_condition_syls)[: word_index + 1])
+        right_splited_word_POS = get_POS("".join(rdr_condition_syls)[word_index:])
+
+        replace_cql = ""
+        if left_splited_word_POS in [NO_POS, empty_POS] and right_splited_word_POS in [
+            NO_POS,
+            empty_POS,
+        ]:
+            replace_cql = "[][]"
+        elif left_splited_word_POS in [NO_POS, empty_POS]:
+            replace_cql = f"[][pos={right_splited_word_POS}]"
+        elif right_splited_word_POS in [NO_POS, empty_POS]:
+            replace_cql = f"[pos={left_splited_word_POS}][]"
+        else:
+            replace_cql = f"[pos={left_splited_word_POS}][pos={right_splited_word_POS}]"
+
+        curr_new_cql_rule = "\t".join(
+            [match_cql, index_cql, operation_cql, replace_cql]
+        )
+        split_cql_rules_collection += f"{curr_new_cql_rule}\n"
+
+    return split_cql_rules_collection
 
 
 def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
@@ -370,13 +414,13 @@ def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
 def generate_match_cql_string(rdr_condition, rdr_conclusion):
     # Generating match cql from rdr_condition and rdr conclusion
     match_cql = ""
-    match_cql_inner_value = ""
 
     indices_for_rule_generation = [t[0] for t in rdr_conclusion]
     for i in indices_for_rule_generation:
         rdr_condition_attributes = list(rdr_condition[i].keys())
         no_of_attributes = len(rdr_condition_attributes)
         attr_counter = 0
+        match_cql_inner_value = ""
         for rdr_condition_attr in rdr_condition_attributes:
             attr_counter += 1
             if rdr_condition_attr == "text":
@@ -393,7 +437,8 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
             # IF there are more than one attribute, there should & sign btw then
             if attr_counter < no_of_attributes:
                 match_cql_inner_value += "&"
-    match_cql += f"[{match_cql_inner_value}]"
+        match_cql += f"[{match_cql_inner_value}]"
+
     return match_cql
 
 
