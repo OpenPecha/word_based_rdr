@@ -295,7 +295,7 @@ def split_merge_cql(rdr_string):
         for rdr_conclusion_tuple in rdr_conclusion:
             rdr_conclusion_tag = rdr_conclusion_tuple[1]
 
-            # Getting tag of each syls for checking if affix rules generation is needed
+            # Getting tag of each syls for checking if split rules generation is needed
             # rdr_condition_syls = ['ལ་', 'ལ་'],
             # rdr_conclusion_tag_list = ['B', 'B']
             rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["text"]
@@ -320,7 +320,30 @@ def split_merge_cql(rdr_string):
             new_cql_split_rule = generate_split_rule(
                 rdr_condition, rdr_conclusion, split_modification
             )
-            cql_rules_collection += f"{new_cql_split_rule}\n"
+            cql_rules_collection += f"{new_cql_split_rule}"
+
+        need_merge_rule_generation = False
+        # if there is a need for merge modification, this will store index, and syllable index a in tuple
+        merge_modification = []
+        # Checking for merge rule generation
+        is_first_tuple = True
+        for rdr_conclusion_tuple in rdr_conclusion:
+            if is_first_tuple:
+                is_first_tuple = False
+                continue
+            rdr_conclusion_tag = rdr_conclusion_tuple[1]
+            rdr_conclusion_tag_list = list(rdr_conclusion_tag)
+
+            # Cleaning empty elements after conversion from word to syls
+            rdr_conclusion_tag_list = [
+                x for x in rdr_conclusion_tag_list if x != "" and x != '"'
+            ]
+            if rdr_conclusion_tag_list[0] in ["I", "Y"]:
+                need_merge_rule_generation = True
+                merge_modification.append(rdr_conclusion_tuple[0])
+        if need_merge_rule_generation:
+            print(merge_modification)
+
     return cql_rules_collection
 
 
