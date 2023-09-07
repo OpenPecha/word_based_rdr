@@ -191,12 +191,12 @@ def filter_only_neccessary_rdr_rules(rdr_string):
             attrs_storage = {}
             for attr_tuple in curr_index_attributes:
                 if "word" in attr_tuple[0].lower():
-                    # attrs_storage.append(("TEXT", attr_tuple[1]))
-                    attrs_storage["TEXT"] = attr_tuple[1]
+                    # attrs_storage.append(("text", attr_tuple[1]))
+                    attrs_storage["text"] = attr_tuple[1]
                     continue
                 if "pos" in attr_tuple[0].lower():
-                    # attrs_storage.append(("POS", attr_tuple[1]))
-                    attrs_storage["POS"] = attr_tuple[1]
+                    # attrs_storage.append(("pos", attr_tuple[1]))
+                    attrs_storage["pos"] = attr_tuple[1]
 
             rdr_condition_storage[attr_counter] = attrs_storage
             attr_counter += 1
@@ -245,7 +245,7 @@ def split_merge_cql(rdr_string):
             # Getting tag of each syls for checking if affix rules generation is needed
             # rdr_condition_syls = ['"ངེས་', 'པར་'],
             # rdr_conclusion_tag_list = ['B', 'Y']
-            rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["TEXT"]
+            rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["text"]
             rdr_condition_syls = split_by_TSEK(rdr_condition_text)
 
             rdr_conclusion_tag_list = list(rdr_conclusion_tag)
@@ -300,9 +300,11 @@ def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
     [""]    1   +   []
     """
 
+    # Collecting all the cql rule string
+    affix_cql_rules_collection = ""
     print(rdr_condition, rdr_conclusion, affix_modification)
     for idx, afx_modf in affix_modification:
-        word_text = rdr_condition[idx]["TEXT"]
+        word_text = rdr_condition[idx]["text"]
         word_text = word_text.replace("-", "")[
             1:-1
         ]  # removing '-' before passing the string to find POS
@@ -315,14 +317,53 @@ def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
 
         # Check from word_senses, which 'pos' matches and modify that attribute 'affixed' as True or False
 
-        for index, curr_word_sense in enumerate(word_senses):
+        for word_sense_index, curr_word_sense in enumerate(word_senses):
             if word_pos == curr_word_sense["pos"]:
-                if afx_modf == "OFF":
-                    print("Generate OFF rule")
-                if afx_modf == "ON":
-                    print("Generate ON rule")
+                match_cql = generate_match_cql_string(rdr_condition, rdr_conclusion)
+                index_cql = str(idx + 1)
+                operation_cql = "+"
 
-    return " "
+                # afx_modf == "OFF": mean there should'nt be affix , where there is
+                # afx_modf == "ON": mean there should be affix, when there is'nt
+                replace_cql = f'[senses[{word_sense_index}]["affixed"]={False}]'
+                if afx_modf == "ON":
+                    replace_cql = f'[senses[{word_sense_index}]["affixed"]={True}]'
+                curr_new_cql_rule = "\t".join(
+                    [match_cql, index_cql, operation_cql, replace_cql]
+                )
+                affix_cql_rules_collection += f"{curr_new_cql_rule}\n"
+
+    return affix_cql_rules_collection
+
+
+def generate_match_cql_string(rdr_condition, rdr_conclusion):
+    # Generating match cql from rdr_condition and rdr conclusion
+    match_cql = ""
+    match_cql_inner_value = ""
+
+    indices_for_rule_generation = [t[0] for t in rdr_conclusion]
+    for i in indices_for_rule_generation:
+        rdr_condition_attributes = list(rdr_condition[i].keys())
+        no_of_attributes = len(rdr_condition_attributes)
+        attr_counter = 0
+        for rdr_condition_attr in rdr_condition_attributes:
+            attr_counter += 1
+            if rdr_condition_attr == "text":
+                match_cql_inner_value += "{}={}".format(
+                    rdr_condition_attr,
+                    rdr_condition[i][rdr_condition_attr].replace("-", ""),
+                )
+            else:
+                match_cql_inner_value += "{}={}".format(
+                    rdr_condition_attr,
+                    rdr_condition[i][rdr_condition_attr].replace("-", ""),
+                )
+
+            # IF there are more than one attribute, there should & sign btw then
+            if attr_counter < no_of_attributes:
+                match_cql_inner_value += "&"
+    match_cql += f"[{match_cql_inner_value}]"
+    return match_cql
 
 
 if __name__ == "__main__":
