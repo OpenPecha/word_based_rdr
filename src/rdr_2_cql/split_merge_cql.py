@@ -241,6 +241,9 @@ def split_merge_cql(rdr_string):
         # If the particular rules doesn't has proper format
         is_unnecessary_rule = False
 
+        need_affix_rule_generation = False
+        # if there is a need for affix modification, this will store index, and operation in tuple
+        affix_modification = []
         # Checking for affix rule generation
         for rdr_conclusion_tuple in rdr_conclusion:
             rdr_conclusion_tag = rdr_conclusion_tuple[1]
@@ -264,9 +267,6 @@ def split_merge_cql(rdr_string):
                 is_unnecessary_rule = True
                 break
 
-            need_affix_rule_generation = False
-            # if there is a need for affix modification, this will store index, and operation in tuple
-            affix_modification = []
             for idx_for_affix, curr_syl in enumerate(rdr_condition_syls):
                 if "-" in curr_syl and rdr_conclusion_tag_list[idx_for_affix] not in [
                     "X",
@@ -278,17 +278,46 @@ def split_merge_cql(rdr_string):
                 if "-" not in curr_syl and rdr_conclusion_tag_list in ["X", "Y"]:
                     need_affix_rule_generation = True
                     affix_modification.append((idx_for_affix, "OFF"))
-            if need_affix_rule_generation:
-                affix_rule = generate_affix_rule(
-                    rdr_condition, rdr_conclusion, affix_modification
-                )
-                cql_rules_collection += f"{affix_rule}\n"
+        if need_affix_rule_generation:
+            affix_rule = generate_affix_rule(
+                rdr_condition, rdr_conclusion, affix_modification
+            )
+            cql_rules_collection += f"{affix_rule}\n"
 
         # if the rule is not proper, jumps to next rule
         if is_unnecessary_rule:
             continue
 
+        need_split_rule_generation = False
+        # if there is a need for split modification, this will store index, and syllable index a in tuple
+        split_modification = []
         # Checking for split rule generation
+        for rdr_conclusion_tuple in rdr_conclusion:
+            rdr_conclusion_tag = rdr_conclusion_tuple[1]
+
+            # Getting tag of each syls for checking if affix rules generation is needed
+            # rdr_condition_syls = ['ལ་', 'ལ་'],
+            # rdr_conclusion_tag_list = ['B', 'B']
+            rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["text"]
+            rdr_condition_syls = split_by_TSEK(rdr_condition_text)
+
+            rdr_conclusion_tag_list = list(rdr_conclusion_tag)
+
+            # Cleaning empty elements after conversion from word to syls
+            rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
+            rdr_conclusion_tag_list = [
+                x for x in rdr_conclusion_tag_list if x != "" and x != '"'
+            ]
+
+            for idx_for_split, curr_syl in enumerate(rdr_condition_syls):
+                if idx_for_split != 0 and rdr_conclusion_tag_list[idx_for_split] in [
+                    "B",
+                    "X",
+                ]:
+                    need_split_rule_generation = True
+                    split_modification.append((rdr_conclusion_tuple[0], idx_for_split))
+        if need_split_rule_generation:
+            print(split_modification)
 
     return cql_rules_collection
 
