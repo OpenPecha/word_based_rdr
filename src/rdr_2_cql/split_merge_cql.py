@@ -206,8 +206,10 @@ def filter_only_neccessary_rdr_rules(rdr_string):
     # Recieves indices where the rdr condition matches (list of tuples, tuples containing the matched elements together)
     matched_indices = find_combinations_of_matches(sorted_rdr_condition_storage)
 
-    matched_indices.append((33,))
-    matched_indices.append((4,))
+    # unique_matched_indices = list(set(item for tpl in matched_indices for item in tpl))
+    # #Appending rest of the rules as well one by one
+    # matched_indices.extend((i,) for i in range(len(sorted_rdr_condition_storage)) if i not in unique_matched_indices)
+
     # Filtering rules that were only on the matched_indices
     final_filtered_rdr_rules = []
     for matched_index_tuple in matched_indices:
@@ -228,6 +230,7 @@ def filter_only_neccessary_rdr_rules(rdr_string):
 
 def split_merge_cql(rdr_string):
     rdr_rules = filter_only_neccessary_rdr_rules(rdr_string)
+    cql_rules_collection = ""
     for idx, rdr_rule in enumerate(rdr_rules):
         rdr_condition = rdr_rule[0]
         rdr_conclusion = rdr_rule[1]
@@ -279,7 +282,7 @@ def split_merge_cql(rdr_string):
                 affix_rule = generate_affix_rule(
                     rdr_condition, rdr_conclusion, affix_modification
                 )
-                print(f"affix rule: {affix_rule}")
+                cql_rules_collection += f"{affix_rule}\n"
 
         # if the rule is not proper, jumps to next rule
         if is_unnecessary_rule:
@@ -287,7 +290,7 @@ def split_merge_cql(rdr_string):
 
         # Checking for split rule generation
 
-    return rdr_rules
+    return cql_rules_collection
 
 
 def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
@@ -302,7 +305,6 @@ def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
 
     # Collecting all the cql rule string
     affix_cql_rules_collection = ""
-    print(rdr_condition, rdr_conclusion, affix_modification)
     for idx, afx_modf in affix_modification:
         word_text = rdr_condition[idx]["text"]
         word_text = word_text.replace("-", "")[
@@ -371,4 +373,4 @@ if __name__ == "__main__":
         encoding="utf-8"
     )
     rdr_rules = split_merge_cql(rdr_string)
-    # print(rdr_rules)
+    print(rdr_rules)
