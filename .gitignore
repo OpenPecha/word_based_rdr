@@ -2,6 +2,7 @@ max_match_output.py
 cql_demo.py
 rdr_rules.txt
 rules_ordering.py
+store_tsv.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
