@@ -316,6 +316,8 @@ def generate_merge_rule(rdr_condition, rdr_conclusion, merge_modification):
 
 def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
     # Collecting all the cql rule string
+    # split_modification is list of tuples, storing index and syllable index of the word to split
+
     split_cql_rules_collection = ""
     for word_index, syl_index in split_modification:
         match_cql = generate_match_cql_string(rdr_condition, rdr_conclusion)
@@ -328,12 +330,15 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
             rdr_condition_syls[idx] = rdr_condition_syls[idx].replace('"', "")
             rdr_condition_syls[idx] = rdr_condition_syls[idx].replace('"', "")
 
-        char_index = len("".join(rdr_condition_syls[: word_index + 1]))
+        char_index = len("".join(rdr_condition_syls[:syl_index]))
         index_cql = f"{word_index+1}-{char_index}"
         operation_cql = "::"
 
-        left_splited_word_POS = get_POS("".join(rdr_condition_syls)[: word_index + 1])
-        right_splited_word_POS = get_POS("".join(rdr_condition_syls)[word_index:])
+        left_splited_word = "".join(rdr_condition_syls)[:syl_index]
+        left_splited_word_POS = get_POS(left_splited_word)
+
+        right_splited_word = "".join(rdr_condition_syls)[syl_index:]
+        right_splited_word_POS = get_POS(right_splited_word)
 
         replace_cql = ""
         if left_splited_word_POS in [NO_POS, empty_POS] and right_splited_word_POS in [
@@ -433,9 +438,7 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
 
 
 if __name__ == "__main__":
-    rdr_string = Path("src/data/TIB_train_maxmatched_tagged.txt.RDR").read_text(
-        encoding="utf-8"
-    )
+    rdr_string = Path("src/data/TIB_demo.RDR").read_text(encoding="utf-8")
     cql_rules = split_merge_cql(rdr_string)
-    with open("mydata.tsv", "w", encoding="utf-8") as tsvfile:
+    with open("TIB_demo.tsv", "w", encoding="utf-8") as tsvfile:
         tsvfile.write(cql_rules)

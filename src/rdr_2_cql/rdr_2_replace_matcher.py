@@ -1,4 +1,5 @@
 from collections import defaultdict
+from pathlib import Path
 from typing import Dict
 
 # variables
@@ -139,10 +140,11 @@ def find_rules(lines):
 
         test = defaultdict(list)
         for i in range(1, level + 1):
-            for pos, t in state[i].items():
-                for u in t:
-                    if u not in test[pos]:  # avoid duplicates
-                        test[pos].append(u)
+            if i in state:
+                for pos, t in state[i].items():
+                    for u in t:
+                        if u not in test[pos]:  # avoid duplicates
+                            test[pos].append(u)
         rules.append({"test": test, "ccl": ccl})
     return rules
 
@@ -180,3 +182,10 @@ def parse_test(test):
     else:
         raise SyntaxError
     return {pos: (attr, tag)}
+
+
+if __name__ == "__main__":
+    rdr_string = Path("src/data/TIB_demo_1_threshold.RDR").read_text(encoding="utf-8")
+    cql_rules = rdr_2_replace_matcher(rdr_string)
+    with open("mydata_1.tsv", "w", encoding="utf-8") as tsvfile:
+        tsvfile.write(cql_rules)
