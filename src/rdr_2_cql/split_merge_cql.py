@@ -257,7 +257,7 @@ def split_merge_cql(rdr_string):
                     need_split_rule_generation = True
                     split_modification.append((rdr_conclusion_tuple[0], idx_for_split))
         if need_split_rule_generation:
-            new_cql_split_rule = generate_split_rule(
+            new_cql_split_rule, rdr_condition, rdr_conclusion = generate_split_rule(
                 rdr_condition, rdr_conclusion, split_modification
             )
             cql_rules_collection += f"{new_cql_split_rule}"
@@ -267,9 +267,15 @@ def split_merge_cql(rdr_string):
         merge_modification = []
         # Checking for merge rule generation
         is_first_tuple = True
+        # Store if the p
+        check_prev_index_has_text = False
         for rdr_conclusion_tuple in rdr_conclusion:
             if is_first_tuple:
                 is_first_tuple = False
+                index_to_check = rdr_conclusion_tuple[0]
+                check_prev_index_has_text = any(
+                    "text" == key for key in rdr_condition[index_to_check].keys()
+                )
                 continue
             rdr_conclusion_tag = rdr_conclusion_tuple[1]
             rdr_conclusion_tag_list = list(rdr_conclusion_tag)
@@ -278,9 +284,14 @@ def split_merge_cql(rdr_string):
             rdr_conclusion_tag_list = [
                 x for x in rdr_conclusion_tag_list if x != "" and x != '"'
             ]
-            if rdr_conclusion_tag_list[0] in ["I", "Y"]:
+            if rdr_conclusion_tag_list[0] in ["I", "Y"] and check_prev_index_has_text:
                 need_merge_rule_generation = True
                 merge_modification.append(rdr_conclusion_tuple[0])
+            index_to_check = rdr_conclusion_tuple[0]
+            check_prev_index_has_text = any(
+                "text" == key for key in rdr_condition[index_to_check].keys()
+            )
+
         if need_merge_rule_generation:
             new_cql_merge_rule = generate_merge_rule(
                 rdr_condition, rdr_conclusion, merge_modification
@@ -374,11 +385,21 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
             [match_cql, index_cql, operation_cql, replace_cql]
         )
         split_cql_rules_collection += curr_new_cql_rule + "\n"
-        # modifying the rdr_condition and rdr_conclusion
-        # First rdr_conclusion
+        # modifying the rdr_condition, rdr_conclusion and split_modification
+        # 1.modifying split_modification
+        found = any(
+            split_modification_tuple[0] == word_index + 1
+            for split_modification_tuple in split_modification
+        )
+        add_or_not = 1 if found else 0
+        split_modification[split_index + 1 :] = [  # noqa
+            (i + add_or_not, syl_index)
+            for i, syl_index in split_modification[split_index + 1 :]  # noqa
+        ]
+        # 2.modifying rdr_conclusion
         left_splited_tag = "".join(rdr_conclusion_tag_list[:syl_index])
         right_splited_tag = "".join(rdr_conclusion_tag_list[syl_index:])
-        # add_or_not
+        # add_or_not, if word_index+1 is present in rdr_conclusion, then add 1 to the index
         found = any(
             rdr_conclusion_tuple[0] == word_index + 1
             for rdr_conclusion_tuple in rdr_conclusion
@@ -395,20 +416,27 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
             (word_index + 1, right_splited_tag),
         ]
 
-        # Second rdr_condition
+        # 3. modifying rdr_condition
         new_dict = {}
         rdr_condition_keys = list(rdr_condition.keys())
         rdr_condition_keys.sort()
         add_or_not = 0
+        # Checking if word_index+1 is present in keys or not
+        # EG of rdr_condition and word_index = 0
+        # {0: {'text': '"ལ་ལ་"'}, 1: {'text': '"ལ་ལ་"'}} <- add_or_not = 1
+        # {0: {'text': '"ལ་ལ་"'}, 2: {'text': '"ལ་ལ་"'}} <- add_or_not = 0
+        # In second example, after splitting the word_index=0, doesnt effect the rest of the keys
         if word_index + 1 in rdr_condition_keys:
             add_or_not = 1
         for key in rdr_condition_keys:
             if key < word_index:
                 new_dict[key] = rdr_condition[key]
+            # if the key == word_index, we need to insert two dictionary (after split, two words comes)
             elif key == word_index:
                 new_dict[key] = {"text": left_splited_word}
                 new_dict[key + 1] = {"text": right_splited_word}
             else:
+                # if key > word_index, we need to add 0 or 1 to the key, depending on add_or_not
                 new_dict[key + add_or_not] = rdr_condition[key]
         rdr_condition = new_dict
 
