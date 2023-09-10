@@ -338,12 +338,12 @@ def generate_merge_rule(rdr_condition, rdr_conclusion, merge_modification):
             i for i, item in enumerate(rdr_conclusion) if item[0] == word_index
         )
         # Shifting the values to the left
-        rdr_conclusion[merge_index + 1 :] = [  # noqa
-            (i - 1, tag) for i, tag in rdr_conclusion[merge_index + 1 :]  # noqa
+        rdr_conclusion[merge_index + 2 :] = [  # noqa
+            (i - 1, tag) for i, tag in rdr_conclusion[merge_index + 2 :]  # noqa
         ]
         # Updating the merged tag in rdr conclusion
-        rdr_conclusion[merge_index - 1 : merge_index + 1] = [  # noqa
-            (merge_index - 1, new_merged_word)
+        rdr_conclusion[merge_index : merge_index + 2] = [  # noqa
+            (merge_index, new_merged_word)
         ]
 
         # 2. modifying rdr_condition
