@@ -267,15 +267,11 @@ def split_merge_cql(rdr_string):
         merge_modification = []
         # Checking for merge rule generation
         is_first_tuple = True
-        # Store if the p
-        check_prev_index_has_text = False
+
         for rdr_conclusion_tuple in rdr_conclusion:
             if is_first_tuple:
                 is_first_tuple = False
-                index_to_check = rdr_conclusion_tuple[0]
-                check_prev_index_has_text = any(
-                    "text" == key for key in rdr_condition[index_to_check].keys()
-                )
+
                 continue
             rdr_conclusion_tag = rdr_conclusion_tuple[1]
             rdr_conclusion_tag_list = list(rdr_conclusion_tag)
@@ -284,13 +280,22 @@ def split_merge_cql(rdr_string):
             rdr_conclusion_tag_list = [
                 x for x in rdr_conclusion_tag_list if x != "" and x != '"'
             ]
-            if rdr_conclusion_tag_list[0] in ["I", "Y"] and check_prev_index_has_text:
-                need_merge_rule_generation = True
-                merge_modification.append(rdr_conclusion_tuple[0])
-            index_to_check = rdr_conclusion_tuple[0]
-            check_prev_index_has_text = any(
-                "text" == key for key in rdr_condition[index_to_check].keys()
-            )
+
+            if rdr_conclusion_tag_list[0] in ["I", "Y"]:
+                # Check if the prev index has a word to merge with
+                index_to_check = rdr_conclusion_tuple[0] - 1
+                is_index_in_rdr_condition = any(
+                    index_to_check == key for key in list(rdr_condition.keys())
+                )
+                is_text_in_prev_index_condition = False
+                if is_index_in_rdr_condition:
+                    is_text_in_prev_index_condition = any(
+                        "text" in key
+                        for key in list(rdr_condition[index_to_check].keys())
+                    )
+                if is_text_in_prev_index_condition:
+                    need_merge_rule_generation = True
+                    merge_modification.append(rdr_conclusion_tuple[0])
 
         if need_merge_rule_generation:
             new_cql_merge_rule = generate_merge_rule(
@@ -303,10 +308,14 @@ def split_merge_cql(rdr_string):
 
 def generate_merge_rule(rdr_condition, rdr_conclusion, merge_modification):
     # Collecting all the cql rule string
+
     merge_cql_rules_collection = ""
-    for word_index in merge_modification:
+    for i, word_index in enumerate(merge_modification):
         match_cql = generate_match_cql_string(rdr_condition, rdr_conclusion)
-        index_cql = str(word_index)
+        # We are substracting i from word_index because with each iteration and merging,
+        # the index of the word get reduced by 1
+        # We can consider this as modifying the merge_modification list
+        index_cql = str(word_index - i)
         operation_cql = "+"
 
         left_merge_word = rdr_condition[word_index - 1]["text"]
@@ -323,6 +332,37 @@ def generate_merge_rule(rdr_condition, rdr_conclusion, merge_modification):
         )
 
         merge_cql_rules_collection += curr_new_cql_rule + "\n"
+        # modifying rdr_condition, rdr_conclusion
+        # 1.modifying rdr_condition
+        merge_index = next(
+            i for i, item in enumerate(rdr_conclusion) if item[0] == word_index
+        )
+        # Shifting the values to the left
+        rdr_conclusion[merge_index + 1 :] = [  # noqa
+            (i - 1, tag) for i, tag in rdr_conclusion[merge_index + 1 :]  # noqa
+        ]
+        # Updating the merged tag in rdr conclusion
+        rdr_conclusion[merge_index - 1 : merge_index + 1] = [  # noqa
+            (merge_index - 1, new_merged_word)
+        ]
+
+        # 2. modifying rdr_condition
+        new_dict = {}
+        rdr_condition_keys = list(rdr_condition.keys())
+        rdr_condition_keys.sort()
+
+        for key in rdr_condition_keys:
+            if key + 1 < merge_index:
+                new_dict[key] = rdr_condition[key]
+            # if the key == word_index, we need to insert two dictionary (after split, two words comes)
+            elif key + 1 == merge_index:
+                new_dict[key] = {"text": new_merged_word}
+            elif key == merge_index:
+                continue
+            else:
+                # if key > word_index, we need to add 0 or 1 to the key, depending on add_or_not
+                new_dict[key - 1] = rdr_condition[key]
+        rdr_condition = new_dict
 
     return merge_cql_rules_collection
 
