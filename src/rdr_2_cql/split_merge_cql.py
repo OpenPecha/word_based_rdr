@@ -217,7 +217,9 @@ def split_merge_cql(rdr_string):
                     need_affix_rule_generation = True
                     affix_modification.append((idx_for_affix, "OFF"))
         if need_affix_rule_generation:
-            new_cql_affix_rule = generate_affix_rule(
+            # new rule generation
+            # rdr condition and rdr conclusion will be updated
+            new_cql_affix_rule, rdr_condition, rdr_conclusion = generate_affix_rule(
                 rdr_condition, rdr_conclusion, affix_modification
             )
             cql_rules_collection += f"{new_cql_affix_rule}\n"
@@ -322,13 +324,29 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
     for word_index, syl_index in split_modification:
         match_cql = generate_match_cql_string(rdr_condition, rdr_conclusion)
 
+        # Getting value for syls and tag of word index
         rdr_condition_text = rdr_condition[word_index]["text"]
         rdr_condition_syls = split_by_TSEK(rdr_condition_text)
+
+        split_index = next(
+            i for i, item in enumerate(rdr_conclusion) if item[0] == word_index
+        )
+        rdr_conclusion_tag = rdr_conclusion[split_index][1]
+        rdr_conclusion_tag_list = list(rdr_conclusion_tag)
+
         # Cleaning empty elements after conversion from word to syls
         rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
-        for idx, text in enumerate(rdr_condition_syls):
-            rdr_condition_syls[idx] = rdr_condition_syls[idx].replace('"', "")
-            rdr_condition_syls[idx] = rdr_condition_syls[idx].replace('"', "")
+        rdr_conclusion_tag_list = [
+            x for x in rdr_conclusion_tag_list if x != "" and x != '"'
+        ]
+
+        # Removing double and single quotes from the syls
+        rdr_condition_syls = [
+            text.replace('"', "").replace('"', "") for text in rdr_condition_syls
+        ]
+        rdr_conclusion_tag_list = [
+            text.replace('"', "").replace('"', "") for text in rdr_conclusion_tag_list
+        ]
 
         char_index = len("".join(rdr_condition_syls[:syl_index]))
         index_cql = f"{word_index+1}-{char_index}"
@@ -336,7 +354,6 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
 
         left_splited_word = "".join(rdr_condition_syls)[:syl_index]
         left_splited_word_POS = get_POS(left_splited_word)
-
         right_splited_word = "".join(rdr_condition_syls)[syl_index:]
         right_splited_word_POS = get_POS(right_splited_word)
 
@@ -357,8 +374,45 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
             [match_cql, index_cql, operation_cql, replace_cql]
         )
         split_cql_rules_collection += curr_new_cql_rule + "\n"
+        # modifying the rdr_condition and rdr_conclusion
+        # First rdr_conclusion
+        left_splited_tag = "".join(rdr_conclusion_tag_list[:syl_index])
+        right_splited_tag = "".join(rdr_conclusion_tag_list[syl_index:])
+        # add_or_not
+        found = any(
+            rdr_conclusion_tuple[0] == word_index + 1
+            for rdr_conclusion_tuple in rdr_conclusion
+        )
+        add_or_not = 1 if found else 0
+        # Shifting the index value of tuple elements right to the split index
+        rdr_conclusion[split_index + 1 :] = [  # noqa
+            (i + add_or_not, tag)
+            for i, tag in rdr_conclusion[split_index + 1 :]  # noqa
+        ]
+        # Now inserting the new splitted index tag tuple
+        rdr_conclusion[split_index : split_index + 1] = [  # noqa
+            (word_index, left_splited_tag),
+            (word_index + 1, right_splited_tag),
+        ]
 
-    return split_cql_rules_collection
+        # Second rdr_condition
+        new_dict = {}
+        rdr_condition_keys = list(rdr_condition.keys())
+        rdr_condition_keys.sort()
+        add_or_not = 0
+        if word_index + 1 in rdr_condition_keys:
+            add_or_not = 1
+        for key in rdr_condition_keys:
+            if key < word_index:
+                new_dict[key] = rdr_condition[key]
+            elif key == word_index:
+                new_dict[key] = {"text": left_splited_word}
+                new_dict[key + 1] = {"text": right_splited_word}
+            else:
+                new_dict[key + add_or_not] = rdr_condition[key]
+        rdr_condition = new_dict
+
+    return split_cql_rules_collection, rdr_condition, rdr_conclusion
 
 
 def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
