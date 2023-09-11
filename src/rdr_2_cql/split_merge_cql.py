@@ -327,7 +327,7 @@ def generate_merge_rule(rdr_condition, rdr_conclusion, merge_modification):
         if new_merged_word_POS in [NO_POS, empty_POS]:
             replace_cql = "[]"
         else:
-            replace_cql = f"[pos='{new_merged_word_POS}']"
+            replace_cql = f'[pos="{new_merged_word_POS}"]'
         curr_new_cql_rule = "\t".join(
             [match_cql, index_cql, operation_cql, replace_cql]
         )
@@ -416,11 +416,13 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
         ]:
             replace_cql = "[][]"
         elif left_splited_word_POS in [NO_POS, empty_POS]:
-            replace_cql = f"[][pos={right_splited_word_POS}]"
+            replace_cql = f'[][pos="{right_splited_word_POS}"]'
         elif right_splited_word_POS in [NO_POS, empty_POS]:
-            replace_cql = f"[pos={left_splited_word_POS}][]"
+            replace_cql = f'[pos="{left_splited_word_POS}"][]'
         else:
-            replace_cql = f"[pos={left_splited_word_POS}][pos={right_splited_word_POS}]"
+            replace_cql = (
+                f'[pos="{left_splited_word_POS}"][pos="{right_splited_word_POS}"]'
+            )
 
         curr_new_cql_rule = "\t".join(
             [match_cql, index_cql, operation_cql, replace_cql]
