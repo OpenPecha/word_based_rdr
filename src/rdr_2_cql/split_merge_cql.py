@@ -542,9 +542,12 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
         for rdr_condition_attr in rdr_condition_attributes:
             attr_counter += 1
             if rdr_condition_attr == "text":
-                match_cql_inner_value += "{}={}".format(
+                match_cql_inner_value += '{}="{}"'.format(
                     rdr_condition_attr,
-                    rdr_condition[i][rdr_condition_attr].replace("-", ""),
+                    rdr_condition[i][rdr_condition_attr]
+                    .replace("-", "")
+                    .replace('"', "")
+                    .replace("'", ""),
                 )
             else:
                 match_cql_inner_value += "{}={}".format(
@@ -561,9 +564,7 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
 
 
 if __name__ == "__main__":
-    rdr_string = Path("src/data/TIB_train_maxmatched_tagged.txt.RDR").read_text(
-        encoding="utf-8"
-    )
+    rdr_string = Path("src/data/TIB_demo.RDR").read_text(encoding="utf-8")
     cql_rules = split_merge_cql(rdr_string)
-    with open("TIB_train.tsv", "w", encoding="utf-8") as tsvfile:
+    with open("src/data/TIB_demo.tsv", "w", encoding="utf-8") as tsvfile:
         tsvfile.write(cql_rules)

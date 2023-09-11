@@ -68,3 +68,5 @@ if __name__ == "__main__":
     file_string = Path("src/data/TIB_demo.txt").read_text(encoding="utf-8")
     cql_rules = pipeline(file_string)
     print(cql_rules)
+    with open("src/data/TIB_demo.tsv", "w", encoding="utf-8") as tsvfile:
+        tsvfile.write(cql_rules)
