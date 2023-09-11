@@ -534,8 +534,8 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
     match_cql = ""
 
     indices_for_rule_generation = [t[0] for t in rdr_conclusion]
-    for i in indices_for_rule_generation:
-        rdr_condition_attributes = list(rdr_condition[i].keys())
+    for i, index in enumerate(indices_for_rule_generation):
+        rdr_condition_attributes = list(rdr_condition[index].keys())
         no_of_attributes = len(rdr_condition_attributes)
         attr_counter = 0
         match_cql_inner_value = ""
@@ -543,7 +543,7 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
             attr_counter += 1
             if rdr_condition_attr == "text":
                 match_cql_inner_value += '"{}"'.format(
-                    rdr_condition[i][rdr_condition_attr]
+                    rdr_condition[index][rdr_condition_attr]
                     .replace("-", "")
                     .replace('"', "")
                     .replace("'", ""),
@@ -551,7 +551,7 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
             else:
                 match_cql_inner_value += '{}="{}"'.format(
                     rdr_condition_attr,
-                    rdr_condition[i][rdr_condition_attr]
+                    rdr_condition[index][rdr_condition_attr]
                     .replace('"', "")
                     .replace("'", ""),
                 )
@@ -560,6 +560,8 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
             if attr_counter < no_of_attributes:
                 match_cql_inner_value += "&"
         match_cql += f"[{match_cql_inner_value}]"
+        if i < len(indices_for_rule_generation) - 1:
+            match_cql += " "
 
     return match_cql
 
