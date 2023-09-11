@@ -542,17 +542,18 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
         for rdr_condition_attr in rdr_condition_attributes:
             attr_counter += 1
             if rdr_condition_attr == "text":
-                match_cql_inner_value += '{}="{}"'.format(
-                    rdr_condition_attr,
+                match_cql_inner_value += '"{}"'.format(
                     rdr_condition[i][rdr_condition_attr]
                     .replace("-", "")
                     .replace('"', "")
                     .replace("'", ""),
                 )
             else:
-                match_cql_inner_value += "{}={}".format(
+                match_cql_inner_value += '{}="{}"'.format(
                     rdr_condition_attr,
-                    rdr_condition[i][rdr_condition_attr].replace("-", ""),
+                    rdr_condition[i][rdr_condition_attr]
+                    .replace('"', "")
+                    .replace("'", ""),
                 )
 
             # IF there are more than one attribute, there should & sign btw then

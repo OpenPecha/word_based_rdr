@@ -15,14 +15,14 @@ def test_cql_rules():
     token_list = wt.tokenize(string, split_affixes=False)
     token_text_list = [token.text for token in token_list]
     print(token_text_list)
-    print("》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》")
     # add test adjust rule to adjustments rules
     wt.config.adjustments["rules"].append(Path("src/data/TIB_demo.tsv"))
     at = AdjustTokens(
         main=wt.config.dictionary["rules"], custom=wt.config.adjustments["rules"]
     )
     adjusted = at.adjust(token_list)
-    print(adjusted)
+    adjusted_token_text_list = [token.text for token in adjusted]
+    print(adjusted_token_text_list)
 
 
 if __name__ == "__main__":
