@@ -318,8 +318,9 @@ def generate_merge_rule(rdr_condition, rdr_conclusion, merge_modification):
         index_cql = str(word_index - i)
         operation_cql = "+"
 
-        left_merge_word = rdr_condition[word_index - 1]["text"]
-        right_merge_word = rdr_condition[word_index]["text"]
+        merge_index = word_index - 1 - i
+        left_merge_word = rdr_condition[merge_index]["text"]
+        right_merge_word = rdr_condition[merge_index + 1]["text"]
         new_merged_word = left_merge_word + right_merge_word
         new_merged_word = new_merged_word.replace('"', "").replace('"', "")
         new_merged_word_POS = get_POS(new_merged_word)
@@ -403,9 +404,9 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
         index_cql = f"{word_index+1}-{char_index}"
         operation_cql = "::"
 
-        left_splited_word = "".join(rdr_condition_syls)[:syl_index]
+        left_splited_word = "".join(rdr_condition_syls[:syl_index])
         left_splited_word_POS = get_POS(left_splited_word)
-        right_splited_word = "".join(rdr_condition_syls)[syl_index:]
+        right_splited_word = "".join(rdr_condition_syls[syl_index:])
         right_splited_word_POS = get_POS(right_splited_word)
 
         replace_cql = ""
@@ -560,7 +561,9 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
 
 
 if __name__ == "__main__":
-    rdr_string = Path("src/data/TIB_demo.RDR").read_text(encoding="utf-8")
+    rdr_string = Path("src/data/TIB_train_maxmatched_tagged.txt.RDR").read_text(
+        encoding="utf-8"
+    )
     cql_rules = split_merge_cql(rdr_string)
-    with open("TIB_demo.tsv", "w", encoding="utf-8") as tsvfile:
+    with open("TIB_train.tsv", "w", encoding="utf-8") as tsvfile:
         tsvfile.write(cql_rules)
