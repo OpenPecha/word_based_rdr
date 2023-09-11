@@ -16,6 +16,7 @@ from src.eval_rdr_result.eval_rdr_result import (  # noqa
 )
 from src.max_matcher.max_matcher import botok_max_matcher  # noqa
 from src.preprocessing.preprocessor import file_2_botok, gold_corpus_2_tagger  # noqa
+from src.rdr_2_cql.split_merge_cql import split_merge_cql  # noqa
 from src.tagger.tagger import tagger  # noqa
 from src.train_tag_rdr.train_tag_rdr import train_with_external_rdr  # noqa
 
@@ -59,15 +60,11 @@ def pipeline(data):
     external_tagger_output = re.sub(pattern, replacement, tagger_output)
     rdr_rules = train_with_external_rdr(tagger_output, external_tagger_output, (3, 2))
 
-    # Writing rdr rules to a file
-    file_path = Path("src/data/TIB_demo.RDR")
-    with open(file_path, "w", encoding="utf-8") as file:
-        file.write(rdr_rules)
-
-    # Printing rdr rules
-    print(rdr_rules)
+    cql_rules = split_merge_cql(rdr_rules)
+    return cql_rules
 
 
 if __name__ == "__main__":
     file_string = Path("src/data/TIB_demo.txt").read_text(encoding="utf-8")
-    pipeline(file_string)
+    cql_rules = pipeline(file_string)
+    print(cql_rules)
