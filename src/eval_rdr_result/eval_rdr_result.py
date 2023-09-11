@@ -1,6 +1,16 @@
 import os
+import re
+import sys
+from pathlib import Path
 
-from ..RDRPOSTagger.Utility.Eval import computeAccuracies, computeAccuracy
+# Add the root directory of your project to sys.path
+root_path = (
+    Path(__file__).resolve().parents[2]
+)  # Adjust the number of parents as needed
+sys.path.append(str(root_path))
+
+from src.RDRPOSTagger.Utility.Eval import computeAccuracies, computeAccuracy  # noqa
+from src.train_tag_rdr.train_tag_rdr import tag_with_ExtRDR  # noqa
 
 
 def eval_rdr_result(
@@ -45,3 +55,28 @@ def eval_rdr_known_unknown_result(
     return computeAccuracies(
         fulldict_file_path, goldCorpus_file_path, taggedCorpus_file_path
     )
+
+
+if __name__ == "__main__":
+    gold_corpus_data_tagged = Path(
+        "src/data/TIB_train_maxmatched_tagged.txt"
+    ).read_text(encoding="utf-8")
+    pattern = r"/[BIUXY]+"
+    replacement = r"/U"
+    botok_predicted_data = re.sub(pattern, replacement, gold_corpus_data_tagged)
+    with open(
+        "src/data/TIB_train_botok_tagged.txt.TAGGED", "w", encoding="utf-8"
+    ) as tsvfile:
+        tsvfile.write(botok_predicted_data)
+    botok_acc = eval_rdr_result(
+        "TIB_train_maxmatched_tagged.txt", "TIB_train_botok_tagged.txt.TAGGED"
+    )
+    print(f"botok accuracy: {botok_acc}")
+
+    file_to_tag = "TIB_train_maxmatched.txt"
+    result = tag_with_ExtRDR(file_to_tag, "TIB_train_maxmatched_tagged.txt.RDR")
+
+    rdr_acc = eval_rdr_result(
+        "TIB_train_maxmatched_tagged.txt", "TIB_train_maxmatched.txt.TAGGED"
+    )
+    print(f"botok + rdr accuracy: {rdr_acc}")

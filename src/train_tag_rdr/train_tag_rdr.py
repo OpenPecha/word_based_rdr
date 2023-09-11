@@ -66,7 +66,7 @@ def train_file_with_external_rdr(
 
 
 def tag_with_ExtRDR(
-    string_to_tag,
+    file_to_tag="TIB_test_maxmatched.txt",
     RDR_rules="TIB_train_maxmatched_tagged.txt.RDR",
 ):
     """
@@ -77,15 +77,17 @@ def tag_with_ExtRDR(
     current_dir = os.path.dirname(__file__)
     # file_relative_path = "../data/" + file_to_tag
     rdr_rules_relative_path = "../data/" + RDR_rules
+    file_to_tag_relative_path = "../data/" + file_to_tag
 
     # file_path = os.path.join(current_dir, file_relative_path)
     rdr_rules_path = os.path.join(current_dir, rdr_rules_relative_path)
+    file_to_tag_path = os.path.join(current_dir, file_to_tag_relative_path)
 
     function_arguments = [
         "ExtRDRPOSTagger.py",
         "tag",
         rdr_rules_path,
-        string_to_tag,
+        file_to_tag_path,
     ]
     return ExtRDR_RUN(function_arguments)
 

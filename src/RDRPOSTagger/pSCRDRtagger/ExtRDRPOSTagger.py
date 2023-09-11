@@ -114,7 +114,7 @@ def ExtRDR_RUN(system_arguments):
             r = ExtRDRPOSTagger()
             print("\n=> Read a POS tagging model from " + args[1])
             r.constructSCRDRtreeFromRDRfile(args[1])
-            print("\n=> Perform POS tagging on " + args[2])
+            # print("\n=> Perform POS tagging on " + args[2])
             r.tagInitializedCorpus(args[2])
         except Exception as e:
             print("\nERROR ==> ", e)
