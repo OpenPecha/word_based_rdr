@@ -112,7 +112,7 @@ def ExtRDR_RUN(system_arguments):
     elif args[0].lower() == "tag":
         try:
             r = ExtRDRPOSTagger()
-            print("\n=> Read a POS tagging model from " + args[1])
+            # print("\n=> Read a POS tagging model from " + args[1])
             r.constructSCRDRtreeFromRDRfile(args[1])
             # print("\n=> Perform POS tagging on " + args[2])
             r.tagInitializedCorpus(args[2])

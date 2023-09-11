@@ -58,11 +58,14 @@ def eval_rdr_known_unknown_result(
 
 
 if __name__ == "__main__":
+    # Gold corpus data tagged
     gold_corpus_data_tagged = Path(
         "src/data/TIB_train_maxmatched_tagged.txt"
     ).read_text(encoding="utf-8")
     pattern = r"/[BIUXY]+"
     replacement = r"/U"
+
+    # Botok predicted data tagged
     botok_predicted_data = re.sub(pattern, replacement, gold_corpus_data_tagged)
     with open(
         "src/data/TIB_train_botok_tagged.txt.TAGGED", "w", encoding="utf-8"
@@ -73,9 +76,11 @@ if __name__ == "__main__":
     )
     print(f"botok accuracy: {botok_acc}")
 
+    # botok predicted data
     file_to_tag = "TIB_train_maxmatched.txt"
-    result = tag_with_ExtRDR(file_to_tag, "TIB_train_maxmatched_tagged.txt.RDR")
-
+    # tagging with external rdr
+    tag_with_ExtRDR(file_to_tag, "TIB_train_maxmatched_tagged.txt.RDR")
+    # evaluating with result
     rdr_acc = eval_rdr_result(
         "TIB_train_maxmatched_tagged.txt", "TIB_train_maxmatched.txt.TAGGED"
     )
