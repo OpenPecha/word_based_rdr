@@ -22,20 +22,21 @@ from src.train_tag_rdr.train_tag_rdr import train_with_external_rdr  # noqa
 
 
 def pipeline(data):
+    # Pipeline description:>
     # The input data should be the gold corpus such that word segmented with spaces
-    gold_corpus = data
-    # Some data processing on gold corpus to have similar compare with botok output
-    gold_corpus_2_tagger_input = gold_corpus_2_tagger(data)  # noqa
+    # gold_corpus = data
+    # # Some data processing on gold corpus to have similar compare with botok output
+    # gold_corpus_2_tagger_input = gold_corpus_2_tagger(data)  # noqa
 
-    # The gold corpus data is put together with no space allowed before sending to botok
-    botok_input = file_2_botok(data)
-    # Sending to botok and getting the maxmatched output
-    botok_output = botok_max_matcher(botok_input)
+    # # The gold corpus data is put together with no space allowed before sending to botok
+    # botok_input = file_2_botok(data)
+    # # Sending to botok and getting the maxmatched output
+    # botok_output = botok_max_matcher(botok_input)
 
-    # This checks if the processing steps has done correctly and has equal string before sending to the tagger
-    is_equal_string_length_result = is_equal_string_length(  # noqa
-        gold_corpus, botok_output
-    )
+    # # This checks if the processing steps has done correctly and has equal string before sending to the tagger
+    # is_equal_string_length_result = is_equal_string_length(  # noqa
+    #     gold_corpus, botok_output
+    # )
 
     # Sending the data to tagger,
     # In this step, all the above steps is done in tagger function, thats why previous variables has not been
