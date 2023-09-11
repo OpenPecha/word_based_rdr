@@ -571,5 +571,5 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
 if __name__ == "__main__":
     rdr_string = Path("src/data/TIB_demo.RDR").read_text(encoding="utf-8")
     cql_rules = split_merge_cql(rdr_string)
-    with open("src/data/TIB_demo.tsv", "w", encoding="utf-8") as tsvfile:
+    with open("tests/data/TIB_lala_test.tsv", "w", encoding="utf-8") as tsvfile:
         tsvfile.write(cql_rules)

@@ -16,7 +16,7 @@ def test_cql_rules():
     token_text_list = [token.text for token in token_list]
     print(token_text_list)
     # add test adjust rule to adjustments rules
-    wt.config.adjustments["rules"].append(Path("src/data/TIB_demo.tsv"))
+    wt.config.adjustments["rules"].append(Path("tests/data/TIB_lala_test.tsv"))
     at = AdjustTokens(
         main=wt.config.dictionary["rules"], custom=wt.config.adjustments["rules"]
     )
