@@ -14,7 +14,7 @@ def test_cql_rules():
 
     token_list = wt.tokenize(string, split_affixes=False)
     token_text_list = [token.text for token in token_list]
-    print(token_text_list)
+    assert token_text_list == ["ལ་ལ་", "ལ་ལ་", "ལ་བ་", "ཡོད་"]
     # add test adjust rule to adjustments rules
     wt.config.adjustments["rules"].append(Path("tests/data/TIB_lala_test.tsv"))
     at = AdjustTokens(
@@ -22,7 +22,7 @@ def test_cql_rules():
     )
     adjusted = at.adjust(token_list)
     adjusted_token_text_list = [token.text for token in adjusted]
-    print(adjusted_token_text_list)
+    assert adjusted_token_text_list == ["ལ་", "ལ་ལ་", "ལ་", "ལ་བ་", "ཡོད་"]
 
 
 if __name__ == "__main__":
