@@ -10,12 +10,12 @@ sys.path.append(str(root_path))
 
 # Now import the modules from your project
 from src.comparator.comparator import is_equal_string_length  # noqa
+from src.data_processor import file_2_botok, gold_corpus_2_tagger  # noqa
 from src.eval_rdr_result.eval_rdr_result import (  # noqa
     eval_rdr_known_unknown_result,
     eval_rdr_result,
 )
 from src.max_matcher.max_matcher import botok_max_matcher  # noqa
-from src.preprocessing.preprocessor import file_2_botok, gold_corpus_2_tagger  # noqa
 from src.rdr_2_cql.split_merge_cql import split_merge_cql  # noqa
 from src.tagger.tagger import tagger  # noqa
 from src.train_tag_rdr.train_tag_rdr import train_with_external_rdr  # noqa

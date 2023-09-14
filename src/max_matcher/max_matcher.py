@@ -10,7 +10,7 @@ root_path = (
 )  # Adjust the number of parents as needed
 sys.path.append(str(root_path))
 
-from src.preprocessing.preprocessor import adjust_spaces, file_2_botok  # noqa
+from src.data_processor import adjust_spaces, file_2_botok  # noqa
 
 
 def botok_max_matcher(file_string):

@@ -1,5 +1,5 @@
+from ..data_processor import gold_corpus_2_tagger
 from ..max_matcher.max_matcher import botok_max_matcher
-from ..preprocessing.preprocessor import gold_corpus_2_tagger
 
 
 def is_equal_string_length(gold_corpus_string, botok_output_string):

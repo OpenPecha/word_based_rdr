@@ -1,7 +1,7 @@
 import os
 import re
 
-from src.preprocessing.preprocessor import adjust_spaces
+from src.data_processor import adjust_spaces
 from src.tagger.tagger import split_by_TSEK
 
 

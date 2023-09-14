@@ -1,4 +1,4 @@
-from src.preprocessing.preprocessor import file_2_botok, gold_corpus_2_tagger
+from src.data_processor import file_2_botok, gold_corpus_2_tagger
 
 
 # Test function for file string to have no gap, so that there wont be bias before sending it to botok max match
