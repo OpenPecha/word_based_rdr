@@ -1,7 +1,7 @@
 import os
 import re
 
-from src.data_processor import adjust_spaces
+from src.data_processor import remove_extra_spaces
 from src.tagger.tagger import split_by_TSEK
 
 
@@ -93,5 +93,5 @@ def split_merge_to_proper_string(tagged_file="TIB_test_maxmatched.txt.TAGGED"):
             joined_string += word_tag_list[i][0]
             if word_tag_list[i + 1][1] in ["X", "B", "U"]:
                 joined_string += " "
-    joined_string = adjust_spaces(joined_string)
+    joined_string = remove_extra_spaces(joined_string)
     return joined_string

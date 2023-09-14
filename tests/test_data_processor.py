@@ -1,10 +1,13 @@
-from src.data_processor import file_2_botok, gold_corpus_2_tagger
+from src.data_processor import (
+    transform_gold_corpus_for_botok_word_tokenizer_pipeline,
+    transform_gold_corpus_for_tagging,
+)
 
 
 # Test function for file string to have no gap, so that there wont be bias before sending it to botok max match
-def test_file_2_botok():
+def test_transform_gold_corpus_for_botok_word_tokenizer_pipeline():
     assert (
-        file_2_botok(
+        transform_gold_corpus_for_botok_word_tokenizer_pipeline(
             "༄༅། །རྒྱལ་པོ་ ལ་ གཏམ་ བྱ་བ་ རིན་པོ་ཆེ འི་ ཕྲེང་་་བ། ལ་ ལ་ལ་ ལ་ ལ་བ་ ཡོད། དཔལ། དགེའོ་ བཀྲ་ཤིས་ ཤོག།"
         )
         == "༄༅། །རྒྱལ་པོ་ལ་གཏམ་བྱ་བ་རིན་པོ་ཆེའི་ཕྲེང་་་བ། ལ་ལ་ལ་ལ་ལ་བ་ཡོད། དཔལ། དགེའོ་བཀྲ་ཤིས་ཤོག།"
@@ -12,9 +15,9 @@ def test_file_2_botok():
 
 
 # Test function for gold corpus going into tagger
-def test_gold_corpus_2_tagger():
+def test_transform_gold_corpus_for_tagging():
     assert (
-        gold_corpus_2_tagger(
+        transform_gold_corpus_for_tagging(
             "༄༅། །རྒྱལ་པོ་ ལ་ གཏམ་ བྱ་བ་ རིན་པོ་ཆེ འི་ ཕྲེང་་་བ། ལ་ ལ་ལ་ ལ་ ལ་བ་ ཡོད། དཔལ། དགེའོ་ བཀྲ་ཤིས་ ཤོག།"
         )
         == "༄༅།_། རྒྱལ་པོ་ ལ་ གཏམ་ བྱ་བ་ རིན་པོ་ཆེ-འི་ ཕྲེང་་་བ །_ ལ་ ལ་ལ་ ལ་ ལ་བ་ ཡོད །_ དཔལ །_ དགེའོ་ བཀྲ་ཤིས་ ཤོག ། "

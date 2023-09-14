@@ -1,4 +1,3 @@
-import re
 import sys
 from pathlib import Path
 
@@ -10,7 +9,11 @@ root_path = (
 )  # Adjust the number of parents as needed
 sys.path.append(str(root_path))
 
-from src.data_processor import adjust_spaces, file_2_botok  # noqa
+from src.data_processor import (  # noqa
+    remove_extra_spaces,
+    transform_gold_corpus_for_botok_word_tokenizer_pipeline,
+)
+from src.Utility.regex_replacer import replace_with_regex  # noqa
 
 
 def botok_max_matcher(file_string):
@@ -18,17 +21,18 @@ def botok_max_matcher(file_string):
     input: string of a file before going under max match(botok)
     output/return: cleaned/preprocess string and word segmented
     """
-    preprocessed_string = file_2_botok(file_string)
+    preprocessed_string = transform_gold_corpus_for_botok_word_tokenizer_pipeline(
+        file_string
+    )
     t = Text(preprocessed_string)
     max_match_output = t.tokenize_words_raw_text
-    max_match_output = adjust_spaces(max_match_output)
+    max_match_output = remove_extra_spaces(max_match_output)
     """
     Input: རིན་པོ་ཆེའི་, max match output: རིན་པོ་ཆེ འི་, after replacement རིན་པོ་ཆེ-འི་
     """
     pattern = r"((?![་།_༠༡༢༣༤༥༦༧༨༩])[\u0F00-\u0FFF]) (ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང)"
-
     replacement = r"\1-\2"
-    max_match_output = re.sub(pattern, replacement, max_match_output)
+    max_match_output = replace_with_regex({pattern: replacement}, max_match_output)
     return max_match_output
 
 

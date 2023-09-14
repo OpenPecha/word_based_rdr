@@ -1,4 +1,4 @@
-from ..data_processor import gold_corpus_2_tagger
+from ..data_processor import transform_gold_corpus_for_tagging
 from ..max_matcher.max_matcher import botok_max_matcher
 
 
@@ -18,7 +18,7 @@ def is_equal_string_length(gold_corpus_string, botok_output_string):
 
 def comparator(file_string):
     # Comparing if the string out(gold corpus and max match output) going for tagging has the same number of syllables
-    gold_corpus_output = gold_corpus_2_tagger(file_string)
+    gold_corpus_output = transform_gold_corpus_for_tagging(file_string)
     botok_output = botok_max_matcher(file_string)
 
     equal_number_of_syls = is_equal_string_length(gold_corpus_output, botok_output)

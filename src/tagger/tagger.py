@@ -11,7 +11,7 @@ root_path = (
 sys.path.append(str(root_path))
 
 from src.comparator.comparator import comparator  # noqa
-from src.data_processor import adjust_spaces  # noqa
+from src.data_processor import remove_extra_spaces  # noqa
 
 
 def split_by_TSEK(string_to_split):
@@ -95,8 +95,8 @@ def tagger(file_string):
     if equal_number_of_syls is False:
         return "ValueError: Output of gold corpus and botok output does not match. Something wrong in language structure."  # noqa
 
-    gold_corpus_output = adjust_spaces(gold_corpus_output)
-    botok_output = adjust_spaces(botok_output)
+    gold_corpus_output = remove_extra_spaces(gold_corpus_output)
+    botok_output = remove_extra_spaces(botok_output)
 
     gold_corpus_words = gold_corpus_output.split()
     # Spliting on space and affixes, if max match has'nt done it

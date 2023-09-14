@@ -10,7 +10,10 @@ sys.path.append(str(root_path))
 
 # Now import the modules from your project
 from src.comparator.comparator import is_equal_string_length  # noqa
-from src.data_processor import file_2_botok, gold_corpus_2_tagger  # noqa
+from src.data_processor import (  # noqa
+    transform_gold_corpus_for_botok_word_tokenizer_pipeline,
+    transform_gold_corpus_for_tagging,
+)
 from src.eval_rdr_result.eval_rdr_result import (  # noqa
     eval_rdr_known_unknown_result,
     eval_rdr_result,
@@ -26,10 +29,10 @@ def pipeline(data):
     # The input data should be the gold corpus such that word segmented with spaces
     # gold_corpus = data
     # # Some data processing on gold corpus to have similar compare with botok output
-    # gold_corpus_2_tagger_input = gold_corpus_2_tagger(data)  # noqa
+    # transform_gold_corpus_for_tagging_input = transform_gold_corpus_for_tagging(data)  # noqa
 
     # # The gold corpus data is put together with no space allowed before sending to botok
-    # botok_input = file_2_botok(data)
+    # botok_input = transform_gold_corpus_for_botok_word_tokenizer_pipeline(data)
     # # Sending to botok and getting the maxmatched output
     # botok_output = botok_max_matcher(botok_input)
 
