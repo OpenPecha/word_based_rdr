@@ -1,3 +1,4 @@
+# import re
 import sys
 from itertools import combinations
 from pathlib import Path
@@ -144,9 +145,13 @@ def filter_only_neccessary_rdr_rules(rdr_string):
     # Recieves indices where the rdr condition matches (list of tuples, tuples containing the matched elements together)
     matched_indices = find_combinations_of_matches(sorted_rdr_condition_storage)
 
-    # unique_matched_indices = list(set(item for tpl in matched_indices for item in tpl))
-    # #Appending rest of the rules as well one by one
-    # matched_indices.extend((i,) for i in range(len(sorted_rdr_condition_storage)) if i not in unique_matched_indices)
+    unique_matched_indices = list({item for tpl in matched_indices for item in tpl})
+    # Appending rest of the rules as well one by one
+    matched_indices.extend(
+        (i,)
+        for i in range(len(sorted_rdr_condition_storage))
+        if i not in unique_matched_indices
+    )
 
     # Filtering rules that were only on the matched_indices
     final_filtered_rdr_rules = []
@@ -179,7 +184,7 @@ def split_merge_cql(rdr_string):
         # If the particular rules doesn't has proper format
         is_unnecessary_rule = False
 
-        need_affix_rule_generation = False
+        # need_affix_rule_generation = False
         # if there is a need for affix modification, this will store index, and operation in tuple
         affix_modification = []
         # Checking for affix rule generation
@@ -210,19 +215,22 @@ def split_merge_cql(rdr_string):
                     "X",
                     "Y",
                 ]:
-                    need_affix_rule_generation = True
-                    affix_modification.append((idx_for_affix, "OFF"))
+                    # need_affix_rule_generation = True
+                    affix_modification.append((idx, idx_for_affix, "OFF"))
                     continue
-                if "-" not in curr_syl and rdr_conclusion_tag_list in ["X", "Y"]:
-                    need_affix_rule_generation = True
-                    affix_modification.append((idx_for_affix, "OFF"))
-        if need_affix_rule_generation:
-            # new rule generation
-            # rdr condition and rdr conclusion will be updated
-            new_cql_affix_rule, rdr_condition, rdr_conclusion = generate_affix_rule(
-                rdr_condition, rdr_conclusion, affix_modification
-            )
-            cql_rules_collection += f"{new_cql_affix_rule}\n"
+                if "-" not in curr_syl and rdr_conclusion_tag_list[idx_for_affix] in [
+                    "X",
+                    "Y",
+                ]:
+                    # need_affix_rule_generation = True
+                    affix_modification.append((idx, idx_for_affix, "ON"))
+        # if need_affix_rule_generation:
+        #     # new rule generation
+        #     # rdr condition and rdr conclusion will be updated
+        #     new_cql_affix_rule, rdr_condition, rdr_conclusion = generate_affix_rule(
+        #         rdr_condition, rdr_conclusion, affix_modification
+        #     )
+        #     cql_rules_collection += f"{new_cql_affix_rule}\n"
 
         # if the rule is not proper, jumps to next rule
         if is_unnecessary_rule:
@@ -486,49 +494,90 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
     return split_cql_rules_collection, rdr_condition, rdr_conclusion
 
 
-def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
-    """
-    each cql rule should be as follows: <matchcql>\t<index>\t<operation>\t<replacecql>
-    cql example :
-    ["ལ་ལ་"] ["ལ་ལ་"]	1-2	::	[] []
-    ["ལ་"] ["ལ་"] ["ལ་ལ་"]	3-2	::	[] []
-    ["ལ་"] ["ལ་"] ["ལ་"] ["ལ་"]	2	+	[]
-    [""]    1   +   []
-    """
+# def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
+#     """
+#     each cql rule should be as follows: <matchcql>\t<index>\t<operation>\t<replacecql>
+#     cql example :
+#     ["ལ་ལ་"] ["ལ་ལ་"]	1-2	::	[] []
+#     ["ལ་"] ["ལ་"] ["ལ་ལ་"]	3-2	::	[] []
+#     ["ལ་"] ["ལ་"] ["ལ་"] ["ལ་"]	2	+	[]
+#     [""]    1   +   []
+#     """
 
-    # Collecting all the cql rule string
-    affix_cql_rules_collection = ""
-    for idx, afx_modf in affix_modification:
-        word_text = rdr_condition[idx]["text"]
-        word_text = word_text.replace("-", "")[
-            1:-1
-        ]  # removing '-' before passing the string to find POS
-        word_pos = get_POS(word_text)
-        word_senses = get_word_senses(word_text)
+#     # Collecting all the cql rule string
+#     affix_cql_rules_collection = ""
+#     for word_index, syl_index, afx_modf in affix_modification:
+#         # word_text = rdr_condition[word_index]["text"]
+#         if afx_modf == "ON":
+#             match_cql = generate_match_cql_string(rdr_condition, rdr_conclusion)
 
-        # If there is no word sense present or POS is empty, then no rule is generated
-        if not word_senses or word_pos in [NO_POS, empty_POS]:
-            continue
+#             # Getting value for syls and tag of word index
+#             rdr_condition_text = rdr_condition[word_index]["text"]
+#             rdr_condition_syls = split_by_TSEK(rdr_condition_text)
 
-        # Check from word_senses, which 'pos' matches and modify that attribute 'affixed' as True or False
+#             split_index = next(
+#                 i for i, item in enumerate(rdr_conclusion) if item[0] == word_index
+#             )
+#             rdr_conclusion_tag = rdr_conclusion[split_index][1]
+#             rdr_conclusion_tag_list = list(rdr_conclusion_tag)
 
-        for word_sense_index, curr_word_sense in enumerate(word_senses):
-            if word_pos == curr_word_sense["pos"]:
-                match_cql = generate_match_cql_string(rdr_condition, rdr_conclusion)
-                index_cql = str(idx + 1)
-                operation_cql = "+"
+#             # Cleaning empty elements after conversion from word to syls
+#             rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
+#             rdr_conclusion_tag_list = [
+#                 x for x in rdr_conclusion_tag_list if x != "" and x != '"'
+#             ]
 
-                # afx_modf == "OFF": mean there should'nt be affix , where there is
-                # afx_modf == "ON": mean there should be affix, when there is'nt
-                replace_cql = f'[senses[{word_sense_index}]["affixed"]={False}]'
-                if afx_modf == "ON":
-                    replace_cql = f'[senses[{word_sense_index}]["affixed"]={True}]'
-                curr_new_cql_rule = "\t".join(
-                    [match_cql, index_cql, operation_cql, replace_cql]
-                )
-                affix_cql_rules_collection += curr_new_cql_rule + "\n"
+#             # Removing double and single quotes from the syls
+#             rdr_condition_syls = [
+#                 text.replace('"', "").replace('"', "") for text in rdr_condition_syls
+#             ]
+#             rdr_conclusion_tag_list = [
+#                 text.replace('"', "").replace('"', "")
+#                 for text in rdr_conclusion_tag_list
+#             ]
 
-    return affix_cql_rules_collection
+#             char_index = len("".join(rdr_condition_syls[:syl_index]))
+#             # Find affix index (ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང) in the word
+#             pattern = r"(ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང)"
+#             affix_partner_length = re.search(pattern, rdr_condition_syls[syl_index])[0]
+#             char_index += affix_partner_length
+#             index_cql = f"{word_index+1}-{char_index}"
+#             operation_cql = "::"
+
+#             left_splited_word = (
+#                 "".join(rdr_condition_syls[:syl_index])
+#                 + rdr_condition_syls[syl_index][:affix_partner_length]
+#             )
+#             left_splited_word_POS = get_POS(left_splited_word)
+#             right_splited_word = rdr_condition_syls[syl_index][
+#                 affix_partner_length:
+#             ] + "".join(rdr_condition_syls[syl_index:])
+#             right_splited_word_POS = get_POS(right_splited_word)
+
+#             replace_cql = ""
+#             if left_splited_word_POS in [
+#                 NO_POS,
+#                 empty_POS,
+#             ] and right_splited_word_POS in [
+#                 NO_POS,
+#                 empty_POS,
+#             ]:
+#                 replace_cql = "[][]"
+#             elif left_splited_word_POS in [NO_POS, empty_POS]:
+#                 replace_cql = f'[][pos="{right_splited_word_POS}"]'
+#             elif right_splited_word_POS in [NO_POS, empty_POS]:
+#                 replace_cql = f'[pos="{left_splited_word_POS}"][]'
+#             else:
+#                 replace_cql = (
+#                     f'[pos="{left_splited_word_POS}"][pos="{right_splited_word_POS}"]'
+#                 )
+
+#             curr_new_cql_rule = "\t".join(
+#                 [match_cql, index_cql, operation_cql, replace_cql]
+#             )
+#             affix_cql_rules_collection += curr_new_cql_rule + "\n"
+
+#     return affix_cql_rules_collection
 
 
 def generate_match_cql_string(rdr_condition, rdr_conclusion):
