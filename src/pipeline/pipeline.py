@@ -1,27 +1,19 @@
 import re
-import sys
 from pathlib import Path
 
-# Add the root directory of your project to sys.path
-root_path = (
-    Path(__file__).resolve().parents[2]
-)  # Adjust the number of parents as needed
-sys.path.append(str(root_path))
-
-# Now import the modules from your project
-from src.comparator.comparator import is_equal_string_length  # noqa
-from src.data_processor import (  # noqa
+from ..botok_word_tokenizer_pipeline import botok_word_tokenizer_pipeline  # noqa
+from ..comparator.comparator import is_equal_string_length  # noqa
+from ..data_processor import (  # noqa
     transform_gold_corpus_for_botok_word_tokenizer_pipeline,
     transform_gold_corpus_for_tagging,
 )
-from src.eval_rdr_result.eval_rdr_result import (  # noqa
+from ..eval_rdr_result.eval_rdr_result import (  # noqa
     eval_rdr_known_unknown_result,
     eval_rdr_result,
 )
-from src.max_matcher.max_matcher import botok_max_matcher  # noqa
-from src.rdr_2_cql.split_merge_cql import split_merge_cql  # noqa
-from src.tagger.tagger import tagger  # noqa
-from src.train_tag_rdr.train_tag_rdr import train_with_external_rdr  # noqa
+from ..rdr_2_cql.split_merge_cql import split_merge_cql  # noqa
+from ..tagger.tagger import tagger  # noqa
+from ..train_tag_rdr.train_tag_rdr import train_with_external_rdr  # noqa
 
 
 def pipeline(data):
@@ -34,7 +26,7 @@ def pipeline(data):
     # # The gold corpus data is put together with no space allowed before sending to botok
     # botok_input = transform_gold_corpus_for_botok_word_tokenizer_pipeline(data)
     # # Sending to botok and getting the maxmatched output
-    # botok_output = botok_max_matcher(botok_input)
+    # botok_output = botok_word_tokenizer_pipeline(botok_input)
 
     # # This checks if the processing steps has done correctly and has equal string before sending to the tagger
     # is_equal_string_length_result = is_equal_string_length(  # noqa

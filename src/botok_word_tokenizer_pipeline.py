@@ -1,22 +1,13 @@
-import sys
-from pathlib import Path
-
 from botok import Text
 
-# Add the root directory of your project to sys.path
-root_path = (
-    Path(__file__).resolve().parents[2]
-)  # Adjust the number of parents as needed
-sys.path.append(str(root_path))
-
-from src.data_processor import (  # noqa
+from .data_processor import (  # noqa
     remove_extra_spaces,
     transform_gold_corpus_for_botok_word_tokenizer_pipeline,
 )
-from src.Utility.regex_replacer import replace_with_regex  # noqa
+from .Utility.regex_replacer import replace_with_regex  # noqa
 
 
-def botok_max_matcher(file_string):
+def botok_word_tokenizer_pipeline(file_string):
     """
     input: string of a file before going under max match(botok)
     output/return: cleaned/preprocess string and word segmented
@@ -38,5 +29,5 @@ def botok_max_matcher(file_string):
 
 if __name__ == "__main__":
     word = "༄༅། །རྒྱལ་པོ་ ལ་ གཏམ་ བྱ་བ་ རིན་པོ་ཆེ འི་ ཕྲེང་་་བ། ལ་ ལ་ལ་ ལ་ ལ་བ་ ཡོད། དཔལ། དགེའོ་ བཀྲ་ཤིས་ ཤོག།"
-    botok_output = botok_max_matcher(word)
+    botok_output = botok_word_tokenizer_pipeline(word)
     print(botok_output)
