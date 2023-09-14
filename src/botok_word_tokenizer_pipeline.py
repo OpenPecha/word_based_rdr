@@ -1,10 +1,10 @@
 from botok import Text
 
-from .data_processor import (  # noqa
+from .data_processor import (
     remove_extra_spaces,
     transform_gold_corpus_for_botok_word_tokenizer_pipeline,
 )
-from .Utility.regex_replacer import replace_with_regex  # noqa
+from .Utility.regex_replacer import replace_with_regex
 
 
 def botok_word_tokenizer_pipeline(file_string):
