@@ -2,7 +2,7 @@ import os
 import re
 
 from src.data_processor import remove_extra_spaces
-from src.Utility.get_syllables import split_by_TSEK
+from src.Utility.get_syllables import get_syllables
 
 
 def split_into_word_tag_list(tagged_file="TIB_test_maxmatched.txt.TAGGED"):
@@ -27,7 +27,7 @@ def split_into_word_tag_list(tagged_file="TIB_test_maxmatched.txt.TAGGED"):
             word_tag_splited[0] = re.sub(pattern, replacement, word_tag_splited[0])
             word_tag_list.append(word_tag_splited)
         else:
-            syls_list = split_by_TSEK(word_tag_splited[0])
+            syls_list = get_syllables(word_tag_splited[0])
             # ['ལོག་པ-འོ', 'C'], in cases like here where there are two syllables in a word but only one tag
             if len(syls_list) != len(word_tag_splited[1]):
                 anomaly_word_tag_list = adjust_anomaly_tagged(

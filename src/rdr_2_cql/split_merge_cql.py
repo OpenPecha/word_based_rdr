@@ -12,7 +12,7 @@ sys.path.append(str(root_path))
 
 from src.rdr_2_cql.rdr_2_replace_matcher import find_levels, find_rules  # noqa
 from src.Utility.get_POS import get_POS, get_word_senses  # noqa
-from src.Utility.get_syllables import split_by_TSEK  # noqa
+from src.Utility.get_syllables import get_syllables  # noqa
 
 NO_POS = "NO_POS"
 empty_POS = '"'
@@ -194,7 +194,7 @@ def split_merge_cql(rdr_string):
             # rdr_condition_syls = ['"ངེས་', 'པར་'],
             # rdr_conclusion_tag_list = ['B', 'Y']
             rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["text"]
-            rdr_condition_syls = split_by_TSEK(rdr_condition_text)
+            rdr_condition_syls = get_syllables(rdr_condition_text)
 
             rdr_conclusion_tag_list = list(rdr_conclusion_tag)
 
@@ -246,7 +246,7 @@ def split_merge_cql(rdr_string):
             # rdr_condition_syls = ['ལ་', 'ལ་'],
             # rdr_conclusion_tag_list = ['B', 'B']
             rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["text"]
-            rdr_condition_syls = split_by_TSEK(rdr_condition_text)
+            rdr_condition_syls = get_syllables(rdr_condition_text)
 
             rdr_conclusion_tag_list = list(rdr_conclusion_tag)
 
@@ -385,7 +385,7 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
 
         # Getting value for syls and tag of word index
         rdr_condition_text = rdr_condition[word_index]["text"]
-        rdr_condition_syls = split_by_TSEK(rdr_condition_text)
+        rdr_condition_syls = get_syllables(rdr_condition_text)
 
         split_index = next(
             i for i, item in enumerate(rdr_conclusion) if item[0] == word_index
@@ -512,7 +512,7 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
 
 #             # Getting value for syls and tag of word index
 #             rdr_condition_text = rdr_condition[word_index]["text"]
-#             rdr_condition_syls = split_by_TSEK(rdr_condition_text)
+#             rdr_condition_syls = get_syllables(rdr_condition_text)
 
 #             split_index = next(
 #                 i for i, item in enumerate(rdr_conclusion) if item[0] == word_index

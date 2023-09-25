@@ -9,7 +9,7 @@ root_path = (
 sys.path.append(str(root_path))
 
 from src.RDRPOSTagger.Utility.Utils import getWordTag  # noqa
-from src.Utility.get_syllables import split_by_TSEK  # noqa
+from src.Utility.get_syllables import get_syllables  # noqa
 
 cql_rules_generated = []
 
@@ -221,7 +221,7 @@ def find_words_for_split_merge(tag_split_list, word_list, tag_list):
         syllable_word_list = []
         syllable_tag_list = []
         for i in range(start_index, stop_index + 1):
-            syllable_word_list.append(split_by_TSEK(word_list[i]))
+            syllable_word_list.append(get_syllables(word_list[i]))
             syllable_tag_list.append(list(tag_list[i]))
         """
         syllable_word_list = [[ལ་,ལ་],[ལ་,ལ་]]

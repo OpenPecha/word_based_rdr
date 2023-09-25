@@ -1,40 +1,40 @@
 import re
+from typing import List
 
 from botok import TSEK
 
 
-def split_by_TSEK(string_to_split):
+def filter_multiple_tsek(text: str) -> str:
     pattern = r"[་]+"  # Removing multiple TSEKs
     replacement = "་"
-    string_to_split = re.sub(pattern, replacement, string_to_split)
-    split_pattern = TSEK
-    splited_list = re.split(split_pattern, string_to_split)
-    if len(splited_list) == 1:
-        return splited_list
-    for index, element in enumerate(splited_list):
+    text = re.sub(pattern, replacement, text)
+    return text
+
+
+def get_syllables(text: str) -> List[str]:
+    text_to_split = filter_multiple_tsek(text)
+    text_syllables = re.split(TSEK, text_to_split)
+    if len(text_syllables) == 1:
+        return text_syllables
+    for index, element in enumerate(text_syllables):
         if element == "":
-            splited_list[index - 1] += TSEK
+            text_syllables[index - 1] += TSEK
             break
-        if index == len(splited_list) - 1:
+        if index == len(text_syllables) - 1:
             break
-        if splited_list[index + 1] != "":
-            splited_list[index] += TSEK
+        if text_syllables[index + 1] != "":
+            text_syllables[index] += TSEK
 
-    splited_list = list(filter(None, splited_list))
-    return splited_list
+    text_syllables = list(filter(None, text_syllables))
+    return text_syllables
 
 
-def split_by_TSEK_without_TsekConcat(word_string):
-    pattern = r"[་]+"
-    replacement = "་"
-    # Removing multiple TSEKs to one just one TSEK
-    word_string = re.sub(pattern, replacement, word_string)
-    split_pattern = TSEK
-    # Spliting the string with TSEK
-    word_tsek_splited_list = re.split(split_pattern, word_string)
-    word_tsek_splited_list = list(filter(None, word_tsek_splited_list))
-    return word_tsek_splited_list
+def get_syllables_without_tsek(text: str) -> List[str]:
+    text = filter_multiple_tsek(text)
+    text_syllables = re.split(TSEK, text)
+    text_syllables = list(filter(None, text_syllables))
+    return text_syllables
 
 
 if __name__ == "__main__":
-    print(split_by_TSEK("ལ-ས་པ་"))
+    print(get_syllables("ལ-ས་པ་"))

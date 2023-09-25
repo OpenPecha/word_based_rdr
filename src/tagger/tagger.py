@@ -11,7 +11,7 @@ sys.path.append(str(root_path))
 
 from src.compare_strings import compare_gold_corpus_and_tokenized_output  # noqa
 from src.data_processor import remove_extra_spaces  # noqa
-from src.Utility.get_syllables import split_by_TSEK  # noqa
+from src.Utility.get_syllables import get_syllables  # noqa
 
 
 def split_list_with_TSEK(list_to_split):
@@ -47,7 +47,7 @@ def gold_corpus_tagger(gold_corpus_words, gold_index, gold_index_track):
 
     for gold_corpus_unmatched_word in gold_corpus_unmatched_word_list:
 
-        gold_corpus_unmatched_syls = split_by_TSEK(gold_corpus_unmatched_word)
+        gold_corpus_unmatched_syls = get_syllables(gold_corpus_unmatched_word)
 
         new_word = True
         for gold_corpus_unmatched_syl in gold_corpus_unmatched_syls:
@@ -160,7 +160,7 @@ def tagger(file_string):
 
         gold_corpus_syls_tagged_index = 0
         for botok_unmatched_word in botok_unmatched_word_list:
-            botok_unmatched_syls = split_by_TSEK(botok_unmatched_word)
+            botok_unmatched_syls = get_syllables(botok_unmatched_word)
             botok_unmatched_syls_count = len(botok_unmatched_syls)
             botok_syls = ""
             botok_tags = ""

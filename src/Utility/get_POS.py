@@ -5,7 +5,7 @@ from botok.config import Config
 from botok.textunits.bosyl import BoSyl
 from botok.tries.trie import Trie
 
-from .get_syllables import split_by_TSEK_without_TsekConcat
+from .get_syllables import get_syllables_without_tsek
 
 TSEK = "་"
 NO_POS = "NO_POS"
@@ -19,7 +19,7 @@ def get_word_senses(word_string):
         main_data=config.dictionary,
         custom_data=config.adjustments,
     )
-    syls = split_by_TSEK_without_TsekConcat(word_string)
+    syls = get_syllables_without_tsek(word_string)
     current_node = None
     for i in range(len(syls)):
         syl = syls[i]
@@ -52,7 +52,7 @@ def get_POS(word_string, is_first_iteration=True):
         main_data=config.dictionary,
         custom_data=config.adjustments,
     )
-    syls = split_by_TSEK_without_TsekConcat(word_string)
+    syls = get_syllables_without_tsek(word_string)
     current_node = None
     for i in range(len(syls)):
         syl = syls[i]
