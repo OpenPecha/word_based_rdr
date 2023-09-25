@@ -1,4 +1,4 @@
-from src.botok_tokenizer_pipeline import botok_word_tokenizer_pipeline
+from src.tokenizer_pipeline import botok_word_tokenizer_pipeline
 
 
 # The input is a gold corpus, but the string is preprocessed(no spaces) before botok does max match, so there

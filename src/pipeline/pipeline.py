@@ -1,7 +1,6 @@
 import re
 from pathlib import Path
 
-from ..botok_tokenizer_pipeline import botok_word_tokenizer_pipeline  # noqa
 from ..compare_function_outputs import compare_function_outputs  # noqa
 from ..data_processor import (  # noqa
     prepare_gold_corpus_for_tokenizer,
@@ -13,6 +12,7 @@ from ..eval_rdr_result.eval_rdr_result import (  # noqa
 )
 from ..rdr_2_cql.split_merge_cql import split_merge_cql  # noqa
 from ..tagger.tagger import tagger  # noqa
+from ..tokenizer_pipeline import botok_word_tokenizer_pipeline  # noqa
 from ..train_tag_rdr.train_tag_rdr import train_with_external_rdr  # noqa
 
 
