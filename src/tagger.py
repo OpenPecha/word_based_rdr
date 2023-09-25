@@ -50,6 +50,14 @@ def tag_syllables(syllable_list: List[str]) -> List[str]:
     return tagged_syllables
 
 
+def filter_underscore(text: str) -> str:
+    return text.replace("_", "")
+
+
+def filter_hyphen(text: str) -> str:
+    return text.replace("-", "")
+
+
 def find_next_matching_words(tokenized_words, gold_corpus_words, tok_idx, gold_idx):
     """
     Find the next matching words between botok and gold corpus starting from given indices.
@@ -60,37 +68,37 @@ def find_next_matching_words(tokenized_words, gold_corpus_words, tok_idx, gold_i
     while tok_last_idx < len(tokenized_words) and gold_last_idx < len(
         gold_corpus_words
     ):
-        condition_1 = tokenized_words[tok_last_idx].replace(
-            "_", ""
-        ) == gold_corpus_words[gold_last_idx].replace("_", "")
 
-        botok_unmatched_words = "".join(
-            tokenized_words[tok_idx : tok_last_idx + 1]  # noqa
+        curr_tok_word = filter_underscore(tokenized_words[tok_last_idx])
+        curr_gold_word = filter_underscore(gold_corpus_words[gold_last_idx])
+
+        condition_1 = curr_tok_word == curr_gold_word
+
+        unmatched_tok_words = "".join(
+            tokenized_words[i] for i in range(tok_idx, tok_last_idx + 1)
         )
-        gold_corpus_unmatched_words = "".join(
-            gold_corpus_words[gold_idx : gold_last_idx + 1]  # noqa
+        unmatched_gold_words = "".join(
+            gold_corpus_words[i] for i in range(gold_idx, gold_last_idx + 1)
         )
 
-        botok_unmatched_words = botok_unmatched_words.replace("_", "").replace("-", "")
-        gold_corpus_unmatched_words = gold_corpus_unmatched_words.replace(
-            "_", ""
-        ).replace("-", "")
+        unmatched_tok_words = filter_underscore(filter_hyphen(unmatched_tok_words))
+        unmatched_gold_words = filter_underscore(filter_hyphen(unmatched_gold_words))
 
-        if condition_1 and len(botok_unmatched_words) == len(
-            gold_corpus_unmatched_words
-        ):
+        condition2 = unmatched_tok_words == unmatched_gold_words
+        if condition_1 and condition2:
             break
 
-        botok_unmatched_syls = split_words_into_syllables(
-            tokenized_words[tok_idx : tok_last_idx + 1]  # noqa
-        )
-        gold_corpus_unmatched_syls = split_words_into_syllables(
-            gold_corpus_words[gold_idx : gold_last_idx + 1]  # noqa
+        unmatched_tok_syls = split_words_into_syllables(
+            [tokenized_words[i] for i in range(tok_idx, tok_last_idx + 1)]
         )
 
-        if len(botok_unmatched_syls) > len(gold_corpus_unmatched_syls):
+        unmatched_gold_syls = split_words_into_syllables(
+            [gold_corpus_words[i] for i in range(gold_idx, gold_last_idx + 1)]
+        )
+
+        if len(unmatched_tok_syls) > len(unmatched_gold_syls):
             gold_last_idx += 1
-        elif len(botok_unmatched_syls) < len(gold_corpus_unmatched_syls):
+        elif len(unmatched_tok_syls) < len(unmatched_gold_syls):
             tok_last_idx += 1
         else:
             gold_last_idx += 1
@@ -159,9 +167,9 @@ def tagger(gold_corpus: str) -> str:
 
     while tok_idx < len(tokenized_words) and gold_idx < len(gold_corpus_words):
         # Checking if the word is the same (ignoring '_' due to possible shads alignment)
-        curr_tok_word = tokenized_words[tok_idx].replace("_", "")
-        curr_gold_word = gold_corpus_words[gold_idx].replace("_", "")
 
+        curr_tok_word = filter_underscore(tokenized_words[tok_idx])
+        curr_gold_word = filter_underscore(gold_corpus_words[gold_idx])
         # If the word matches perfectly in output of both botok and gold corpus
         if curr_tok_word == curr_gold_word:
             tagged_content += tokenized_words[tok_idx] + "/U "
