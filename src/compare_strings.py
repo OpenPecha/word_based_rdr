@@ -3,7 +3,7 @@ from .tokenizer_pipeline import botok_word_tokenizer_pipeline
 from .Utility.regex_replacer import replace_with_regex
 
 
-def is_equal_string_length(gold_corpus_string, botok_output_string):
+def is_corpus_tokenization_identical(gold_corpus_string, botok_output_string):
     pattern = {" ": "_", "-": "", "_": ""}
     gold_corpus_without_spaces = replace_with_regex(pattern, gold_corpus_string)
     botok_output_string_without_spaces = replace_with_regex(
@@ -16,10 +16,11 @@ def is_equal_string_length(gold_corpus_string, botok_output_string):
     return equal_string_length
 
 
-def compare_function_outputs(file_string):
-    # Comparing if the string out(gold corpus and max match output) going for tagging has the same number of syllables
-    gold_corpus_output = transform_gold_corpus_for_tagging(file_string)
-    botok_output = botok_word_tokenizer_pipeline(file_string)
+def compare_gold_corpus_and_tokenized_output(gold_corpus):
+    gold_corpus_output = transform_gold_corpus_for_tagging(gold_corpus)
+    botok_output = botok_word_tokenizer_pipeline(gold_corpus)
 
-    equal_number_of_syls = is_equal_string_length(gold_corpus_output, botok_output)
+    equal_number_of_syls = is_corpus_tokenization_identical(
+        gold_corpus_output, botok_output
+    )
     return equal_number_of_syls, gold_corpus_output, botok_output

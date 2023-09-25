@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-from ..compare_function_outputs import compare_function_outputs  # noqa
+from ..compare_strings import compare_gold_corpus_and_tokenized_output  # noqa
 from ..data_processor import (  # noqa
     prepare_gold_corpus_for_tokenizer,
     transform_gold_corpus_for_tagging,
@@ -29,7 +29,7 @@ def pipeline(data):
     # botok_output = botok_word_tokenizer_pipeline(botok_input)
 
     # # This checks if the processing steps has done correctly and has equal string before sending to the tagger
-    # is_equal_string_length_result = is_equal_string_length(  # noqa
+    # is_corpus_tokenization_identical_result = is_corpus_tokenization_identical(  # noqa
     #     gold_corpus, botok_output
     # )
 

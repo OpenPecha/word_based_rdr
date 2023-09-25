@@ -10,7 +10,7 @@ root_path = (
 )  # Adjust the number of parents as needed
 sys.path.append(str(root_path))
 
-from src.compare_function_outputs import compare_function_outputs  # noqa
+from src.compare_strings import compare_gold_corpus_and_tokenized_output  # noqa
 from src.data_processor import remove_extra_spaces  # noqa
 
 
@@ -89,9 +89,11 @@ def gold_corpus_tagger(gold_corpus_words, gold_index, gold_index_track):
 
 def tagger(file_string):
 
-    equal_number_of_syls, gold_corpus_output, botok_output = compare_function_outputs(
-        file_string
-    )
+    (
+        equal_number_of_syls,
+        gold_corpus_output,
+        botok_output,
+    ) = compare_gold_corpus_and_tokenized_output(file_string)
 
     if equal_number_of_syls is False:
         return "ValueError: Output of gold corpus and botok output does not match. Something wrong in language structure."  # noqa
