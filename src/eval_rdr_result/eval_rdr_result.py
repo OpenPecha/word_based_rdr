@@ -10,7 +10,7 @@ root_path = (
 sys.path.append(str(root_path))
 
 from src.RDRPOSTagger.Utility.Eval import computeAccuracies, computeAccuracy  # noqa
-from src.train_tag_rdr import tag_with_ExtRDR  # noqa
+from src.train_tag_rdr import tag_with_external_rdr  # noqa
 
 
 def eval_rdr_result(
@@ -76,10 +76,9 @@ if __name__ == "__main__":
     )
     print(f"botok accuracy: {botok_acc}")
 
-    # botok predicted data
-    file_to_tag = "TIB_train_maxmatched.txt"
-    # tagging with external rdr
-    tag_with_ExtRDR(file_to_tag, "TIB_train_maxmatched_tagged.txt.RDR")
+    file_to_tag = Path("src/data/TIB_train_maxmatched.txt")
+    rdr_file_path = Path("src/data/TIB_train_maxmatched_tagged.txt.RDR")
+    tag_with_external_rdr(file_to_tag, rdr_file_path)
     # evaluating with result
     rdr_acc = eval_rdr_result(
         "TIB_train_maxmatched_tagged.txt", "TIB_train_maxmatched.txt.TAGGED"
