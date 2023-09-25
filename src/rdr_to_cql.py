@@ -43,7 +43,8 @@ def reorder_rdr_rules_based_on_level(rdr_rules_with_levels):
     rdr_rules_count = len(rdr_rules_with_levels)
     index = 0
 
-    # In this function we putting rules with more than level 2 above the level 2, for split merge
+    # In this function we putting rules with more than level 2 above the level 2,
+    # so that the rules can be applied in correct order
     # object.word == "མི་" and object.pos == "VERB" : object.conclusion = "B" <---Level 2
     #       object.word == "མི་" and object.nextWord1 == "ཕན་" : object.conclusion = "U"   <---Level 3
     while index < rdr_rules_count:
