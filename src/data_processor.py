@@ -74,7 +74,7 @@ def adjust_spaces_for_non_tibetan_character(text: str) -> str:
     return text
 
 
-def prepare_gold_corpus_for_botok_tokenizer(gold_corpus: str) -> str:
+def prepare_gold_corpus_for_tokenizer(gold_corpus: str) -> str:
 
     """
     input: string of a file before going under max match(botok)
@@ -118,5 +118,5 @@ def transform_gold_corpus_for_tagging(gold_corpus: str) -> str:
 
 if __name__ == "__main__":
     file_string = Path("../data/TIB_train.txt").read_text(encoding="utf-8")
-    modified_string = prepare_gold_corpus_for_botok_tokenizer(file_string)
+    modified_string = prepare_gold_corpus_for_tokenizer(file_string)
     print(modified_string)
