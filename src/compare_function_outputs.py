@@ -1,4 +1,4 @@
-from .botok_word_tokenizer_pipeline import botok_word_tokenizer_pipeline
+from .botok_tokenizer_pipeline import botok_word_tokenizer_pipeline
 from .data_processor import transform_gold_corpus_for_tagging
 from .Utility.regex_replacer import replace_with_regex
 

@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-from ..botok_word_tokenizer_pipeline import botok_word_tokenizer_pipeline  # noqa
+from ..botok_tokenizer_pipeline import botok_word_tokenizer_pipeline  # noqa
 from ..compare_function_outputs import compare_function_outputs  # noqa
 from ..data_processor import (  # noqa
     prepare_gold_corpus_for_botok_tokenizer,

@@ -7,8 +7,9 @@ from .Utility.regex_replacer import replace_with_regex
 
 
 def filter_text(text: str, is_gold_corpus=False) -> str:
-    # Some signs(i.e ?,+,- ) are presented in human annotated training files which needs to be edited
-    # There are two different kind of TSEK, and here proper tsek been replaced
+    # There are two different kind of TSEK in tibetan, and here standard TSEK is used
+    # In gold corpus, i)'-' for affix ii)'+' joiner iii)'?' when annotator is not sure
+    # Eg: དགེ-འོ་, ཤེས་རབ་+པོ, རཏྣ་ མཱ་? ལཱི།?
     special_characters = {"?": " ", "+": "", "-": "", "༌": TSEK}
     if is_gold_corpus:
         special_characters = {"?": " ", "+": "", "༌": TSEK}
@@ -73,14 +74,14 @@ def adjust_spaces_for_non_tibetan_character(text: str) -> str:
     return text
 
 
-def prepare_gold_corpus_for_botok_tokenizer(text: str) -> str:
+def prepare_gold_corpus_for_botok_tokenizer(gold_corpus: str) -> str:
 
     """
     input: string of a file before going under max match(botok)
     output/return: cleaned/preprocess string
     """
 
-    text = filter_text(text)
+    text = filter_text(gold_corpus)
 
     # Joining all the words, not leaving spaces unless its for SHAD
     patterns = {r"(?<=([^།])) (?=([^།]))": ""}
@@ -89,13 +90,13 @@ def prepare_gold_corpus_for_botok_tokenizer(text: str) -> str:
     return text
 
 
-def transform_gold_corpus_for_tagging(text: str) -> str:
+def transform_gold_corpus_for_tagging(gold_corpus: str) -> str:
 
     """
     input: string where words are separated with space by human annotators before going to tagger
     output/return: cleaned/preprocess string where words are still separated by space
     """
-    text = filter_text(text, is_gold_corpus=True)
+    text = filter_text(gold_corpus, is_gold_corpus=True)
 
     patterns = {
         "།[ ]+༄": "།_༄",  # ཕྲེང་བ།  ༄༅༅།-> ཕྲེང་བ།_༄༅༅།
