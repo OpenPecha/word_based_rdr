@@ -21,42 +21,35 @@ def split_words_into_syllables(words_list: List[str]) -> List[str]:
     return syllables
 
 
-# Building a tagged list for unmatched gold corpus syllables
-def gold_corpus_tagger(gold_corpus_words, gold_index, gold_index_track):
+def tag_syllables(syllable_list: List[str], start_index, end_index) -> List[str]:
     """
-    Input: List of words of gold corpus
-    Output: list of each syllable followed by the proper tag
+    Args:
+        (list of str): List of words from the gold corpus.
+    Returns:
+        list of str: List of syllables with proper tags.
     Eg:
-    Input: ['ལ་', 'ལ་ལ་', 'ལ་', 'ལ་བ་'], gold_index=0, gold_index_track =3
+    Input: ['ལ་', 'ལ་ལ་', 'ལ་', 'ལ་བ་'], start_index=0, end_index =3
     Output: ['ལ་', 'B', 'ལ་','B', 'ལ་', 'I', 'ལ་','B']
-
     B: means start of new word
     I: Continuation of the previous word
     X: New word but contains affix in gold corpus i.e ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང
     Y: Continuation of the previous word but contains affix
     """
-    gold_corpus_unmatched_word_list = gold_corpus_words[gold_index:gold_index_track]
-    gold_corpus_syls_tagged = []
-
-    for gold_corpus_unmatched_word in gold_corpus_unmatched_word_list:
-
-        gold_corpus_unmatched_syls = get_syllables(gold_corpus_unmatched_word)
-
+    tagged_syllables = []
+    for word in syllable_list[start_index:end_index]:
+        syllables = get_syllables(word)
         new_word = True
-        for gold_corpus_unmatched_syl in gold_corpus_unmatched_syls:
-            gold_corpus_syls_tagged.append(gold_corpus_unmatched_syl)
+
+        for syl in syllables:
+            tagged_syllables.append(syl)
+
             if new_word:
-                if "-" in gold_corpus_unmatched_syl:
-                    gold_corpus_syls_tagged.append("X")
-                else:
-                    gold_corpus_syls_tagged.append("B")
+                tag = "B" if "-" not in syl else "X"
                 new_word = False
             else:
-                if "-" in gold_corpus_unmatched_syl:
-                    gold_corpus_syls_tagged.append("Y")
-                else:
-                    gold_corpus_syls_tagged.append("I")
-    return gold_corpus_syls_tagged
+                tag = "I" if "-" not in syl else "Y"
+            tagged_syllables.append(tag)
+    return tagged_syllables
 
 
 def tagger(gold_corpus):
@@ -142,7 +135,7 @@ def tagger(gold_corpus):
                 botok_index_track += 1
 
         # Calling function to get a tagged list for unmatched gold corpus syllables
-        gold_corpus_syls_tagged = gold_corpus_tagger(
+        gold_corpus_syls_tagged = tag_syllables(
             gold_corpus_words, gold_index, gold_index_track
         )
 
