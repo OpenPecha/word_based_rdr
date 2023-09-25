@@ -2,7 +2,7 @@ import os
 import re
 
 from src.data_processor import remove_extra_spaces
-from src.tagger.tagger import split_by_TSEK
+from src.Utility.get_syllables import split_by_TSEK
 
 
 def split_into_word_tag_list(tagged_file="TIB_test_maxmatched.txt.TAGGED"):

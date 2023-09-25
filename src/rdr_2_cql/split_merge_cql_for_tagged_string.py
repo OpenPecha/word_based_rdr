@@ -9,7 +9,7 @@ root_path = (
 sys.path.append(str(root_path))
 
 from src.RDRPOSTagger.Utility.Utils import getWordTag  # noqa
-from src.tagger.tagger import split_by_TSEK  # noqa
+from src.Utility.get_syllables import split_by_TSEK  # noqa
 
 cql_rules_generated = []
 

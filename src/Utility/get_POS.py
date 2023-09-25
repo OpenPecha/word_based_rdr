@@ -1,4 +1,3 @@
-import re
 from pathlib import Path
 
 from botok import WordTokenizer
@@ -6,20 +5,10 @@ from botok.config import Config
 from botok.textunits.bosyl import BoSyl
 from botok.tries.trie import Trie
 
+from .get_syllables import split_by_TSEK_without_TsekConcat
+
 TSEK = "་"
 NO_POS = "NO_POS"
-
-
-def split_by_TSEK_without_TsekConcat(word_string):
-    pattern = r"[་]+"
-    replacement = "་"
-    # Removing multiple TSEKs to one just one TSEK
-    word_string = re.sub(pattern, replacement, word_string)
-    split_pattern = TSEK
-    # Spliting the string with TSEK
-    word_tsek_splited_list = re.split(split_pattern, word_string)
-    word_tsek_splited_list = list(filter(None, word_tsek_splited_list))
-    return word_tsek_splited_list
 
 
 def get_word_senses(word_string):

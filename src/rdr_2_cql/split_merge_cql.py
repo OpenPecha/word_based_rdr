@@ -11,9 +11,8 @@ root_path = (
 sys.path.append(str(root_path))
 
 from src.rdr_2_cql.rdr_2_replace_matcher import find_levels, find_rules  # noqa
-from src.tagger.tagger import split_by_TSEK  # noqa
 from src.Utility.get_POS import get_POS, get_word_senses  # noqa
-from src.Utility.split_by_TSEK import split_by_TSEK  # noqa
+from src.Utility.get_syllables import split_by_TSEK  # noqa
 
 NO_POS = "NO_POS"
 empty_POS = '"'
