@@ -3,8 +3,9 @@ from typing import List
 
 from botok import TSEK
 
-from .compare_strings import compare_gold_corpus_and_tokenized_output
-from .data_processor import remove_extra_spaces
+from .compare_strings import is_corpus_tokenization_identical
+from .data_processor import transform_gold_corpus_for_tagging
+from .tokenizer_pipeline import botok_word_tokenizer_pipeline
 from .Utility.get_syllables import get_syllables
 
 
@@ -140,20 +141,17 @@ def tag_unmatched_words(tokenized_words, gold_corpus_words, tok_idx, gold_idx):
 
 
 def tagger(gold_corpus: str) -> str:
-    # Compare gold_corpus and tokenized_output
-    (
-        is_syllables_separated_correctly,
-        gold_corpus_output,
-        tokenized_output,
-    ) = compare_gold_corpus_and_tokenized_output(gold_corpus)
+    gold_corpus_cleaned = transform_gold_corpus_for_tagging(gold_corpus)
+    tokenized_output = botok_word_tokenizer_pipeline(gold_corpus)
 
-    if not is_syllables_separated_correctly:
+    is_syls_separated_correctly = is_corpus_tokenization_identical(
+        gold_corpus_cleaned, tokenized_output
+    )
+
+    if not is_syls_separated_correctly:
         return "Error tagger.py: Output of gold corpus and tokenized output does not match."
 
-    gold_corpus_output = remove_extra_spaces(gold_corpus_output)
-    tokenized_output = remove_extra_spaces(tokenized_output)
-
-    gold_corpus_words = gold_corpus_output.split()
+    gold_corpus_words = gold_corpus_cleaned.split()
     tokenized_words = tokenized_output.split()
 
     gold_idx, tok_idx = 0, 0
