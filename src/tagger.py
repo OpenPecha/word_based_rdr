@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
 from botok import TSEK
 
@@ -58,7 +58,12 @@ def filter_hyphen(text: str) -> str:
     return text.replace("-", "")
 
 
-def find_next_matching_words(tokenized_words, gold_corpus_words, tok_idx, gold_idx):
+def find_next_matching_words(
+    tokenized_words: List[str],
+    gold_corpus_words: List[str],
+    tok_idx: int,
+    gold_idx: int,
+) -> Tuple[int, int]:
     """
     Find the next matching words between botok and gold corpus starting from given indices.
     Returns the indices of the last matching words found.
@@ -107,7 +112,12 @@ def find_next_matching_words(tokenized_words, gold_corpus_words, tok_idx, gold_i
     return gold_last_idx, tok_last_idx
 
 
-def tag_unmatched_words(tokenized_words, gold_corpus_words, tok_idx, gold_idx):
+def tag_unmatched_words(
+    tokenized_words: List[str],
+    gold_corpus_words: List[str],
+    tok_idx: int,
+    gold_idx: int,
+) -> Tuple[str, int, int]:
     """
     Tag unmatched words based on gold corpus syllables and return the tagged content.
     Returns the tagged content and the indices after tagging.
