@@ -10,7 +10,7 @@ root_path = (
 sys.path.append(str(root_path))
 
 from src.RDRPOSTagger.Utility.Eval import computeAccuracies, computeAccuracy  # noqa
-from src.train_tag_rdr.train_tag_rdr import tag_with_ExtRDR  # noqa
+from src.train_tag_rdr import tag_with_ExtRDR  # noqa
 
 
 def eval_rdr_result(
