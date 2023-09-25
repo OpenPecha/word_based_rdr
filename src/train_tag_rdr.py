@@ -1,23 +1,14 @@
 import os
 import re
-import sys
-from pathlib import Path
 
-# Add the root directory of your project to sys.path
-root_path = (
-    Path(__file__).resolve().parents[2]
-)  # Adjust the number of parents as needed
-sys.path.append(str(root_path))
-
-from src.RDRPOSTagger.pSCRDRtagger.ExtRDRPOSTagger import ExtRDR_RUN  # noqa
-from src.RDRPOSTagger.pSCRDRtagger.RDRPOSTagger import run  # noqa
+from .RDRPOSTagger.pSCRDRtagger.ExtRDRPOSTagger import ExtRDR_RUN  # noqa
+from .RDRPOSTagger.pSCRDRtagger.RDRPOSTagger import run  # noqa
 
 
 def train_rdr(file_to_train_tagged="TIB_train_maxmatched_tagged.txt", THRESHOLD=(4, 4)):
     """
     Input: File already tagged, output from botok and then through tagger file
     Output: Two files i)RDR rules .RDR ii)RDR dictionary .DICT
-    Important note: File should be in the folder 'data', and output in 'resources'
     """
     current_dir = os.path.dirname(__file__)
     relative_path = "../data/" + file_to_train_tagged
@@ -26,17 +17,19 @@ def train_rdr(file_to_train_tagged="TIB_train_maxmatched_tagged.txt", THRESHOLD=
     run(function_arguments)
 
 
-def train_with_external_rdr(gold_corpus, external_tagged_corpus, THRESHOLD=(1, 1)):
+def train_with_external_rdr(
+    gold_corpus_tagged: str, external_tagged_corpus: str, THRESHOLD=(4, 4)
+):
 
     """
-    Input: Gold standard corpus, tagged_string by external tagger(already rdr rules tagged on botok output), threshold
+    Input: Gold standard corpus, tagged_string by external tagger, threshold
     return rdr rules in string
     """
 
     function_arguments = [
         "ExtRDRPOSTagger.py",
         "train",
-        gold_corpus,
+        gold_corpus_tagged,
         external_tagged_corpus,
         THRESHOLD,
     ]
@@ -48,8 +41,7 @@ def train_file_with_external_rdr(
 ):
     """
     Input: File already tagged, output from botok and then through tagger file
-    Output: Two files i)RDR rules .RDR ii)RDR dictionary .DICT
-    Important note: File should be in the folder 'data', and output in 'resources'
+    Output: Two files i)RDR rules .RDR
     """
     current_dir = os.path.dirname(__file__)
     relative_path = "../data/" + gold_corpus_file
@@ -72,14 +64,11 @@ def tag_with_ExtRDR(
     """
     Input : String that is already went through botok max matched algorithm and word segmented,
     Output: file tagged acccording to the RDR model rules and dictionary.
-    Important note: File should be in the folder 'data', and output in 'resources'
     """
     current_dir = os.path.dirname(__file__)
-    # file_relative_path = "../data/" + file_to_tag
     rdr_rules_relative_path = "../data/" + RDR_rules
     file_to_tag_relative_path = "../data/" + file_to_tag
 
-    # file_path = os.path.join(current_dir, file_relative_path)
     rdr_rules_path = os.path.join(current_dir, rdr_rules_relative_path)
     file_to_tag_path = os.path.join(current_dir, file_to_tag_relative_path)
 
@@ -97,11 +86,7 @@ def tag_rdr(
     RDR_rules="TIB_train_maxmatched_tagged.txt.RDR",
     RDR_dictionary="TIB_train_maxmatched_tagged.txt.DICT",
 ):
-    """
-    Input : String that is already went through botok max matched algorithm and word segmented,
-    Output: file tagged acccording to the RDR model rules and dictionary.
-    Important note: File should be in the folder 'data', and output in 'resources'
-    """
+
     current_dir = os.path.dirname(__file__)
     # file_relative_path = "../data/" + file_to_tag
     rdr_rules_relative_path = "../data/" + RDR_rules
@@ -129,7 +114,6 @@ def tag_file_rdr(
 ):
 
     current_dir = os.path.dirname(__file__)
-    # file_relative_path = "../data/" + file_to_tag
     file_to_tag_relative_path = "../data/" + file_to_tag
     file_to_tag_path = os.path.join(current_dir, file_to_tag_relative_path)
 
@@ -152,7 +136,3 @@ if __name__ == "__main__":
         "src/data/TIB_train_maxmatched_tagged.txt.RDR", "w", encoding="utf-8"
     ) as file:
         file.write(result)
-
-    # tag_with_ExtRDR(
-    #         r"src\data\TIB_short_test_maxmatched.txt", "TIB_train_maxmatched_tagged.txt.RDR"
-    #     )
