@@ -68,7 +68,7 @@ def tag_rdr(text: str, rdr_file_path: Path, dict_file_path: Path):
         "RDRPOSTagger.py",
         "tag",
         rdr_file_path,
-        rdr_file_path,
+        dict_file_path,
         text,
     ]
     return run(function_arguments)
