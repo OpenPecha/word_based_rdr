@@ -1,18 +1,10 @@
-# import re
-import sys
 from itertools import combinations
 from pathlib import Path
 from typing import Dict, List
 
-# Add the root directory of your project to sys.path
-root_path = (
-    Path(__file__).resolve().parents[2]
-)  # Adjust the number of parents as needed
-sys.path.append(str(root_path))
-
-from src.Utility.get_POS import get_POS, get_word_senses  # noqa
-from src.Utility.get_syllables import get_syllables  # noqa
-from src.Utility.rdr_to_cql_replace_matcher import find_levels, find_rules  # noqa
+from .Utility.get_POS import get_POS
+from .Utility.get_syllables import get_syllables
+from .Utility.rdr_to_cql_replace_matcher import find_levels, find_rules
 
 NO_POS = "NO_POS"
 empty_POS = '"'
@@ -47,7 +39,7 @@ def find_combinations_of_matches(list_of_dicts):
     return all_combinations
 
 
-def Re_Arrange_the_ordering(rdr_rules_with_levels):
+def reorder_rdr_rules_based_on_level(rdr_rules_with_levels):
     rdr_rules_count = len(rdr_rules_with_levels)
     index = 0
 
@@ -76,23 +68,7 @@ def Re_Arrange_the_ordering(rdr_rules_with_levels):
     return rdr_rules_with_levels
 
 
-def filter_only_neccessary_rdr_rules(rdr_string):
-
-    # Gets rdr rules with levels
-    # True : object.conclusion = "NN"   <---Level 0
-    #        object.tag == "U" : object.conclusion = "U"    <---Level 1
-    #                object.word == "མི་" and object.pos == "VERB" : object.conclusion = "B" <---Level 2
-    # 		                  object.word == "མི་" and object.nextWord1 == "ཕན་" : object.conclusion = "U"   <---Level 3
-    rdr_rules_with_levels = find_levels(rdr_string)
-
-    # In this function we putting rules with more than level 2 above the level 2, for split merge
-    ordered_rdr_rules_with_levels = Re_Arrange_the_ordering(rdr_rules_with_levels)
-    # Then find the rdr rules
-    rdr_rules = find_rules(ordered_rdr_rules_with_levels)
-
-    # Deleting the first rdr rules which is unneccessary
-    # 	object.tag == "U" : object.conclusion = "U" (looks like this in the .RDR)
-    del rdr_rules[0]
+def filter_only_neccessary_rdr_rules(rdr_rules):
 
     # Unneccessary tuple
     tuple_to_remove = ("object.tag", '"U"')
@@ -170,8 +146,31 @@ def filter_only_neccessary_rdr_rules(rdr_string):
     return final_filtered_rdr_rules
 
 
-def split_merge_cql(rdr_string):
-    rdr_rules = filter_only_neccessary_rdr_rules(rdr_string)
+def parse_rdr_rules(rdr_string: str) -> List[Dict]:
+    # Gets rdr rules with levels
+    # True : object.conclusion = "NN"   <---Level 0
+    #        object.tag == "U" : object.conclusion = "U"    <---Level 1
+    #                object.word == "མི་" and object.pos == "VERB" : object.conclusion = "B" <---Level 2
+    # 		                  object.word == "མི་" and object.nextWord1 == "ཕན་" : object.conclusion = "U"   <---Level 3
+    rdr_rules_with_levels = find_levels(rdr_string)
+
+    # In this function we putting rules with more than level 2 above the level 2
+    ordered_rdr_rules_with_levels = reorder_rdr_rules_based_on_level(
+        rdr_rules_with_levels
+    )
+    # Then find the rdr rules
+    rdr_rules = find_rules(ordered_rdr_rules_with_levels)
+
+    # Deleting the first rdr rules which is unneccessary
+    # 	object.tag == "U" : object.conclusion = "U" (looks like this in the .RDR)
+    del rdr_rules[0]
+
+    return rdr_rules
+
+
+def convert_rdr_to_cql(rdr_string):
+    rdr_rules = parse_rdr_rules(rdr_string)
+    rdr_rules = filter_only_neccessary_rdr_rules(rdr_rules)
     cql_rules_collection = ""
     for idx, rdr_rule in enumerate(rdr_rules):
         rdr_condition = rdr_rule[0]
@@ -493,92 +492,6 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
     return split_cql_rules_collection, rdr_condition, rdr_conclusion
 
 
-# def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
-#     """
-#     each cql rule should be as follows: <matchcql>\t<index>\t<operation>\t<replacecql>
-#     cql example :
-#     ["ལ་ལ་"] ["ལ་ལ་"]	1-2	::	[] []
-#     ["ལ་"] ["ལ་"] ["ལ་ལ་"]	3-2	::	[] []
-#     ["ལ་"] ["ལ་"] ["ལ་"] ["ལ་"]	2	+	[]
-#     [""]    1   +   []
-#     """
-
-#     # Collecting all the cql rule string
-#     affix_cql_rules_collection = ""
-#     for word_index, syl_index, afx_modf in affix_modification:
-#         # word_text = rdr_condition[word_index]["text"]
-#         if afx_modf == "ON":
-#             match_cql = generate_match_cql_string(rdr_condition, rdr_conclusion)
-
-#             # Getting value for syls and tag of word index
-#             rdr_condition_text = rdr_condition[word_index]["text"]
-#             rdr_condition_syls = get_syllables(rdr_condition_text)
-
-#             split_index = next(
-#                 i for i, item in enumerate(rdr_conclusion) if item[0] == word_index
-#             )
-#             rdr_conclusion_tag = rdr_conclusion[split_index][1]
-#             rdr_conclusion_tag_list = list(rdr_conclusion_tag)
-
-#             # Cleaning empty elements after conversion from word to syls
-#             rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
-#             rdr_conclusion_tag_list = [
-#                 x for x in rdr_conclusion_tag_list if x != "" and x != '"'
-#             ]
-
-#             # Removing double and single quotes from the syls
-#             rdr_condition_syls = [
-#                 text.replace('"', "").replace('"', "") for text in rdr_condition_syls
-#             ]
-#             rdr_conclusion_tag_list = [
-#                 text.replace('"', "").replace('"', "")
-#                 for text in rdr_conclusion_tag_list
-#             ]
-
-#             char_index = len("".join(rdr_condition_syls[:syl_index]))
-#             # Find affix index (ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང) in the word
-#             pattern = r"(ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང)"
-#             affix_partner_length = re.search(pattern, rdr_condition_syls[syl_index])[0]
-#             char_index += affix_partner_length
-#             index_cql = f"{word_index+1}-{char_index}"
-#             operation_cql = "::"
-
-#             left_splited_word = (
-#                 "".join(rdr_condition_syls[:syl_index])
-#                 + rdr_condition_syls[syl_index][:affix_partner_length]
-#             )
-#             left_splited_word_POS = get_POS(left_splited_word)
-#             right_splited_word = rdr_condition_syls[syl_index][
-#                 affix_partner_length:
-#             ] + "".join(rdr_condition_syls[syl_index:])
-#             right_splited_word_POS = get_POS(right_splited_word)
-
-#             replace_cql = ""
-#             if left_splited_word_POS in [
-#                 NO_POS,
-#                 empty_POS,
-#             ] and right_splited_word_POS in [
-#                 NO_POS,
-#                 empty_POS,
-#             ]:
-#                 replace_cql = "[][]"
-#             elif left_splited_word_POS in [NO_POS, empty_POS]:
-#                 replace_cql = f'[][pos="{right_splited_word_POS}"]'
-#             elif right_splited_word_POS in [NO_POS, empty_POS]:
-#                 replace_cql = f'[pos="{left_splited_word_POS}"][]'
-#             else:
-#                 replace_cql = (
-#                     f'[pos="{left_splited_word_POS}"][pos="{right_splited_word_POS}"]'
-#                 )
-
-#             curr_new_cql_rule = "\t".join(
-#                 [match_cql, index_cql, operation_cql, replace_cql]
-#             )
-#             affix_cql_rules_collection += curr_new_cql_rule + "\n"
-
-#     return affix_cql_rules_collection
-
-
 def generate_match_cql_string(rdr_condition, rdr_conclusion):
     # Generating match cql from rdr_condition and rdr conclusion
     match_cql = ""
@@ -617,7 +530,6 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
 
 
 if __name__ == "__main__":
-    rdr_string = Path("src/data/TIB_demo.RDR").read_text(encoding="utf-8")
-    cql_rules = split_merge_cql(rdr_string)
-    with open("tests/data/TIB_lala_test.tsv", "w", encoding="utf-8") as tsvfile:
-        tsvfile.write(cql_rules)
+    rdr_string = Path("src/data/TIB_model.RDR").read_text(encoding="utf-8")
+    cql_rules = convert_rdr_to_cql(rdr_string)
+    print(cql_rules)
