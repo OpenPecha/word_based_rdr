@@ -1,31 +1,24 @@
-import sys
 from pathlib import Path
+from typing import List
 
 from botok import TSEK
 
-# Add the root directory of your project to sys.path
-root_path = (
-    Path(__file__).resolve().parents[2]
-)  # Adjust the number of parents as needed
-sys.path.append(str(root_path))
-
-from src.compare_strings import compare_gold_corpus_and_tokenized_output  # noqa
-from src.data_processor import remove_extra_spaces  # noqa
-from src.Utility.get_syllables import get_syllables  # noqa
+from .compare_strings import compare_gold_corpus_and_tokenized_output
+from .data_processor import remove_extra_spaces
+from .Utility.get_syllables import get_syllables
 
 
-def split_list_with_TSEK(list_to_split):
-    specific_character = TSEK
-    split_list = []
+def split_words_into_syllables(words_list: List[str]) -> List[str]:
+    syllables = []
 
-    for element in list_to_split:
-        if specific_character in element:
-            insert_list = element.split(specific_character)
-            split_list += insert_list
+    for words in words_list:
+        if TSEK in words:
+            tsek_split_words = words.split(TSEK)
+            syllables += tsek_split_words
         else:
-            split_list.append(element)
-    split_list = list(filter(None, split_list))
-    return split_list
+            syllables.append(words)
+    syllables = list(filter(None, syllables))
+    return syllables
 
 
 # Building a tagged list for unmatched gold corpus syllables
@@ -66,25 +59,23 @@ def gold_corpus_tagger(gold_corpus_words, gold_index, gold_index_track):
     return gold_corpus_syls_tagged
 
 
-def tagger(file_string):
+def tagger(gold_corpus):
 
     (
-        equal_number_of_syls,
+        is_syllables_separated_correctly,
         gold_corpus_output,
-        botok_output,
-    ) = compare_gold_corpus_and_tokenized_output(file_string)
+        tokenized_output,
+    ) = compare_gold_corpus_and_tokenized_output(gold_corpus)
 
-    if equal_number_of_syls is False:
-        return "ValueError: Output of gold corpus and botok output does not match. Something wrong in language structure."  # noqa
+    if is_syllables_separated_correctly is False:
+        return "Error tagger.py: Output of gold corpus and tokenized output does not match. "
 
     gold_corpus_output = remove_extra_spaces(gold_corpus_output)
-    botok_output = remove_extra_spaces(botok_output)
+    tokenized_output = remove_extra_spaces(tokenized_output)
 
     gold_corpus_words = gold_corpus_output.split()
-    # Spliting on space and affixes, if max match has'nt done it
-    # pattern = r"\s+|ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང"
-    # botok_words = re.split(pattern, botok_output)
-    botok_words = botok_output.split()
+
+    botok_words = tokenized_output.split()
     botok_words_count = len(botok_words)
     gold_corpus_words_count = len(gold_corpus_words)
 
@@ -135,10 +126,10 @@ def tagger(file_string):
             ):
                 break
 
-            botok_unmatched_syls = split_list_with_TSEK(
+            botok_unmatched_syls = split_words_into_syllables(
                 botok_words[botok_index : botok_index_track + 1]  # noqa
             )
-            gold_corpus_unmatched_syls = split_list_with_TSEK(
+            gold_corpus_unmatched_syls = split_words_into_syllables(
                 gold_corpus_words[gold_index : gold_index_track + 1]  # noqa
             )
 
@@ -188,7 +179,7 @@ def tagger(file_string):
 
 
 if __name__ == "__main__":
-    file_string = Path("../data/TIB_test.txt").read_text(encoding="utf-8")
+    file_string = Path("src/data/TIB_train.txt").read_text(encoding="utf-8")
     tagged_output = tagger(file_string)
-    with open("../data/TIB_test_maxmatched_tagged.txt", "w", encoding="utf-8") as file:
+    with open("src/data/TIB_tagged.txt", "w", encoding="utf-8") as file:
         file.write(tagged_output)
