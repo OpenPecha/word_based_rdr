@@ -35,7 +35,7 @@ def train_with_external_rdr(
 
 def train_file_with_external_rdr(file_path: Path, THRESHOLD=(4, 4)):
     """
-    Input: File already tagged, output from botok and then through tagger file
+    Input: File already tagged(already tokenized and tagged)
     Output: Two files i)RDR rules .RDR
     """
 
@@ -49,7 +49,7 @@ def train_file_with_external_rdr(file_path: Path, THRESHOLD=(4, 4)):
 
 def tag_with_external_rdr(file_path: Path, rdr_file_path: Path):
     """
-    Input : String that is already went through botok max matched algorithm and word segmented,
+    Input : String that is already tokenized and tagged
     Output: file tagged acccording to the RDR model rules and dictionary.
     """
 
