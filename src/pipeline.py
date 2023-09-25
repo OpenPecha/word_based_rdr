@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 
-from src.rdr_2_cql.split_merge_cql import split_merge_cql
+from src.split_merge_cql import split_merge_cql
 from src.tagger import tagger
 from src.train_tag_rdr import train_with_external_rdr
 

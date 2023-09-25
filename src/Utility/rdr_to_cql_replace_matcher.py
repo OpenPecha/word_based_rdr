@@ -1,5 +1,4 @@
 from collections import defaultdict
-from pathlib import Path
 from typing import Dict
 
 # variables
@@ -14,7 +13,6 @@ prev_pos = "object.prevPos"
 next_pos = "object.nextPos"
 
 conclusion = "object.conclusion"
-# suffix = "object.suffixL"
 op = " == "
 ccl_op = " = "
 cond_sep = " and "
@@ -61,7 +59,6 @@ def rdr_2_replace_matcher(string):
 
         if object_word != "":
             add_word_seg_tag(word_tag_dict, object_word, object_seg_tag)
-    # print(word_tag_dict)
 
     cql = format_rules(find_rules_output)
 
@@ -170,9 +167,6 @@ def parse_test(test):
             if n in attr and len(attr) > len(n):
                 pos = -int(attr[-1])
                 attr = attr[:-1]
-
-        # if attr == suffix:
-        #     tag = '".*' + tag[1:]
         return attr, pos, tag
 
     if op in test:
@@ -182,10 +176,3 @@ def parse_test(test):
     else:
         raise SyntaxError
     return {pos: (attr, tag)}
-
-
-if __name__ == "__main__":
-    rdr_string = Path("src/data/TIB_demo_1_threshold.RDR").read_text(encoding="utf-8")
-    cql_rules = rdr_2_replace_matcher(rdr_string)
-    with open("mydata_1.tsv", "w", encoding="utf-8") as tsvfile:
-        tsvfile.write(cql_rules)

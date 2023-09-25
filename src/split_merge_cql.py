@@ -10,9 +10,9 @@ root_path = (
 )  # Adjust the number of parents as needed
 sys.path.append(str(root_path))
 
-from src.rdr_2_cql.rdr_2_replace_matcher import find_levels, find_rules  # noqa
 from src.Utility.get_POS import get_POS, get_word_senses  # noqa
 from src.Utility.get_syllables import get_syllables  # noqa
+from src.Utility.rdr_to_cql_replace_matcher import find_levels, find_rules  # noqa
 
 NO_POS = "NO_POS"
 empty_POS = '"'
