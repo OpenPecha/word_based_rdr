@@ -4,7 +4,7 @@ from pathlib import Path
 from ..botok_word_tokenizer_pipeline import botok_word_tokenizer_pipeline  # noqa
 from ..compare_function_outputs import compare_function_outputs  # noqa
 from ..data_processor import (  # noqa
-    transform_gold_corpus_for_botok_word_tokenizer_pipeline,
+    prepare_gold_corpus_for_botok_tokenizer,
     transform_gold_corpus_for_tagging,
 )
 from ..eval_rdr_result.eval_rdr_result import (  # noqa
@@ -24,7 +24,7 @@ def pipeline(data):
     # transform_gold_corpus_for_tagging_input = transform_gold_corpus_for_tagging(data)  # noqa
 
     # # The gold corpus data is put together with no space allowed before sending to botok
-    # botok_input = transform_gold_corpus_for_botok_word_tokenizer_pipeline(data)
+    # botok_input = prepare_gold_corpus_for_botok_tokenizer(data)
     # # Sending to botok and getting the maxmatched output
     # botok_output = botok_word_tokenizer_pipeline(botok_input)
 

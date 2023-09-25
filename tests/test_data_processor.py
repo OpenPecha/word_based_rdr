@@ -1,13 +1,13 @@
 from src.data_processor import (
-    transform_gold_corpus_for_botok_word_tokenizer_pipeline,
+    prepare_gold_corpus_for_botok_tokenizer,
     transform_gold_corpus_for_tagging,
 )
 
 
 # Test function for file string to have no gap, so that there wont be bias before sending it to botok max match
-def test_transform_gold_corpus_for_botok_word_tokenizer_pipeline():
+def test_prepare_gold_corpus_for_botok_tokenizer():
     assert (
-        transform_gold_corpus_for_botok_word_tokenizer_pipeline(
+        prepare_gold_corpus_for_botok_tokenizer(
             "༄༅། །རྒྱལ་པོ་ ལ་ གཏམ་ བྱ་བ་ རིན་པོ་ཆེ འི་ ཕྲེང་་་བ། ལ་ ལ་ལ་ ལ་ ལ་བ་ ཡོད། དཔལ། དགེའོ་ བཀྲ་ཤིས་ ཤོག།"
         )
         == "༄༅། །རྒྱལ་པོ་ལ་གཏམ་བྱ་བ་རིན་པོ་ཆེའི་ཕྲེང་་་བ། ལ་ལ་ལ་ལ་ལ་བ་ཡོད། དཔལ། དགེའོ་བཀྲ་ཤིས་ཤོག།"

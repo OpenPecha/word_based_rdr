@@ -6,31 +6,30 @@ from botok import TSEK
 from .Utility.regex_replacer import replace_with_regex
 
 
-def remove_special_characters(file_string, is_gold_corpus=False):
+def filter_text(text: str, is_gold_corpus=False) -> str:
     # Some signs(i.e ?,+,- ) are presented in human annotated training files which needs to be edited
     # There are two different kind of TSEK, and here proper tsek been replaced
     special_characters = {"?": " ", "+": "", "-": "", "༌": TSEK}
     if is_gold_corpus:
         special_characters = {"?": " ", "+": "", "༌": TSEK}
 
-    modified_content = re.sub(
+    text = re.sub(
         "|".join(re.escape(key) for key in special_characters.keys()),
         lambda match: special_characters[match.group(0)],
-        file_string,
+        text,
     )
-    modified_content = remove_extra_spaces(modified_content)
-    return modified_content
+    text = remove_extra_spaces(text)
+    return text
 
 
-def remove_extra_spaces(file_string):
-
+def remove_extra_spaces(text: str) -> str:
     pattern = r"[ ]+"
     replacement = " "
-    modified_string = replace_with_regex({pattern: replacement}, file_string.strip())
-    return modified_string
+    text = replace_with_regex({pattern: replacement}, text.strip())
+    return text
 
 
-def adjust_spaces_for_non_affix(file_string):
+def adjust_spaces_for_non_affix(text: str) -> str:
     """
     Sometimes there error in gold corpus i.e
     string: ད གེ འོ་ བཀྲ་ཤིས་ ཤོག།
@@ -39,11 +38,11 @@ def adjust_spaces_for_non_affix(file_string):
     """
     pattern = r"([^་།_]) ([^ར ས འི འམ འང འོ འིའོ འིའམ འིའང འོའམ འོའང ། _])"
     replacement = r"\1\2"
-    modified_string = replace_with_regex({pattern: replacement}, file_string)
-    return modified_string
+    text = replace_with_regex({pattern: replacement}, text)
+    return text
 
 
-def adjust_spaces_for_affix(file_string):
+def adjust_spaces_for_affix(text: str) -> str:
     """
     Somtimes there error in gold corpus i.e
     String: །འཁོར་བ འི་ འབྲོག་ ནི་ མི་ བཟད་པ-འི།
@@ -51,52 +50,52 @@ def adjust_spaces_for_affix(file_string):
     """
     pattern = r"((?![་།_༠༡༢༣༤༥༦༧༨༩])[\u0F00-\u0FFF]) (ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང)"
     replacement = r"\1-\2"
-    modified_string = replace_with_regex({pattern: replacement}, file_string)
+    text = replace_with_regex({pattern: replacement}, text)
 
-    return modified_string
+    return text
 
 
-def adjust_spaces_for_tibetan_numbers(file_string):
+def adjust_spaces_for_tibetan_numbers(text: str) -> str:
     patterns = {
         r"(?<=[༠༡༢༣༤༥༦༧༨༩])([ ]+)(?=[༠༡༢༣༤༥༦༧༨༩])": r"",  # གཏམ་༡ ༢  ༣བྱ་བ་ -> གཏམ་༡༢༣བྱ་བ་
         r"\s*([༠༡༢༣༤༥༦༧༨༩]+)\s*": r" \1 ",  # གཏམ་༡༢༣བྱ་བ་ -> གཏམ་ ༡༢༣ བྱ་བ་,
     }
-    modified_content = replace_with_regex(patterns, file_string)
-    return modified_content
+    text = replace_with_regex(patterns, text)
+    return text
 
 
-def adjust_spaces_for_non_tibetan_character(file_string):
+def adjust_spaces_for_non_tibetan_character(text: str) -> str:
     patterns = {
         r"(?<=[^\u0F00-\u0FFF\s]) (?=[^\u0F00-\u0FFF\s])": r"",  # For non tibetan characters
         r"\s*([^\u0F00-\u0FFF\s_-]+)\s*": r" \1 ",
     }
-    modified_content = replace_with_regex(patterns, file_string)
-    return modified_content
+    text = replace_with_regex(patterns, text)
+    return text
 
 
-def transform_gold_corpus_for_botok_word_tokenizer_pipeline(file_string):
+def prepare_gold_corpus_for_botok_tokenizer(text: str) -> str:
 
     """
     input: string of a file before going under max match(botok)
     output/return: cleaned/preprocess string
     """
 
-    modified_content = remove_special_characters(file_string)
+    text = filter_text(text)
 
     # Joining all the words, not leaving spaces unless its for SHAD
     patterns = {r"(?<=([^།])) (?=([^།]))": ""}
 
-    modified_content = replace_with_regex(patterns, modified_content)
-    return modified_content
+    text = replace_with_regex(patterns, text)
+    return text
 
 
-def transform_gold_corpus_for_tagging(file_string):
+def transform_gold_corpus_for_tagging(text: str) -> str:
 
     """
     input: string where words are separated with space by human annotators before going to tagger
     output/return: cleaned/preprocess string where words are still separated by space
     """
-    modified_content = remove_special_characters(file_string, is_gold_corpus=True)
+    text = filter_text(text, is_gold_corpus=True)
 
     patterns = {
         "།[ ]+༄": "།_༄",  # ཕྲེང་བ།  ༄༅༅།-> ཕྲེང་བ།_༄༅༅།
@@ -107,18 +106,16 @@ def transform_gold_corpus_for_tagging(file_string):
         r"(?<![༅།_])([།_]+)": r" \1",  # སྐད་དུ།_རཱ་ -> སྐད་དུ །_རཱ་
         r"([།_]+)(?![༄།_])": r"\1 ",  # སྐད་དུ།_རཱ་ -> སྐད་དུ།_ རཱ་
     }
-    modified_content = replace_with_regex(patterns, modified_content)
-    gold_corpus_output = adjust_spaces_for_non_affix(modified_content)
-    gold_corpus_output = adjust_spaces_for_tibetan_numbers(gold_corpus_output)
-    gold_corpus_output = adjust_spaces_for_non_tibetan_character(gold_corpus_output)
-    gold_corpus_output = adjust_spaces_for_affix(gold_corpus_output)
+    text = replace_with_regex(patterns, text)
+    text = adjust_spaces_for_non_affix(text)
+    text = adjust_spaces_for_tibetan_numbers(text)
+    text = adjust_spaces_for_non_tibetan_character(text)
+    text = adjust_spaces_for_affix(text)
 
-    return gold_corpus_output
+    return text
 
 
 if __name__ == "__main__":
     file_string = Path("../data/TIB_train.txt").read_text(encoding="utf-8")
-    modified_string = transform_gold_corpus_for_botok_word_tokenizer_pipeline(
-        file_string
-    )
+    modified_string = prepare_gold_corpus_for_botok_tokenizer(file_string)
     print(modified_string)
