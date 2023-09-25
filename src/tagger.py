@@ -116,34 +116,32 @@ def tag_unmatched_words(tokenized_words, gold_corpus_words, tok_idx, gold_idx):
         tokenized_words, gold_corpus_words, tok_idx, gold_idx
     )
 
-    gold_corpus_syls_tagged = tag_syllables(gold_corpus_words[gold_idx:gold_last_idx])
+    tagged_gold_syls = tag_syllables(gold_corpus_words[gold_idx:gold_last_idx])
 
-    botok_unmatched_word_list = tokenized_words[tok_idx:tok_last_idx]
+    unmatched_tokenized_words = tokenized_words[tok_idx:tok_last_idx]
 
-    gold_corpus_syls_tagged_index = 0
+    tagged_gold_idx = 0
     tagged_content = ""
 
-    for botok_unmatched_word in botok_unmatched_word_list:
-        botok_unmatched_syls = get_syllables(botok_unmatched_word)
-        botok_unmatched_syls_count = len(botok_unmatched_syls)
-        botok_syls = ""
-        botok_tags = ""
+    for unmatched_tokenized_word in unmatched_tokenized_words:
+        unmatched_tokenzied_syls = get_syllables(unmatched_tokenized_word)
+        unmatched_tokenzied_syls_count = len(unmatched_tokenzied_syls)
+        tokenized_syls = ""
+        tokenized_tags = ""
 
-        botok_unmatched_syls_index = 0
+        unmatched_tok_idx = 0
 
         for i in range(
-            gold_corpus_syls_tagged_index,
-            gold_corpus_syls_tagged_index + (2 * botok_unmatched_syls_count),
+            tagged_gold_idx,
+            tagged_gold_idx + (2 * unmatched_tokenzied_syls_count),
             2,
         ):
-            botok_syls += botok_unmatched_syls[botok_unmatched_syls_index]
-            botok_unmatched_syls_index += 1
-            botok_tags += gold_corpus_syls_tagged[i + 1]
+            tokenized_syls += unmatched_tokenzied_syls[unmatched_tok_idx]
+            unmatched_tok_idx += 1
+            tokenized_tags += tagged_gold_syls[i + 1]
 
-        tagged_content += botok_syls + "/" + botok_tags + " "
-        gold_corpus_syls_tagged_index = gold_corpus_syls_tagged_index + (
-            2 * botok_unmatched_syls_count
-        )
+        tagged_content += tokenized_syls + "/" + tokenized_tags + " "
+        tagged_gold_idx = tagged_gold_idx + (2 * unmatched_tokenzied_syls_count)
 
     return tagged_content, gold_last_idx, tok_last_idx
 
