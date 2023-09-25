@@ -55,20 +55,20 @@ def find_next_matching_words(tokenized_words, gold_corpus_words, tok_idx, gold_i
     Find the next matching words between botok and gold corpus starting from given indices.
     Returns the indices of the last matching words found.
     """
-    gold_idx_track, tok_idx_track = gold_idx, tok_idx
+    gold_last_idx, tok_last_idx = gold_idx, tok_idx
 
-    while tok_idx_track < len(tokenized_words) and gold_idx_track < len(
+    while tok_last_idx < len(tokenized_words) and gold_last_idx < len(
         gold_corpus_words
     ):
-        condition_1 = tokenized_words[tok_idx_track].replace(
+        condition_1 = tokenized_words[tok_last_idx].replace(
             "_", ""
-        ) == gold_corpus_words[gold_idx_track].replace("_", "")
+        ) == gold_corpus_words[gold_last_idx].replace("_", "")
 
         botok_unmatched_words = "".join(
-            tokenized_words[tok_idx : tok_idx_track + 1]  # noqa
+            tokenized_words[tok_idx : tok_last_idx + 1]  # noqa
         )
         gold_corpus_unmatched_words = "".join(
-            gold_corpus_words[gold_idx : gold_idx_track + 1]  # noqa
+            gold_corpus_words[gold_idx : gold_last_idx + 1]  # noqa
         )
 
         botok_unmatched_words = botok_unmatched_words.replace("_", "").replace("-", "")
@@ -82,21 +82,21 @@ def find_next_matching_words(tokenized_words, gold_corpus_words, tok_idx, gold_i
             break
 
         botok_unmatched_syls = split_words_into_syllables(
-            tokenized_words[tok_idx : tok_idx_track + 1]  # noqa
+            tokenized_words[tok_idx : tok_last_idx + 1]  # noqa
         )
         gold_corpus_unmatched_syls = split_words_into_syllables(
-            gold_corpus_words[gold_idx : gold_idx_track + 1]  # noqa
+            gold_corpus_words[gold_idx : gold_last_idx + 1]  # noqa
         )
 
         if len(botok_unmatched_syls) > len(gold_corpus_unmatched_syls):
-            gold_idx_track += 1
+            gold_last_idx += 1
         elif len(botok_unmatched_syls) < len(gold_corpus_unmatched_syls):
-            tok_idx_track += 1
+            tok_last_idx += 1
         else:
-            gold_idx_track += 1
-            tok_idx_track += 1
+            gold_last_idx += 1
+            tok_last_idx += 1
 
-    return gold_idx_track, tok_idx_track
+    return gold_last_idx, tok_last_idx
 
 
 def tag_unmatched_words(tokenized_words, gold_corpus_words, tok_idx, gold_idx):
@@ -104,13 +104,13 @@ def tag_unmatched_words(tokenized_words, gold_corpus_words, tok_idx, gold_idx):
     Tag unmatched words based on gold corpus syllables and return the tagged content.
     Returns the tagged content and the indices after tagging.
     """
-    gold_idx_track, tok_idx_track = find_next_matching_words(
+    gold_last_idx, tok_last_idx = find_next_matching_words(
         tokenized_words, gold_corpus_words, tok_idx, gold_idx
     )
 
-    gold_corpus_syls_tagged = tag_syllables(gold_corpus_words[gold_idx:gold_idx_track])
+    gold_corpus_syls_tagged = tag_syllables(gold_corpus_words[gold_idx:gold_last_idx])
 
-    botok_unmatched_word_list = tokenized_words[tok_idx:tok_idx_track]
+    botok_unmatched_word_list = tokenized_words[tok_idx:tok_last_idx]
 
     gold_corpus_syls_tagged_index = 0
     tagged_content = ""
@@ -137,7 +137,7 @@ def tag_unmatched_words(tokenized_words, gold_corpus_words, tok_idx, gold_idx):
             2 * botok_unmatched_syls_count
         )
 
-    return tagged_content, gold_idx_track, tok_idx_track
+    return tagged_content, gold_last_idx, tok_last_idx
 
 
 def tagger(gold_corpus: str) -> str:
