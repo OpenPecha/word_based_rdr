@@ -4,22 +4,27 @@ from .data_processor import prepare_gold_corpus_for_tokenizer, remove_extra_spac
 from .Utility.regex_replacer import replace_with_regex
 
 
-def botok_word_tokenizer_pipeline(gold_corpus):
+def botok_word_tokenizer_pipeline(gold_corpus: str) -> str:
     """
     input: string of a file before going under max match(botok)
     output/return: cleaned/preprocess string and word segmented
     """
-    preprocessed_string = prepare_gold_corpus_for_tokenizer(gold_corpus)
-    t = Text(preprocessed_string)
-    max_match_output = t.tokenize_words_raw_text
-    max_match_output = remove_extra_spaces(max_match_output)
+    preprocessed_text = prepare_gold_corpus_for_tokenizer(gold_corpus)
+    tokenizer = Text(preprocessed_text)
+    tokenized_text = tokenizer.tokenize_words_raw_text
+    tokenized_text = remove_extra_spaces(tokenized_text)
+    tokenized_text = add_hyphens_to_affixes(tokenized_text)
+    return tokenized_text
+
+
+def add_hyphens_to_affixes(text: str) -> str:
     """
-    Input: རིན་པོ་ཆེའི་, max match output: རིན་པོ་ཆེ འི་, after replacement རིན་པོ་ཆེ-འི་
+    Input: རིན་པོ་ཆེའི་, tokenized output: རིན་པོ་ཆེ འི་, after replacement རིན་པོ་ཆེ-འི་
     """
     pattern = r"((?![་།_༠༡༢༣༤༥༦༧༨༩])[\u0F00-\u0FFF]) (ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང)"
     replacement = r"\1-\2"
-    max_match_output = replace_with_regex({pattern: replacement}, max_match_output)
-    return max_match_output
+    text = replace_with_regex({pattern: replacement}, text)
+    return text
 
 
 if __name__ == "__main__":
