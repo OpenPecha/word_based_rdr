@@ -234,34 +234,11 @@ def convert_rdr_to_cql(rdr_string):
         if is_unnecessary_rule:
             continue
 
-        need_split_rule_generation = False
-        # if there is a need for split modification, this will store index, and syllable index a in tuple
-        split_modification = []
         # Checking for split rule generation
-        for rdr_conclusion_tuple in rdr_conclusion:
-            rdr_conclusion_tag = rdr_conclusion_tuple[1]
+        need_split_rule_generation, split_modification = is_split_rule_needed(
+            rdr_condition, rdr_conclusion
+        )
 
-            # Getting tag of each syls for checking if split rules generation is needed
-            # rdr_condition_syls = ['ལ་', 'ལ་'],
-            # rdr_conclusion_tag_list = ['B', 'B']
-            rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["text"]
-            rdr_condition_syls = get_syllables(rdr_condition_text)
-
-            rdr_conclusion_tag_list = list(rdr_conclusion_tag)
-
-            # Cleaning empty elements after conversion from word to syls
-            rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
-            rdr_conclusion_tag_list = [
-                x for x in rdr_conclusion_tag_list if x != "" and x != '"'
-            ]
-
-            for idx_for_split, curr_syl in enumerate(rdr_condition_syls):
-                if idx_for_split != 0 and rdr_conclusion_tag_list[idx_for_split] in [
-                    "B",
-                    "X",
-                ]:
-                    need_split_rule_generation = True
-                    split_modification.append((rdr_conclusion_tuple[0], idx_for_split))
         if need_split_rule_generation:
             new_cql_split_rule, rdr_condition, rdr_conclusion = generate_split_rule(
                 rdr_condition, rdr_conclusion, split_modification
@@ -310,6 +287,38 @@ def convert_rdr_to_cql(rdr_string):
             cql_rules_collection += f"{new_cql_merge_rule}"
 
     return cql_rules_collection
+
+
+def is_split_rule_needed(rdr_condition, rdr_conclusion):
+    need_split_rule_generation = False
+    # if there is a need for split modification, this will store index, and syllable index a in tuple
+    split_modification = []
+    # Checking for split rule generation
+    for rdr_conclusion_tuple in rdr_conclusion:
+        rdr_conclusion_tag = rdr_conclusion_tuple[1]
+
+        # Getting tag of each syls for checking if split rules generation is needed
+        # rdr_condition_syls = ['ལ་', 'ལ་'],
+        # rdr_conclusion_tag_list = ['B', 'B']
+        rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["text"]
+        rdr_condition_syls = get_syllables(rdr_condition_text)
+
+        rdr_conclusion_tag_list = list(rdr_conclusion_tag)
+
+        # Cleaning empty elements after conversion from word to syls
+        rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
+        rdr_conclusion_tag_list = [
+            x for x in rdr_conclusion_tag_list if x != "" and x != '"'
+        ]
+
+        for idx_for_split, curr_syl in enumerate(rdr_condition_syls):
+            if idx_for_split != 0 and rdr_conclusion_tag_list[idx_for_split] in [
+                "B",
+                "X",
+            ]:
+                need_split_rule_generation = True
+                split_modification.append((rdr_conclusion_tuple[0], idx_for_split))
+    return need_split_rule_generation, split_modification
 
 
 def generate_merge_rule(rdr_condition, rdr_conclusion, merge_modification):
