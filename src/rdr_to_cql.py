@@ -184,10 +184,10 @@ def convert_rdr_to_cql(rdr_string):
             rdr_condition, rdr_conclusion, idx
         )
 
-        # if need_affix_rule_generation:
+        # if affix_modification:
         #     # new rule generation
         #     # rdr condition and rdr conclusion will be updated
-        #     new_cql_affix_rule, rdr_condition, rdr_conclusion = generate_affix_rule(
+        #     new_cql_affix_rule = generate_affix_rule(
         #         rdr_condition, rdr_conclusion, affix_modification
         #     )
         #     cql_rules_collection += f"{new_cql_affix_rule}\n"
@@ -221,6 +221,17 @@ def convert_rdr_to_cql(rdr_string):
     return cql_rules_collection
 
 
+def split_and_clean_word_into_syllables(word: str) -> List[str]:
+    # Splitting the word into syllables
+    # EG: "ལ་ལ་" -> ['ལ་', 'ལ་']
+    word_syllables = get_syllables(word)
+    word_syllables = [x for x in word_syllables if x != "" and x != '"']
+
+    # Removing double and single quotes from the syls
+    word_syllables = [text.replace('"', "").replace('"', "") for text in word_syllables]
+    return word_syllables
+
+
 def is_affix_rule_needed(rdr_condition, rdr_conclusion, idx):
     # If the particular rules doesn't has proper format
     is_unnecessary_rule = False
@@ -231,17 +242,16 @@ def is_affix_rule_needed(rdr_condition, rdr_conclusion, idx):
     # Checking for affix rule generation
     for rdr_conclusion_tuple in rdr_conclusion:
         rdr_conclusion_tag = rdr_conclusion_tuple[1]
-
+        rdr_conclusion_idx = rdr_conclusion_tuple[0]
         # Getting tag of each syls for checking if affix rules generation is needed
         # rdr_condition_syls = ['"ངེས་', 'པར་'],
         # rdr_conclusion_tag_list = ['B', 'Y']
         rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["text"]
-        rdr_condition_syls = get_syllables(rdr_condition_text)
 
         rdr_conclusion_tag_list = list(rdr_conclusion_tag)
 
         # Cleaning empty elements after conversion from word to syls
-        rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
+        rdr_condition_syls = split_and_clean_word_into_syllables(rdr_condition_text)
         rdr_conclusion_tag_list = [
             x for x in rdr_conclusion_tag_list if x != "" and x != '"'
         ]
@@ -257,14 +267,14 @@ def is_affix_rule_needed(rdr_condition, rdr_conclusion, idx):
                 "Y",
             ]:
                 # need_affix_rule_generation = True
-                affix_modification.append((idx, idx_for_affix, "OFF"))
+                affix_modification.append((rdr_conclusion_idx, idx_for_affix, "OFF"))
                 continue
             if "-" not in curr_syl and rdr_conclusion_tag_list[idx_for_affix] in [
                 "X",
                 "Y",
             ]:
                 # need_affix_rule_generation = True
-                affix_modification.append((idx, idx_for_affix, "ON"))
+                affix_modification.append((rdr_conclusion_idx, idx_for_affix, "ON"))
     return is_unnecessary_rule, affix_modification
 
 
@@ -317,12 +327,11 @@ def is_split_rule_needed(rdr_condition, rdr_conclusion):
         # rdr_condition_syls = ['ལ་', 'ལ་'],
         # rdr_conclusion_tag_list = ['B', 'B']
         rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["text"]
-        rdr_condition_syls = get_syllables(rdr_condition_text)
 
         rdr_conclusion_tag_list = list(rdr_conclusion_tag)
 
         # Cleaning empty elements after conversion from word to syls
-        rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
+        rdr_condition_syls = split_and_clean_word_into_syllables(rdr_condition_text)
         rdr_conclusion_tag_list = [
             x for x in rdr_conclusion_tag_list if x != "" and x != '"'
         ]
@@ -409,7 +418,6 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
 
         # Getting value for syls and tag of word index
         rdr_condition_text = rdr_condition[word_index]["text"]
-        rdr_condition_syls = get_syllables(rdr_condition_text)
 
         split_index = next(
             i for i, item in enumerate(rdr_conclusion) if item[0] == word_index
@@ -418,15 +426,12 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
         rdr_conclusion_tag_list = list(rdr_conclusion_tag)
 
         # Cleaning empty elements after conversion from word to syls
-        rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
         rdr_conclusion_tag_list = [
             x for x in rdr_conclusion_tag_list if x != "" and x != '"'
         ]
 
         # Removing double and single quotes from the syls
-        rdr_condition_syls = [
-            text.replace('"', "").replace('"', "") for text in rdr_condition_syls
-        ]
+        rdr_condition_syls = split_and_clean_word_into_syllables(rdr_condition_text)
         rdr_conclusion_tag_list = [
             text.replace('"', "").replace('"', "") for text in rdr_conclusion_tag_list
         ]
@@ -540,6 +545,6 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
 
 
 if __name__ == "__main__":
-    rdr_string = Path("src/data/TIB_train.RDR").read_text(encoding="utf-8")
+    rdr_string = Path("src/data/TIB_model.RDR").read_text(encoding="utf-8")
     cql_rules = convert_rdr_to_cql(rdr_string)
     print(cql_rules)
