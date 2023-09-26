@@ -245,40 +245,10 @@ def convert_rdr_to_cql(rdr_string):
             )
             cql_rules_collection += f"{new_cql_split_rule}"
 
-        need_merge_rule_generation = False
-        # if there is a need for merge modification, this will store index, and syllable index a in tuple
-        merge_modification = []
         # Checking for merge rule generation
-        is_first_tuple = True
-
-        for rdr_conclusion_tuple in rdr_conclusion:
-            if is_first_tuple:
-                is_first_tuple = False
-
-                continue
-            rdr_conclusion_tag = rdr_conclusion_tuple[1]
-            rdr_conclusion_tag_list = list(rdr_conclusion_tag)
-
-            # Cleaning empty elements after conversion from word to syls
-            rdr_conclusion_tag_list = [
-                x for x in rdr_conclusion_tag_list if x != "" and x != '"'
-            ]
-
-            if rdr_conclusion_tag_list[0] in ["I", "Y"]:
-                # Check if the prev index has a word to merge with
-                index_to_check = rdr_conclusion_tuple[0] - 1
-                is_index_in_rdr_condition = any(
-                    index_to_check == key for key in list(rdr_condition.keys())
-                )
-                is_text_in_prev_index_condition = False
-                if is_index_in_rdr_condition:
-                    is_text_in_prev_index_condition = any(
-                        "text" in key
-                        for key in list(rdr_condition[index_to_check].keys())
-                    )
-                if is_text_in_prev_index_condition:
-                    need_merge_rule_generation = True
-                    merge_modification.append(rdr_conclusion_tuple[0])
+        need_merge_rule_generation, merge_modification = is_merge_rule_needed(
+            rdr_condition, rdr_conclusion
+        )
 
         if need_merge_rule_generation:
             new_cql_merge_rule = generate_merge_rule(
@@ -287,6 +257,43 @@ def convert_rdr_to_cql(rdr_string):
             cql_rules_collection += f"{new_cql_merge_rule}"
 
     return cql_rules_collection
+
+
+def is_merge_rule_needed(rdr_condition, rdr_conclusion):
+    need_merge_rule_generation = False
+    # if there is a need for merge modification, this will store index, and syllable index a in tuple
+    merge_modification = []
+    # Checking for merge rule generation
+    is_first_tuple = True
+
+    for rdr_conclusion_tuple in rdr_conclusion:
+        if is_first_tuple:
+            is_first_tuple = False
+
+            continue
+        rdr_conclusion_tag = rdr_conclusion_tuple[1]
+        rdr_conclusion_tag_list = list(rdr_conclusion_tag)
+
+        # Cleaning empty elements after conversion from word to syls
+        rdr_conclusion_tag_list = [
+            x for x in rdr_conclusion_tag_list if x != "" and x != '"'
+        ]
+
+        if rdr_conclusion_tag_list[0] in ["I", "Y"]:
+            # Check if the prev index has a word to merge with
+            index_to_check = rdr_conclusion_tuple[0] - 1
+            is_index_in_rdr_condition = any(
+                index_to_check == key for key in list(rdr_condition.keys())
+            )
+            is_text_in_prev_index_condition = False
+            if is_index_in_rdr_condition:
+                is_text_in_prev_index_condition = any(
+                    "text" in key for key in list(rdr_condition[index_to_check].keys())
+                )
+            if is_text_in_prev_index_condition:
+                need_merge_rule_generation = True
+                merge_modification.append(rdr_conclusion_tuple[0])
+    return need_merge_rule_generation, merge_modification
 
 
 def is_split_rule_needed(rdr_condition, rdr_conclusion):
@@ -524,6 +531,6 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
 
 
 if __name__ == "__main__":
-    rdr_string = Path("src/data/TIB_train.RDR").read_text(encoding="utf-8")
+    rdr_string = Path("src/data/TIB_model.RDR").read_text(encoding="utf-8")
     cql_rules = convert_rdr_to_cql(rdr_string)
     print(cql_rules)
