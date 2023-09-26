@@ -1,3 +1,4 @@
+# import re
 from itertools import combinations
 from pathlib import Path
 from typing import Dict, List
@@ -232,6 +233,81 @@ def split_and_clean_word_into_syllables(word: str) -> List[str]:
     return word_syllables
 
 
+def split_and_clean_tag_into_characters(tag: str) -> List[str]:
+    # Splitting the tag into characters
+    # EG: "BB" -> ['B', 'B']
+    tag_characters = list(tag)
+    tag_characters = [x for x in tag_characters if x != "" and x != '"']
+
+    # Removing double and single quotes from the tag
+    tag_characters = [text.replace('"', "").replace('"', "") for text in tag_characters]
+    return tag_characters
+
+
+# def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
+
+#     # Collecting all the cql rule string
+#     affix_cql_rules_collection = ""
+#     for word_index, syl_index, afx_modf in affix_modification:
+#         # word_text = rdr_condition[word_index]["text"]
+#         if afx_modf == "ON":
+#             match_cql = generate_match_cql_string(rdr_condition, rdr_conclusion)
+
+#             # Getting value for syls and tag of word index
+#             rdr_condition_text = rdr_condition[word_index]["text"]
+#             rdr_conclusion_tag = rdr_conclusion[split_index][1]
+
+#             split_index = next(
+#                 i for i, item in enumerate(rdr_conclusion) if item[0] == word_index
+#             )
+
+#             rdr_condition_syls = split_and_clean_word_into_syllables(rdr_condition_text)
+#             rdr_conclusion_tag_list = split_and_clean_tag_into_characters(rdr_conclusion_tag)
+
+#             char_index = len("".join(rdr_condition_syls[:syl_index]))
+#             # Find affix index (ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང) in the word
+#             pattern = r"(ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང)"
+#             affix_partner_length = re.search(pattern, rdr_condition_syls[syl_index])[0]
+#             char_index += affix_partner_length
+#             index_cql = f"{word_index+1}-{char_index}"
+#             operation_cql = "::"
+
+#             left_splited_word = (
+#                 "".join(rdr_condition_syls[:syl_index])
+#                 + rdr_condition_syls[syl_index][:affix_partner_length]
+#             )
+#             left_splited_word_POS = get_POS(left_splited_word)
+#             right_splited_word = rdr_condition_syls[syl_index][
+#                 affix_partner_length:
+#             ] + "".join(rdr_condition_syls[syl_index:])
+#             right_splited_word_POS = get_POS(right_splited_word)
+
+#             replace_cql = ""
+#             if left_splited_word_POS in [
+#                 NO_POS,
+#                 empty_POS,
+#             ] and right_splited_word_POS in [
+#                 NO_POS,
+#                 empty_POS,
+#             ]:
+#                 replace_cql = "[][]"
+#             elif left_splited_word_POS in [NO_POS, empty_POS]:
+#                 replace_cql = f'[][pos="{right_splited_word_POS}"]'
+#             elif right_splited_word_POS in [NO_POS, empty_POS]:
+#                 replace_cql = f'[pos="{left_splited_word_POS}"][]'
+#             else:
+#                 replace_cql = (
+#                     f'[pos="{left_splited_word_POS}"][pos="{right_splited_word_POS}"]'
+#                 )
+
+#             curr_new_cql_rule = "\t".join(
+#                 [match_cql, index_cql, operation_cql, replace_cql]
+#             )
+#             affix_cql_rules_collection += curr_new_cql_rule + "\n"
+
+#     return affix_cql_rules_collection
+
+
 def is_affix_rule_needed(rdr_condition, rdr_conclusion, idx):
     # If the particular rules doesn't has proper format
     is_unnecessary_rule = False
@@ -248,13 +324,11 @@ def is_affix_rule_needed(rdr_condition, rdr_conclusion, idx):
         # rdr_conclusion_tag_list = ['B', 'Y']
         rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["text"]
 
-        rdr_conclusion_tag_list = list(rdr_conclusion_tag)
-
         # Cleaning empty elements after conversion from word to syls
         rdr_condition_syls = split_and_clean_word_into_syllables(rdr_condition_text)
-        rdr_conclusion_tag_list = [
-            x for x in rdr_conclusion_tag_list if x != "" and x != '"'
-        ]
+        rdr_conclusion_tag_list = split_and_clean_tag_into_characters(
+            rdr_conclusion_tag
+        )
 
         # check if each syllables has their corresponding tag
         if len(rdr_condition_syls) != len(rdr_conclusion_tag_list):
@@ -291,13 +365,11 @@ def is_merge_rule_needed(rdr_condition, rdr_conclusion):
 
             continue
         rdr_conclusion_tag = rdr_conclusion_tuple[1]
-        rdr_conclusion_tag_list = list(rdr_conclusion_tag)
 
         # Cleaning empty elements after conversion from word to syls
-        rdr_conclusion_tag_list = [
-            x for x in rdr_conclusion_tag_list if x != "" and x != '"'
-        ]
-
+        rdr_conclusion_tag_list = split_and_clean_tag_into_characters(
+            rdr_conclusion_tag
+        )
         if rdr_conclusion_tag_list[0] in ["I", "Y"]:
             # Check if the prev index has a word to merge with
             index_to_check = rdr_conclusion_tuple[0] - 1
@@ -328,13 +400,11 @@ def is_split_rule_needed(rdr_condition, rdr_conclusion):
         # rdr_conclusion_tag_list = ['B', 'B']
         rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["text"]
 
-        rdr_conclusion_tag_list = list(rdr_conclusion_tag)
-
         # Cleaning empty elements after conversion from word to syls
         rdr_condition_syls = split_and_clean_word_into_syllables(rdr_condition_text)
-        rdr_conclusion_tag_list = [
-            x for x in rdr_conclusion_tag_list if x != "" and x != '"'
-        ]
+        rdr_conclusion_tag_list = split_and_clean_tag_into_characters(
+            rdr_conclusion_tag
+        )
 
         for idx_for_split, curr_syl in enumerate(rdr_condition_syls):
             if idx_for_split != 0 and rdr_conclusion_tag_list[idx_for_split] in [
@@ -423,18 +493,12 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
             i for i, item in enumerate(rdr_conclusion) if item[0] == word_index
         )
         rdr_conclusion_tag = rdr_conclusion[split_index][1]
-        rdr_conclusion_tag_list = list(rdr_conclusion_tag)
-
-        # Cleaning empty elements after conversion from word to syls
-        rdr_conclusion_tag_list = [
-            x for x in rdr_conclusion_tag_list if x != "" and x != '"'
-        ]
 
         # Removing double and single quotes from the syls
         rdr_condition_syls = split_and_clean_word_into_syllables(rdr_condition_text)
-        rdr_conclusion_tag_list = [
-            text.replace('"', "").replace('"', "") for text in rdr_conclusion_tag_list
-        ]
+        rdr_conclusion_tag_list = split_and_clean_tag_into_characters(
+            rdr_conclusion_tag
+        )
 
         char_index = len("".join(rdr_condition_syls[:syl_index]))
         index_cql = f"{word_index+1}-{char_index}"
