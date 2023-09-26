@@ -1,4 +1,3 @@
-# import re
 from itertools import combinations
 from pathlib import Path
 from typing import Dict, List
@@ -200,90 +199,79 @@ def get_index_of_affix_in_word(word: str) -> int:
     return -1
 
 
-# def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
-#     """
-#     each cql rule should be as follows: <matchcql>\t<index>\t<operation>\t<replacecql>
-#     cql example :
-#     ["ལ་ལ་"] ["ལ་ལ་"] 1-2 ::  [] []
-#     ["ལ་"] ["ལ་"] ["ལ་ལ་"]    3-2 ::  [] []
-#     ["ལ་"] ["ལ་"] ["ལ་"] ["ལ་"]   2   +   []
-#     [""]    1   +   []
-#     """
+def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
+    """
+    each cql rule should be as follows: <matchcql>\t<index>\t<operation>\t<replacecql>
+    cql example :
+    ["ལ་ལ་"] ["ལ་ལ་"] 1-2 ::  [] []
+    ["ལ་"] ["ལ་"] ["ལ་ལ་"]    3-2 ::  [] []
+    ["ལ་"] ["ལ་"] ["ལ་"] ["ལ་"]   2   +   []
+    [""]    1   +   []
+    """
 
-#     # Collecting all the cql rule string
-#     affix_cql_rules_collection = ""
-#     for word_index, syl_index, afx_modf in affix_modification:
-#         # word_text = rdr_condition[word_index]["text"]
-#         if afx_modf == "ON":
-#             match_cql = generate_match_cql_string(rdr_condition, rdr_conclusion)
+    # Collecting all the cql rule string
+    affix_cql_rules_collection = ""
+    for word_index, syl_index, afx_modf in affix_modification:
+        # word_text = rdr_condition[word_index]["text"]
+        if afx_modf == "ON":
+            match_cql = generate_match_cql_string(rdr_condition, rdr_conclusion)
 
-#             # Getting value for syls and tag of word index
-#             rdr_condition_text = rdr_condition[word_index]["text"]
-#             rdr_condition_syls = get_syllables(rdr_condition_text)
+            # Getting value for syls and tag of word index
+            rdr_condition_text = rdr_condition[word_index]["text"]
 
-#             split_index = next(
-#                 i for i, item in enumerate(rdr_conclusion) if item[0] == word_index
-#             )
-#             rdr_conclusion_tag = rdr_conclusion[split_index][1]
-#             rdr_conclusion_tag_list = list(rdr_conclusion_tag)
+            split_index = next(
+                i for i, item in enumerate(rdr_conclusion) if item[0] == word_index
+            )
+            rdr_conclusion_tag = rdr_conclusion[split_index][1]
 
-#             # Cleaning empty elements after conversion from word to syls
-#             rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
-#             rdr_conclusion_tag_list = [
-#                 x for x in rdr_conclusion_tag_list if x != "" and x != '"'
-#             ]
+            # Removing double and single quotes from the syls
+            rdr_condition_syls = split_and_clean_word_into_syllables(rdr_condition_text)
+            rdr_conclusion_tag_list = split_and_clean_word_into_syllables(  # noqa
+                rdr_conclusion_tag
+            )
 
-#             # Removing double and single quotes from the syls
-#             rdr_condition_syls = [
-#                 text.replace('"', "").replace('"', "") for text in rdr_condition_syls
-#             ]
-#             rdr_conclusion_tag_list = [
-#                 text.replace('"', "").replace('"', "")
-#                 for text in rdr_conclusion_tag_list
-#             ]
+            char_index = len("".join(rdr_condition_syls[:syl_index]))
+            affix_partner_length = get_index_of_affix_in_word(
+                rdr_condition_syls[syl_index]
+            )
+            char_index += affix_partner_length
+            index_cql = f"{word_index+1}-{char_index}"
+            operation_cql = "::"
 
-#             char_index = len("".join(rdr_condition_syls[:syl_index]))
-#             # Find affix index (ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང) in the word
-#             pattern = r"(ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང)"
-#             affix_partner_length = re.search(pattern, rdr_condition_syls[syl_index])[0]
-#             char_index += affix_partner_length
-#             index_cql = f"{word_index+1}-{char_index}"
-#             operation_cql = "::"
+            left_splited_word = (
+                "".join(rdr_condition_syls[:syl_index])
+                + rdr_condition_syls[syl_index][:affix_partner_length]
+            )
+            left_splited_word_POS = get_POS(left_splited_word)
+            right_splited_word = rdr_condition_syls[syl_index][
+                affix_partner_length:
+            ] + "".join(rdr_condition_syls[syl_index:])
+            right_splited_word_POS = get_POS(right_splited_word)
 
-#             left_splited_word = (
-#                 "".join(rdr_condition_syls[:syl_index])
-#                 + rdr_condition_syls[syl_index][:affix_partner_length]
-#             )
-#             left_splited_word_POS = get_POS(left_splited_word)
-#             right_splited_word = rdr_condition_syls[syl_index][
-#                 affix_partner_length:
-#             ] + "".join(rdr_condition_syls[syl_index:])
-#             right_splited_word_POS = get_POS(right_splited_word)
+            replace_cql = ""
+            if left_splited_word_POS in [
+                NO_POS,
+                empty_POS,
+            ] and right_splited_word_POS in [
+                NO_POS,
+                empty_POS,
+            ]:
+                replace_cql = "[][]"
+            elif left_splited_word_POS in [NO_POS, empty_POS]:
+                replace_cql = f'[][pos="{right_splited_word_POS}"]'
+            elif right_splited_word_POS in [NO_POS, empty_POS]:
+                replace_cql = f'[pos="{left_splited_word_POS}"][]'
+            else:
+                replace_cql = (
+                    f'[pos="{left_splited_word_POS}"][pos="{right_splited_word_POS}"]'
+                )
 
-#             replace_cql = ""
-#             if left_splited_word_POS in [
-#                 NO_POS,
-#                 empty_POS,
-#             ] and right_splited_word_POS in [
-#                 NO_POS,
-#                 empty_POS,
-#             ]:
-#                 replace_cql = "[][]"
-#             elif left_splited_word_POS in [NO_POS, empty_POS]:
-#                 replace_cql = f'[][pos="{right_splited_word_POS}"]'
-#             elif right_splited_word_POS in [NO_POS, empty_POS]:
-#                 replace_cql = f'[pos="{left_splited_word_POS}"][]'
-#             else:
-#                 replace_cql = (
-#                     f'[pos="{left_splited_word_POS}"][pos="{right_splited_word_POS}"]'
-#                 )
+            curr_new_cql_rule = "\t".join(
+                [match_cql, index_cql, operation_cql, replace_cql]
+            )
+            affix_cql_rules_collection += curr_new_cql_rule + "\n"
 
-#             curr_new_cql_rule = "\t".join(
-#                 [match_cql, index_cql, operation_cql, replace_cql]
-#             )
-#             affix_cql_rules_collection += curr_new_cql_rule + "\n"
-
-#     return affix_cql_rules_collection
+    return affix_cql_rules_collection
 
 
 def is_affix_rule_needed(rdr_condition, rdr_conclusion, idx):
@@ -575,7 +563,7 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
 
     match_cql = []
 
-    for index in [t[0] for t in rdr_conclusion]:
+    for index in list(rdr_condition.keys()):
         rdr_condition_attributes = rdr_condition[index].keys()
         match_cql_inner_value = "&".join(
             generate_attribute_clause(attr, rdr_condition[index][attr])
@@ -640,6 +628,6 @@ def convert_rdr_to_cql(rdr_string):
 
 
 if __name__ == "__main__":
-    rdr_string = Path("src/data/TIB_model.RDR").read_text(encoding="utf-8")
+    rdr_string = Path("src/data/TIB_train.RDR").read_text(encoding="utf-8")
     cql_rules = convert_rdr_to_cql(rdr_string)
     print(cql_rules)
