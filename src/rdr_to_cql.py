@@ -42,7 +42,6 @@ def find_combinations_of_matches(list_of_dicts):
 def reorder_rdr_rules_based_on_level(rdr_rules_with_levels):
     rdr_rules_count = len(rdr_rules_with_levels)
     index = 0
-
     # In this function we putting rules with more than level 2 above the level 2,
     # so that the rules can be applied in correct order
     # object.word == "མི་" and object.pos == "VERB" : object.conclusion = "B" <---Level 2
@@ -494,43 +493,28 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
 
 
 def generate_match_cql_string(rdr_condition, rdr_conclusion):
-    # Generating match cql from rdr_condition and rdr conclusion
-    match_cql = ""
+    def clean_attribute_value(value):
+        return value.replace("-", "").replace('"', "").replace("'", "")
 
-    indices_for_rule_generation = [t[0] for t in rdr_conclusion]
-    for i, index in enumerate(indices_for_rule_generation):
-        rdr_condition_attributes = list(rdr_condition[index].keys())
-        no_of_attributes = len(rdr_condition_attributes)
-        attr_counter = 0
-        match_cql_inner_value = ""
-        for rdr_condition_attr in rdr_condition_attributes:
-            attr_counter += 1
-            if rdr_condition_attr == "text":
-                match_cql_inner_value += '"{}"'.format(
-                    rdr_condition[index][rdr_condition_attr]
-                    .replace("-", "")
-                    .replace('"', "")
-                    .replace("'", ""),
-                )
-            else:
-                match_cql_inner_value += '{}="{}"'.format(
-                    rdr_condition_attr,
-                    rdr_condition[index][rdr_condition_attr]
-                    .replace('"', "")
-                    .replace("'", ""),
-                )
+    def generate_attribute_clause(attribute, value):
+        if attribute == "text":
+            return f'"{clean_attribute_value(value)}"'
+        return f'{attribute}="{clean_attribute_value(value)}"'
 
-            # IF there are more than one attribute, there should & sign btw then
-            if attr_counter < no_of_attributes:
-                match_cql_inner_value += "&"
-        match_cql += f"[{match_cql_inner_value}]"
-        if i < len(indices_for_rule_generation) - 1:
-            match_cql += " "
+    match_cql = []
 
-    return match_cql
+    for index in [t[0] for t in rdr_conclusion]:
+        rdr_condition_attributes = rdr_condition[index].keys()
+        match_cql_inner_value = "&".join(
+            generate_attribute_clause(attr, rdr_condition[index][attr])
+            for attr in rdr_condition_attributes
+        )
+        match_cql.append(f"[{match_cql_inner_value}]")
+
+    return " ".join(match_cql)
 
 
 if __name__ == "__main__":
-    rdr_string = Path("src/data/TIB_model.RDR").read_text(encoding="utf-8")
+    rdr_string = Path("src/data/TIB_train.RDR").read_text(encoding="utf-8")
     cql_rules = convert_rdr_to_cql(rdr_string)
     print(cql_rules)

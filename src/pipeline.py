@@ -23,13 +23,13 @@ def pipeline(gold_corpus):
 
     external_tagger_output = convert_tags_to_perfect_tag(tagger_output)
     rdr_rules = train_with_external_rdr(tagger_output, external_tagger_output, (3, 2))
-    Path("src/data/TIB_model.RDR").write_text(rdr_rules, encoding="utf-8")
+    Path("src/data/TIB_train.RDR").write_text(rdr_rules, encoding="utf-8")
     cql_rules = convert_rdr_to_cql(rdr_rules)
     return cql_rules
 
 
 if __name__ == "__main__":
-    gold_corpus = Path("src/data/TIB_demo.txt").read_text(encoding="utf-8")
+    gold_corpus = Path("src/data/TIB_train.txt").read_text(encoding="utf-8")
     cql_rules = pipeline(gold_corpus)
     print(cql_rules)
     # with open("src/data/TIB_demo.tsv", "w", encoding="utf-8") as tsvfile:
