@@ -23,7 +23,6 @@ def pipeline(gold_corpus):
 
     external_tagger_output = convert_tags_to_perfect_tag(tagger_output)
     rdr_rules = train_with_external_rdr(tagger_output, external_tagger_output, (3, 2))
-    Path("src/data/TIB_train.RDR").write_text(rdr_rules, encoding="utf-8")
     cql_rules = convert_rdr_to_cql(rdr_rules)
     return cql_rules
 
