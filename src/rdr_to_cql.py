@@ -243,9 +243,7 @@ def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
                 + rdr_condition_syls[syl_index][:affix_partner_length]
             )
             left_splited_word_POS = get_POS(left_splited_word)
-            right_splited_word = rdr_condition_syls[syl_index][
-                affix_partner_length:
-            ] + "".join(rdr_condition_syls[syl_index:])
+            right_splited_word = rdr_condition_syls[syl_index][affix_partner_length:]
             right_splited_word_POS = get_POS(right_splited_word)
 
             replace_cql = ""
@@ -270,8 +268,77 @@ def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
                 [match_cql, index_cql, operation_cql, replace_cql]
             )
             affix_cql_rules_collection += curr_new_cql_rule + "\n"
+        elif afx_modf == "OFF":
+            # Getting value for syls and tag of word index
+            rdr_condition_text = rdr_condition[word_index]["text"]
+
+            merge_index = next(
+                i for i, item in enumerate(rdr_conclusion) if item[0] == word_index
+            )
+            rdr_conclusion_tag = rdr_conclusion[merge_index][1]
+
+            # Removing double and single quotes from the syls
+            rdr_condition_syls = split_and_clean_word_into_syllables(rdr_condition_text)
+            rdr_conclusion_tag_list = split_and_clean_word_into_syllables(  # noqa
+                rdr_conclusion_tag
+            )
+
+            hyphen_index = get_hyphen_index(rdr_condition_syls[syl_index])
+            left_splited_word = (
+                list_to_string(rdr_condition_syls[:syl_index])
+                + rdr_condition_syls[syl_index][:hyphen_index]
+            )
+            right_splited_word = rdr_condition_syls[syl_index][
+                hyphen_index + 1 :  # noqa
+            ]
+            if syl_index:
+                right_splited_word += list_to_string(rdr_condition_syls[syl_index:])
+
+            merged_word = rdr_condition_text.replace("-", "")
+            merged_word_POS = get_POS(merged_word)
+            operation_cql = "+"
+            temp_rdr_condition = {}
+            for key_index in list(rdr_condition.keys()):
+                if key_index < word_index:
+                    temp_rdr_condition[key_index] = rdr_condition[key_index]
+                    continue
+                if key_index == word_index:
+                    temp_rdr_condition[key_index] = {
+                        "text": left_splited_word,
+                        "pos": get_POS(left_splited_word),
+                    }
+                    temp_rdr_condition[key_index + 1] = {
+                        "text": right_splited_word,
+                        "pos": get_POS(right_splited_word),
+                    }
+                    continue
+
+                temp_rdr_condition[key_index + 1] = rdr_condition[key_index]
+            match_cql = generate_match_cql_string(temp_rdr_condition, rdr_conclusion)
+            operation_cql = "+"
+            index_cql = str(word_index + 1)
+            if merged_word_POS in [NO_POS, empty_POS]:
+                replace_cql = "[]"
+            else:
+                replace_cql = f'[pos="{merged_word_POS}"]'
+
+            curr_new_cql_rule = "\t".join(
+                [match_cql, index_cql, operation_cql, replace_cql]
+            )
+            affix_cql_rules_collection += curr_new_cql_rule + "\n"
 
     return affix_cql_rules_collection
+
+
+def list_to_string(list_of_str: List[str]) -> str:
+    return "".join(list_of_str)
+
+
+def get_hyphen_index(word: str) -> int:
+    index = word.find("-")
+    if index != -1:
+        return index
+    return -1
 
 
 def is_affix_rule_needed(rdr_condition, rdr_conclusion, idx):
@@ -441,7 +508,7 @@ def generate_merge_rule(rdr_condition, rdr_conclusion, merge_modification):
                 new_dict[key - 1] = rdr_condition[key]
         rdr_condition = new_dict
 
-    return merge_cql_rules_collection
+    return merge_cql_rules_collection, rdr_condition, rdr_conclusion
 
 
 def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
@@ -585,23 +652,6 @@ def convert_rdr_to_cql(rdr_string):
         # Sorting the rdr conclusion based on the index, element
         rdr_conclusion = sorted(rdr_conclusion, key=lambda x: x[0])
 
-        # Checking for affix rule generation
-        is_unnecessary_rule, affix_modification = is_affix_rule_needed(
-            rdr_condition, rdr_conclusion, idx
-        )
-
-        # if affix_modification:
-        #     # new rule generation
-        #     # rdr condition and rdr conclusion will be updated
-        #     new_cql_affix_rule = generate_affix_rule(
-        #         rdr_condition, rdr_conclusion, affix_modification
-        #     )
-        #     cql_rules_collection += f"{new_cql_affix_rule}\n"
-
-        # if the rule is not proper, jumps to next rule
-        if is_unnecessary_rule:
-            continue
-
         # Checking for split rule generation
         need_split_rule_generation, split_modification = is_split_rule_needed(
             rdr_condition, rdr_conclusion
@@ -619,15 +669,47 @@ def convert_rdr_to_cql(rdr_string):
         )
 
         if need_merge_rule_generation:
-            new_cql_merge_rule = generate_merge_rule(
+            new_cql_merge_rule, rdr_conclusion, rdr_conclusion = generate_merge_rule(
                 rdr_condition, rdr_conclusion, merge_modification
             )
             cql_rules_collection += f"{new_cql_merge_rule}"
 
+        # Checking for affix rule generation
+        is_unnecessary_rule, affix_modification = is_affix_rule_needed(
+            rdr_condition, rdr_conclusion, idx
+        )
+
+        if affix_modification:
+            # new rule generation
+            # rdr condition and rdr conclusion will be updated
+            new_cql_affix_rule = generate_affix_rule(
+                rdr_condition, rdr_conclusion, affix_modification
+            )
+            cql_rules_collection += f"{new_cql_affix_rule}"
+
+    cql_rules_collection = remove_duplicates_and_join(cql_rules_collection)
     return cql_rules_collection
+
+
+def remove_duplicates_and_join(input_string: str) -> str:
+    # Split the input string into lines
+    lines = input_string.split("\n")
+    # Remove duplicate lines while preserving the order
+    unique_lines = []
+    seen_lines = set()
+
+    for line in lines:
+        if line not in seen_lines:
+            unique_lines.append(line)
+            seen_lines.add(line)
+
+    # Join the unique lines back into a string
+    result_string = "\n".join(unique_lines)
+
+    return result_string
 
 
 if __name__ == "__main__":
     rdr_string = Path("src/data/TIB_train.RDR").read_text(encoding="utf-8")
     cql_rules = convert_rdr_to_cql(rdr_string)
-    print(cql_rules)
+    Path("src/data/TIB_train.tsv").write_text(cql_rules, encoding="utf-8")

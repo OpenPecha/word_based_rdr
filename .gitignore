@@ -1,4 +1,5 @@
 rules_ordering.py
+main.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
