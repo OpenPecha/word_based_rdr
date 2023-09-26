@@ -169,59 +169,6 @@ def parse_rdr_rules(rdr_string: str) -> List[Dict]:
     return rdr_rules
 
 
-def convert_rdr_to_cql(rdr_string):
-    rdr_rules = parse_rdr_rules(rdr_string)
-    rdr_rules = filter_only_neccessary_rdr_rules(rdr_rules)
-    cql_rules_collection = ""
-    for idx, rdr_rule in enumerate(rdr_rules):
-        rdr_condition = rdr_rule[0]
-        rdr_conclusion = rdr_rule[1]
-
-        # Sorting the rdr conclusion based on the index, element
-        rdr_conclusion = sorted(rdr_conclusion, key=lambda x: x[0])
-
-        # Checking for affix rule generation
-        is_unnecessary_rule, affix_modification = is_affix_rule_needed(
-            rdr_condition, rdr_conclusion, idx
-        )
-
-        # if affix_modification:
-        #     # new rule generation
-        #     # rdr condition and rdr conclusion will be updated
-        #     new_cql_affix_rule = generate_affix_rule(
-        #         rdr_condition, rdr_conclusion, affix_modification
-        #     )
-        #     cql_rules_collection += f"{new_cql_affix_rule}\n"
-
-        # if the rule is not proper, jumps to next rule
-        if is_unnecessary_rule:
-            continue
-
-        # Checking for split rule generation
-        need_split_rule_generation, split_modification = is_split_rule_needed(
-            rdr_condition, rdr_conclusion
-        )
-
-        if need_split_rule_generation:
-            new_cql_split_rule, rdr_condition, rdr_conclusion = generate_split_rule(
-                rdr_condition, rdr_conclusion, split_modification
-            )
-            cql_rules_collection += f"{new_cql_split_rule}"
-
-        # Checking for merge rule generation
-        need_merge_rule_generation, merge_modification = is_merge_rule_needed(
-            rdr_condition, rdr_conclusion
-        )
-
-        if need_merge_rule_generation:
-            new_cql_merge_rule = generate_merge_rule(
-                rdr_condition, rdr_conclusion, merge_modification
-            )
-            cql_rules_collection += f"{new_cql_merge_rule}"
-
-    return cql_rules_collection
-
-
 def split_and_clean_word_into_syllables(word: str) -> List[str]:
     # Splitting the word into syllables
     # EG: "ལ་ལ་" -> ['ལ་', 'ལ་']
@@ -244,7 +191,24 @@ def split_and_clean_tag_into_characters(tag: str) -> List[str]:
     return tag_characters
 
 
+def get_index_of_affix_in_word(word: str) -> int:
+    AFFIXES = ["འོའང", "འོའམ", "འིའང", "འིའམ", "འིའོ", "འོ", "འང", "འམ", "འི", "ས", "ར"]
+    for affix in AFFIXES:
+        index = word.find(affix)
+        if index != -1:
+            return index
+    return -1
+
+
 # def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
+#     """
+#     each cql rule should be as follows: <matchcql>\t<index>\t<operation>\t<replacecql>
+#     cql example :
+#     ["ལ་ལ་"] ["ལ་ལ་"] 1-2 ::  [] []
+#     ["ལ་"] ["ལ་"] ["ལ་ལ་"]    3-2 ::  [] []
+#     ["ལ་"] ["ལ་"] ["ལ་"] ["ལ་"]   2   +   []
+#     [""]    1   +   []
+#     """
 
 #     # Collecting all the cql rule string
 #     affix_cql_rules_collection = ""
@@ -255,14 +219,28 @@ def split_and_clean_tag_into_characters(tag: str) -> List[str]:
 
 #             # Getting value for syls and tag of word index
 #             rdr_condition_text = rdr_condition[word_index]["text"]
-#             rdr_conclusion_tag = rdr_conclusion[split_index][1]
+#             rdr_condition_syls = get_syllables(rdr_condition_text)
 
 #             split_index = next(
 #                 i for i, item in enumerate(rdr_conclusion) if item[0] == word_index
 #             )
+#             rdr_conclusion_tag = rdr_conclusion[split_index][1]
+#             rdr_conclusion_tag_list = list(rdr_conclusion_tag)
 
-#             rdr_condition_syls = split_and_clean_word_into_syllables(rdr_condition_text)
-#             rdr_conclusion_tag_list = split_and_clean_tag_into_characters(rdr_conclusion_tag)
+#             # Cleaning empty elements after conversion from word to syls
+#             rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
+#             rdr_conclusion_tag_list = [
+#                 x for x in rdr_conclusion_tag_list if x != "" and x != '"'
+#             ]
+
+#             # Removing double and single quotes from the syls
+#             rdr_condition_syls = [
+#                 text.replace('"', "").replace('"', "") for text in rdr_condition_syls
+#             ]
+#             rdr_conclusion_tag_list = [
+#                 text.replace('"', "").replace('"', "")
+#                 for text in rdr_conclusion_tag_list
+#             ]
 
 #             char_index = len("".join(rdr_condition_syls[:syl_index]))
 #             # Find affix index (ར|ས|འི|འམ|འང|འོ|འིའོ|འིའམ|འིའང|འོའམ|འོའང) in the word
@@ -606,6 +584,59 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
         match_cql.append(f"[{match_cql_inner_value}]")
 
     return " ".join(match_cql)
+
+
+def convert_rdr_to_cql(rdr_string):
+    rdr_rules = parse_rdr_rules(rdr_string)
+    rdr_rules = filter_only_neccessary_rdr_rules(rdr_rules)
+    cql_rules_collection = ""
+    for idx, rdr_rule in enumerate(rdr_rules):
+        rdr_condition = rdr_rule[0]
+        rdr_conclusion = rdr_rule[1]
+
+        # Sorting the rdr conclusion based on the index, element
+        rdr_conclusion = sorted(rdr_conclusion, key=lambda x: x[0])
+
+        # Checking for affix rule generation
+        is_unnecessary_rule, affix_modification = is_affix_rule_needed(
+            rdr_condition, rdr_conclusion, idx
+        )
+
+        # if affix_modification:
+        #     # new rule generation
+        #     # rdr condition and rdr conclusion will be updated
+        #     new_cql_affix_rule = generate_affix_rule(
+        #         rdr_condition, rdr_conclusion, affix_modification
+        #     )
+        #     cql_rules_collection += f"{new_cql_affix_rule}\n"
+
+        # if the rule is not proper, jumps to next rule
+        if is_unnecessary_rule:
+            continue
+
+        # Checking for split rule generation
+        need_split_rule_generation, split_modification = is_split_rule_needed(
+            rdr_condition, rdr_conclusion
+        )
+
+        if need_split_rule_generation:
+            new_cql_split_rule, rdr_condition, rdr_conclusion = generate_split_rule(
+                rdr_condition, rdr_conclusion, split_modification
+            )
+            cql_rules_collection += f"{new_cql_split_rule}"
+
+        # Checking for merge rule generation
+        need_merge_rule_generation, merge_modification = is_merge_rule_needed(
+            rdr_condition, rdr_conclusion
+        )
+
+        if need_merge_rule_generation:
+            new_cql_merge_rule = generate_merge_rule(
+                rdr_condition, rdr_conclusion, merge_modification
+            )
+            cql_rules_collection += f"{new_cql_merge_rule}"
+
+    return cql_rules_collection
 
 
 if __name__ == "__main__":
