@@ -179,49 +179,11 @@ def convert_rdr_to_cql(rdr_string):
         # Sorting the rdr conclusion based on the index, element
         rdr_conclusion = sorted(rdr_conclusion, key=lambda x: x[0])
 
-        # If the particular rules doesn't has proper format
-        is_unnecessary_rule = False
-
-        # need_affix_rule_generation = False
-        # if there is a need for affix modification, this will store index, and operation in tuple
-        affix_modification = []
         # Checking for affix rule generation
-        for rdr_conclusion_tuple in rdr_conclusion:
-            rdr_conclusion_tag = rdr_conclusion_tuple[1]
+        is_unnecessary_rule, affix_modification = is_affix_rule_needed(
+            rdr_condition, rdr_conclusion, idx
+        )
 
-            # Getting tag of each syls for checking if affix rules generation is needed
-            # rdr_condition_syls = ['"ངེས་', 'པར་'],
-            # rdr_conclusion_tag_list = ['B', 'Y']
-            rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["text"]
-            rdr_condition_syls = get_syllables(rdr_condition_text)
-
-            rdr_conclusion_tag_list = list(rdr_conclusion_tag)
-
-            # Cleaning empty elements after conversion from word to syls
-            rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
-            rdr_conclusion_tag_list = [
-                x for x in rdr_conclusion_tag_list if x != "" and x != '"'
-            ]
-
-            # check if each syllables has their corresponding tag
-            if len(rdr_condition_syls) != len(rdr_conclusion_tag_list):
-                is_unnecessary_rule = True
-                break
-
-            for idx_for_affix, curr_syl in enumerate(rdr_condition_syls):
-                if "-" in curr_syl and rdr_conclusion_tag_list[idx_for_affix] not in [
-                    "X",
-                    "Y",
-                ]:
-                    # need_affix_rule_generation = True
-                    affix_modification.append((idx, idx_for_affix, "OFF"))
-                    continue
-                if "-" not in curr_syl and rdr_conclusion_tag_list[idx_for_affix] in [
-                    "X",
-                    "Y",
-                ]:
-                    # need_affix_rule_generation = True
-                    affix_modification.append((idx, idx_for_affix, "ON"))
         # if need_affix_rule_generation:
         #     # new rule generation
         #     # rdr condition and rdr conclusion will be updated
@@ -257,6 +219,53 @@ def convert_rdr_to_cql(rdr_string):
             cql_rules_collection += f"{new_cql_merge_rule}"
 
     return cql_rules_collection
+
+
+def is_affix_rule_needed(rdr_condition, rdr_conclusion, idx):
+    # If the particular rules doesn't has proper format
+    is_unnecessary_rule = False
+
+    # need_affix_rule_generation = False
+    # if there is a need for affix modification, this will store index, and operation in tuple
+    affix_modification = []
+    # Checking for affix rule generation
+    for rdr_conclusion_tuple in rdr_conclusion:
+        rdr_conclusion_tag = rdr_conclusion_tuple[1]
+
+        # Getting tag of each syls for checking if affix rules generation is needed
+        # rdr_condition_syls = ['"ངེས་', 'པར་'],
+        # rdr_conclusion_tag_list = ['B', 'Y']
+        rdr_condition_text = rdr_condition[rdr_conclusion_tuple[0]]["text"]
+        rdr_condition_syls = get_syllables(rdr_condition_text)
+
+        rdr_conclusion_tag_list = list(rdr_conclusion_tag)
+
+        # Cleaning empty elements after conversion from word to syls
+        rdr_condition_syls = [x for x in rdr_condition_syls if x != "" and x != '"']
+        rdr_conclusion_tag_list = [
+            x for x in rdr_conclusion_tag_list if x != "" and x != '"'
+        ]
+
+        # check if each syllables has their corresponding tag
+        if len(rdr_condition_syls) != len(rdr_conclusion_tag_list):
+            is_unnecessary_rule = True
+            break
+
+        for idx_for_affix, curr_syl in enumerate(rdr_condition_syls):
+            if "-" in curr_syl and rdr_conclusion_tag_list[idx_for_affix] not in [
+                "X",
+                "Y",
+            ]:
+                # need_affix_rule_generation = True
+                affix_modification.append((idx, idx_for_affix, "OFF"))
+                continue
+            if "-" not in curr_syl and rdr_conclusion_tag_list[idx_for_affix] in [
+                "X",
+                "Y",
+            ]:
+                # need_affix_rule_generation = True
+                affix_modification.append((idx, idx_for_affix, "ON"))
+    return is_unnecessary_rule, affix_modification
 
 
 def is_merge_rule_needed(rdr_condition, rdr_conclusion):
@@ -531,6 +540,6 @@ def generate_match_cql_string(rdr_condition, rdr_conclusion):
 
 
 if __name__ == "__main__":
-    rdr_string = Path("src/data/TIB_model.RDR").read_text(encoding="utf-8")
+    rdr_string = Path("src/data/TIB_train.RDR").read_text(encoding="utf-8")
     cql_rules = convert_rdr_to_cql(rdr_string)
     print(cql_rules)
