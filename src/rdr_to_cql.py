@@ -199,6 +199,10 @@ def get_index_of_affix_in_word(word: str) -> int:
     return -1
 
 
+def remove_double_and_single_quotes(word: str) -> str:
+    return word.replace('"', "").replace('"', "")
+
+
 def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
     """
     each cql rule should be as follows: <matchcql>\t<index>\t<operation>\t<replacecql>
@@ -242,8 +246,13 @@ def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
                 "".join(rdr_condition_syls[:syl_index])
                 + rdr_condition_syls[syl_index][:affix_partner_length]
             )
+
+            left_splited_word = remove_double_and_single_quotes(left_splited_word)
+
             left_splited_word_POS = get_POS(left_splited_word)
             right_splited_word = rdr_condition_syls[syl_index][affix_partner_length:]
+            right_splited_word = remove_double_and_single_quotes(right_splited_word)
+
             right_splited_word_POS = get_POS(right_splited_word)
 
             replace_cql = ""
@@ -294,7 +303,11 @@ def generate_affix_rule(rdr_condition, rdr_conclusion, affix_modification):
             if syl_index:
                 right_splited_word += list_to_string(rdr_condition_syls[syl_index:])
 
+            left_splited_word = remove_double_and_single_quotes(left_splited_word)
+            right_splited_word = remove_double_and_single_quotes(right_splited_word)
+
             merged_word = rdr_condition_text.replace("-", "")
+            merged_word = remove_double_and_single_quotes(merged_word)
             merged_word_POS = get_POS(merged_word)
             operation_cql = "+"
             temp_rdr_condition = {}
@@ -465,7 +478,7 @@ def generate_merge_rule(rdr_condition, rdr_conclusion, merge_modification):
         left_merge_word = rdr_condition[merge_index]["text"]
         right_merge_word = rdr_condition[merge_index + 1]["text"]
         new_merged_word = left_merge_word + right_merge_word
-        new_merged_word = new_merged_word.replace('"', "").replace('"', "")
+        new_merged_word = remove_double_and_single_quotes(new_merged_word)
         new_merged_word_POS = get_POS(new_merged_word)
         if new_merged_word_POS in [NO_POS, empty_POS]:
             replace_cql = "[]"
@@ -538,8 +551,10 @@ def generate_split_rule(rdr_condition, rdr_conclusion, split_modification):
         operation_cql = "::"
 
         left_splited_word = "".join(rdr_condition_syls[:syl_index])
+        left_splited_word = remove_double_and_single_quotes(left_splited_word)
         left_splited_word_POS = get_POS(left_splited_word)
         right_splited_word = "".join(rdr_condition_syls[syl_index:])
+        right_splited_word = remove_double_and_single_quotes(right_splited_word)
         right_splited_word_POS = get_POS(right_splited_word)
 
         replace_cql = ""
