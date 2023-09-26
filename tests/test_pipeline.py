@@ -10,8 +10,6 @@ from src.pipeline import pipeline
 def test_cql_rules():
     config = Config(dialect_name="general", base_path=Path.home())
     wt = WordTokenizer(config=config)
-    string = "མངོན་པར་"
-
     string = "ལ་ལ་ལ་ལ་ལ་བ་ཡོད་"
 
     token_list = wt.tokenize(string, split_affixes=False)
@@ -19,6 +17,7 @@ def test_cql_rules():
     assert token_text_list == ["ལ་ལ་", "ལ་ལ་", "ལ་བ་", "ཡོད་"]
 
     gold_corpus = Path("tests/data/TIB_gold_corpus.txt").read_text(encoding="utf-8")
+    # get cql rules from gold corpus
     cql_rules = pipeline(gold_corpus)
 
     # write test adjust rule to file
