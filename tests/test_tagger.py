@@ -1,4 +1,4 @@
-from src.word_segmentation_rules_generator.tagger.tagger import tagger
+from src.tagger import tagger
 
 
 def test_tagger():
