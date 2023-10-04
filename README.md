@@ -16,7 +16,7 @@ There are some words now which are not segmented properly after the max match wh
 <!-- Link to the repo owners' github profiles -->
 
 
-- [@tenzin](https://github.com/tenzin3)
+- [@tenzin3](https://github.com/tenzin3)
 
 ## Integrations
 
