@@ -20,6 +20,7 @@ classifiers = [
 dependencies = [
   "botok >= 0.8.12",
   "ordered-set == 4.1.0",
+  "PyGithub >= 2.1.1",
 ]
 
 
