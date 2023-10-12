@@ -3,10 +3,10 @@ from typing import List, Tuple
 
 from botok import TSEK
 
-from .compare_strings import is_corpus_tokenization_identical
-from .data_processor import transform_gold_corpus_for_tagging
-from .tokenizer_pipeline import botok_word_tokenizer_pipeline
-from .Utility.get_syllables import get_syllables
+from rules_generator.compare_strings import is_corpus_tokenization_identical
+from rules_generator.data_processor import transform_gold_corpus_for_tagging
+from rules_generator.tokenizer_pipeline import botok_word_tokenizer_pipeline
+from rules_generator.Utility.get_syllables import get_syllables
 
 
 def split_words_into_syllables(words_list: List[str]) -> List[str]:

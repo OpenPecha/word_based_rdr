@@ -1,6 +1,6 @@
-from .data_processor import transform_gold_corpus_for_tagging
-from .tokenizer_pipeline import botok_word_tokenizer_pipeline
-from .Utility.regex_replacer import replace_with_regex
+from rules_generator.data_processor import transform_gold_corpus_for_tagging
+from rules_generator.tokenizer_pipeline import botok_word_tokenizer_pipeline
+from rules_generator.Utility.regex_replacer import replace_with_regex
 
 
 def is_corpus_tokenization_identical(gold_corpus, tokenized_output):

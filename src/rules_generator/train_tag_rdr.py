@@ -1,8 +1,8 @@
 import re
 from pathlib import Path
 
-from .RDRPOSTagger.pSCRDRtagger.ExtRDRPOSTagger import ExtRDR_RUN
-from .RDRPOSTagger.pSCRDRtagger.RDRPOSTagger import run
+from rules_generator.RDRPOSTagger.pSCRDRtagger.ExtRDRPOSTagger import ExtRDR_RUN
+from rules_generator.RDRPOSTagger.pSCRDRtagger.RDRPOSTagger import run
 
 
 def train_rdr(file_path: Path, THRESHOLD=(4, 4)):

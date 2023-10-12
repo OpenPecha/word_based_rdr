@@ -3,7 +3,7 @@ from pathlib import Path
 
 from botok import TSEK
 
-from .Utility.regex_replacer import replace_with_regex
+from rules_generator.Utility.regex_replacer import replace_with_regex
 
 
 def filter_text(text: str, is_gold_corpus=False) -> str:
