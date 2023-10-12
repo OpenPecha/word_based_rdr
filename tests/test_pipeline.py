@@ -4,7 +4,7 @@ from botok import WordTokenizer
 from botok.config import Config
 from botok.modifytokens.adjusttokens import AdjustTokens
 
-from src.pipeline import pipeline
+from rules_generator.pipeline import pipeline
 
 
 def test_cql_rules():

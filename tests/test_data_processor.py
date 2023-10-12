@@ -1,4 +1,4 @@
-from src.data_processor import (
+from rules_generator.data_processor import (
     prepare_gold_corpus_for_tokenizer,
     transform_gold_corpus_for_tagging,
 )
