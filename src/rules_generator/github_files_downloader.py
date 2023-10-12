@@ -70,5 +70,17 @@ def download_file_with_url(
         )
 
 
+def download_json_files_from_repo(token, repo_owner, repo_name):
+    file_downloader = GitHubFileDownloader(token, repo_owner, repo_name)
+    json_urls = file_downloader.get_json_file_download_urls_from_repo()
+    no_of_json_files = len(json_urls)
+    counter = 1
+    for url in json_urls:
+        file_name = url.split("/")[-1]
+        print(f"Downloading [{counter}/{no_of_json_files}] {file_name}")
+        download_file_with_url(url, file_name)
+        counter += 1
+
+
 if __name__ == "__main__":
-    pass
+    download_json_files_from_repo(GITHUB_TOKEN, REPO_OWNER, REPO_NAME)
