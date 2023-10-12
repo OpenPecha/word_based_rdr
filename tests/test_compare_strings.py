@@ -1,4 +1,4 @@
-from src.compare_strings import compare_gold_corpus_and_tokenized_output
+from rules_generator.compare_strings import compare_gold_corpus_and_tokenized_output
 
 
 def test_compare_gold_corpus_and_tokenized_output():

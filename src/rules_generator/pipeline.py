@@ -1,9 +1,9 @@
 import re
 from pathlib import Path
 
-from .rdr_to_cql import convert_rdr_to_cql
-from .tagger import tagger
-from .train_tag_rdr import train_with_external_rdr
+from rules_generator.rdr_to_cql import convert_rdr_to_cql
+from rules_generator.tagger import tagger
+from rules_generator.train_tag_rdr import train_with_external_rdr
 
 
 def convert_tags_to_perfect_tag(text: str) -> str:

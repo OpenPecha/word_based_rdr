@@ -1,4 +1,4 @@
-from src.tagger import tagger
+from rules_generator.tagger import tagger
 
 
 def test_tagger():

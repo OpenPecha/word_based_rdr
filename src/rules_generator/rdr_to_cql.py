@@ -2,9 +2,9 @@ from itertools import combinations
 from pathlib import Path
 from typing import Dict, List
 
-from .Utility.get_POS import get_POS
-from .Utility.get_syllables import get_syllables
-from .Utility.rdr_to_cql_replace_matcher import find_levels, find_rules
+from rules_generator.Utility.get_POS import get_POS
+from rules_generator.Utility.get_syllables import get_syllables
+from rules_generator.Utility.rdr_to_cql_replace_matcher import find_levels, find_rules
 
 NO_POS = "NO_POS"
 empty_POS = '"'

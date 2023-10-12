@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from .config import PARENT_DIR
-from .RDRPOSTagger.Utility.Eval import computeAccuracies, computeAccuracy
+from rules_generator.config import PARENT_DIR
+from rules_generator.RDRPOSTagger.Utility.Eval import computeAccuracies, computeAccuracy
 
 
 def eval_rdr_result(gold_corpus_file_path: Path, tagged_corpus_file_path: Path):

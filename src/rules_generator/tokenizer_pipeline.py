@@ -1,7 +1,10 @@
 from botok import Text
 
-from .data_processor import prepare_gold_corpus_for_tokenizer, remove_extra_spaces
-from .Utility.regex_replacer import replace_with_regex
+from rules_generator.data_processor import (
+    prepare_gold_corpus_for_tokenizer,
+    remove_extra_spaces,
+)
+from rules_generator.Utility.regex_replacer import replace_with_regex
 
 
 def botok_word_tokenizer_pipeline(gold_corpus: str) -> str:
