@@ -33,5 +33,5 @@ def extract_json_files_to_output(folder_path: Path, output_file_path: Path):
 
 if __name__ == "__main__":
     RESOURCES_FOLDER_DIR = Path(__file__).resolve().parent.parent.parent / "resources"
-    output_file_path = RESOURCES_FOLDER_DIR / "extracted_text.txt"
+    output_file_path = RESOURCES_FOLDER_DIR / "gold_corpus.txt"
     extract_json_files_to_output(RESOURCES_FOLDER_DIR, output_file_path)
