@@ -1,4 +1,4 @@
-from botok.tokenizers import WordTokenizer
+from botok.tokenizers.wordtokenizer import WordTokenizer
 
 from rules_generator.data_processor import (
     prepare_gold_corpus_for_tokenizer,
