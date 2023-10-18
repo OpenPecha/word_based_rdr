@@ -6,6 +6,10 @@ from botok import TSEK
 from rules_generator.Utility.regex_replacer import replace_with_regex
 
 
+def keep_only_tibetan_characters(text: str) -> str:
+    return re.sub(r"[^\u0F00-\u0FFF\s\n\t]+", r"", text)
+
+
 def filter_text(text: str, is_gold_corpus=False) -> str:
     # There are two different kind of TSEK in tibetan, and here standard TSEK is used
     # In gold corpus, i)'-' for affix ii)'+' joiner iii)'?' when annotator is not sure
@@ -65,15 +69,6 @@ def adjust_spaces_for_tibetan_numbers(text: str) -> str:
     return text
 
 
-def adjust_spaces_for_non_tibetan_character(text: str) -> str:
-    patterns = {
-        r"(?<=[^\u0F00-\u0FFF\s]) (?=[^\u0F00-\u0FFF\s])": r"",  # For non tibetan characters
-        r"\s*([^\u0F00-\u0FFF\s_-]+)\s*": r" \1 ",
-    }
-    text = replace_with_regex(patterns, text)
-    return text
-
-
 def prepare_gold_corpus_for_tokenizer(gold_corpus: str) -> str:
 
     """
@@ -82,6 +77,7 @@ def prepare_gold_corpus_for_tokenizer(gold_corpus: str) -> str:
     """
 
     text = filter_text(gold_corpus)
+    text = keep_only_tibetan_characters(text)
 
     # Joining all the words, not leaving spaces unless its for SHAD
     patterns = {r"(?<=([^།])) (?=([^།]))": ""}
@@ -97,6 +93,7 @@ def transform_gold_corpus_for_tagging(gold_corpus: str) -> str:
     output/return: cleaned/preprocess string where words are still separated by space
     """
     text = filter_text(gold_corpus, is_gold_corpus=True)
+    text = keep_only_tibetan_characters(text)
 
     patterns = {
         "།[ ]+༄": "།_༄",  # ཕྲེང་བ།  ༄༅༅།-> ཕྲེང་བ།_༄༅༅།
@@ -110,13 +107,16 @@ def transform_gold_corpus_for_tagging(gold_corpus: str) -> str:
     text = replace_with_regex(patterns, text)
     text = adjust_spaces_for_non_affix(text)
     text = adjust_spaces_for_tibetan_numbers(text)
-    text = adjust_spaces_for_non_tibetan_character(text)
     text = adjust_spaces_for_affix(text)
 
     return text
 
 
 if __name__ == "__main__":
-    file_string = Path("../data/TIB_train.txt").read_text(encoding="utf-8")
-    modified_string = prepare_gold_corpus_for_tokenizer(file_string)
-    print(modified_string)
+    DATA_DIR = Path(__file__).resolve().parent / "data"
+    gold_corpus = Path(DATA_DIR / "gold_corpus.txt").read_text(encoding="utf-8")
+    gold_corpus = "༄༅ །། དཔལ་ནག་པོ་ཆེན་པོའི་སྒྲུབ་ཐབས་ཞེས་བྱ་བ། སྒྲུབ་ཐབས་ཀླུ་སྒྲུབ་ཀྱིས་མཛད་པ ༄༅༅༅།། རྒྱ་གར་སྐད་དུ ། "
+    prepared_gold_corpus = transform_gold_corpus_for_tagging(gold_corpus)
+    print(prepared_gold_corpus)
+    # with open(DATA_DIR / "gold_corpus_prepared.txt", "w", encoding="utf-8") as tsvfile:
+    #     tsvfile.write(prepared_gold_corpus)

@@ -37,7 +37,7 @@ def pipeline(gold_corpus):
 
 if __name__ == "__main__":
     DATA_DIR = Path(__file__).resolve().parent / "data"
-    gold_corpus = Path(DATA_DIR / "gold_corpus.txt").read_text(encoding="utf-8")
+    gold_corpus = Path(DATA_DIR / "TIB_train.txt").read_text(encoding="utf-8")
     cql_rules = pipeline(gold_corpus)
     with open(DATA_DIR / "gold_corpus.tsv", "w", encoding="utf-8") as tsvfile:
         tsvfile.write(cql_rules)
