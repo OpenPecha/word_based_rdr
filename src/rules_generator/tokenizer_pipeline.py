@@ -1,4 +1,4 @@
-from botok import Text
+from botok.tokenizers import WordTokenizer
 
 from rules_generator.data_processor import (
     prepare_gold_corpus_for_tokenizer,
@@ -13,8 +13,11 @@ def botok_word_tokenizer_pipeline(gold_corpus: str) -> str:
     output/return: cleaned/preprocess string and word segmented
     """
     preprocessed_text = prepare_gold_corpus_for_tokenizer(gold_corpus)
-    tokenizer = Text(preprocessed_text)
-    tokenized_text = tokenizer.tokenize_words_raw_text
+    wt = WordTokenizer()
+    tokenized_tokens = wt.tokenize(preprocessed_text)
+    tokenized_text = " ".join(
+        tokenized_token.text for tokenized_token in tokenized_tokens
+    )
     tokenized_text = remove_extra_spaces(tokenized_text)
     tokenized_text = add_hyphens_to_affixes(tokenized_text)
     return tokenized_text
