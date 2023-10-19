@@ -18,7 +18,7 @@ def botok_word_tokenizer_pipeline(gold_corpus: str) -> str:
     wt = WordTokenizer()
     tokenized_tokens = wt.tokenize(preprocessed_text)
     tokenized_text = " ".join(
-        tokenized_token.text.strip for tokenized_token in tokenized_tokens
+        tokenized_token.text.strip() for tokenized_token in tokenized_tokens
     )
     tokenized_text = remove_extra_spaces(tokenized_text)
     tokenized_text = add_hyphens_to_affixes(tokenized_text)
