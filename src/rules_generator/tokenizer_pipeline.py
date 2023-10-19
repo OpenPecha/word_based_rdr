@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from botok.tokenizers.wordtokenizer import WordTokenizer
+from botok import Text
 
 from rules_generator.data_processor import (
     prepare_gold_corpus_for_tokenizer,
@@ -15,11 +15,9 @@ def botok_word_tokenizer_pipeline(gold_corpus: str) -> str:
     output/return: cleaned/preprocess string and word segmented
     """
     preprocessed_text = prepare_gold_corpus_for_tokenizer(gold_corpus)
-    wt = WordTokenizer()
-    tokenized_tokens = wt.tokenize(preprocessed_text)
-    tokenized_text = " ".join(
-        tokenized_token.text.strip() for tokenized_token in tokenized_tokens
-    )
+    tokenizer = Text(preprocessed_text)
+    tokenized_text = tokenizer.tokenize_words_raw_text
+
     tokenized_text = remove_extra_spaces(tokenized_text)
     tokenized_text = add_hyphens_to_affixes(tokenized_text)
     return tokenized_text
@@ -37,9 +35,9 @@ def add_hyphens_to_affixes(text: str) -> str:
 
 if __name__ == "__main__":
     DATA_DIR = Path(__file__).resolve().parent / "data"
-    gold_corpus = Path(DATA_DIR / "gold_corpus.txt").read_text(encoding="utf-8")
-    gold_corpus = "༄༅ །། དཔལ་ནག་པོ་ཆེན་པོའི་སྒྲུབ་ཐབས་ཞེས་བྱ་བ། སྒྲུབ་ཐབས་ཀླུ་སྒྲུབ་ཀྱིས་མཛད་པ ༄༅༅༅།། རྒྱ་གར་སྐད་དུ ། "
+    gold_corpus = Path(DATA_DIR / "TIB_train.txt").read_text(encoding="utf-8")
     tokenized_gold_corpus = botok_word_tokenizer_pipeline(gold_corpus)
-    print(tokenized_gold_corpus)
-    # with open(DATA_DIR / "gold_corpus_tokenized.txt", "w", encoding="utf-8") as tsvfile:
-    #     tsvfile.write(tokenized_gold_corpus)
+    with open(
+        DATA_DIR / "TIB_train_tokenized_text.txt", "w", encoding="utf-8"
+    ) as tsvfile:
+        tsvfile.write(tokenized_gold_corpus)
