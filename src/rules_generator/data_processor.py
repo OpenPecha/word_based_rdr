@@ -92,7 +92,7 @@ def prepare_gold_corpus_for_tokenizer(gold_corpus: str) -> str:
     output/return: cleaned/preprocess string
     """
     text = add_tsek_before_newline(gold_corpus)
-    text = filter_text(gold_corpus)
+    text = filter_text(text)
 
     # Joining all the words, not leaving spaces unless its for SHAD
     patterns = {r"(?<=([^།])) (?=([^།]))": ""}
@@ -108,7 +108,7 @@ def transform_gold_corpus_for_tagging(gold_corpus: str) -> str:
     output/return: cleaned/preprocess string where words are still separated by space
     """
     text = add_tsek_before_newline(gold_corpus)
-    text = filter_text(gold_corpus, is_gold_corpus=True)
+    text = filter_text(text, is_gold_corpus=True)
 
     patterns = {
         "།[ ]+༄": "།_༄",  # ཕྲེང་བ།  ༄༅༅།-> ཕྲེང་བ།_༄༅༅།
