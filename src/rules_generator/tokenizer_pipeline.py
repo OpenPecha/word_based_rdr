@@ -14,13 +14,20 @@ def botok_word_tokenizer_pipeline(gold_corpus: str) -> str:
     input: string of a file before going under max match(botok)
     output/return: cleaned/preprocess string and word segmented
     """
-    preprocessed_text = prepare_gold_corpus_for_tokenizer(gold_corpus)
-    tokenizer = Text(preprocessed_text)
-    tokenized_text = tokenizer.tokenize_words_raw_text
-
-    tokenized_text = remove_extra_spaces(tokenized_text)
-    tokenized_text = add_hyphens_to_affixes(tokenized_text)
-    return tokenized_text
+    lines = gold_corpus.split("\n")
+    processed_lines = []
+    counter = 1
+    for line in lines:
+        # Apply pre-processing for each line
+        print(f"Processing line [{counter}/{len(lines)}]")
+        counter += 1
+        preprocessed_text = prepare_gold_corpus_for_tokenizer(line)
+        tokenizer = Text(preprocessed_text)
+        tokenized_text = tokenizer.tokenize_words_raw_text
+        tokenized_text = remove_extra_spaces(tokenized_text)
+        tokenized_text = add_hyphens_to_affixes(tokenized_text)
+        processed_lines.append(tokenized_text)
+    return "\n".join(processed_lines)
 
 
 def add_hyphens_to_affixes(text: str) -> str:
@@ -35,9 +42,9 @@ def add_hyphens_to_affixes(text: str) -> str:
 
 if __name__ == "__main__":
     DATA_DIR = Path(__file__).resolve().parent / "data"
-    gold_corpus = Path(DATA_DIR / "TIB_train.txt").read_text(encoding="utf-8")
+    gold_corpus = Path(DATA_DIR / "gold_corpus.txt").read_text(encoding="utf-8")
     tokenized_gold_corpus = botok_word_tokenizer_pipeline(gold_corpus)
     with open(
-        DATA_DIR / "TIB_train_tokenized_text.txt", "w", encoding="utf-8"
+        DATA_DIR / "gold_corpus_tokenized_new_line.txt", "w", encoding="utf-8"
     ) as tsvfile:
         tsvfile.write(tokenized_gold_corpus)
