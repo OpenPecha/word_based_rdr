@@ -78,13 +78,20 @@ def adjust_spaces_for_non_tibetan_character(text: str) -> str:
     return text
 
 
+def add_tsek_before_newline(text):
+    # Use regular expression to find newlines without a shad or tsek before them
+    pattern = r"([^^་།])(\s*\n)"
+    replacement = r"\1་\2"
+    return re.sub(pattern, replacement, text)
+
+
 def prepare_gold_corpus_for_tokenizer(gold_corpus: str) -> str:
 
     """
     input: string of a file before going under max match(botok)
     output/return: cleaned/preprocess string
     """
-
+    text = add_tsek_before_newline(gold_corpus)
     text = filter_text(gold_corpus)
 
     # Joining all the words, not leaving spaces unless its for SHAD
@@ -100,6 +107,7 @@ def transform_gold_corpus_for_tagging(gold_corpus: str) -> str:
     input: string where words are separated with space by human annotators before going to tagger
     output/return: cleaned/preprocess string where words are still separated by space
     """
+    text = add_tsek_before_newline(gold_corpus)
     text = filter_text(gold_corpus, is_gold_corpus=True)
 
     patterns = {
@@ -123,8 +131,7 @@ def transform_gold_corpus_for_tagging(gold_corpus: str) -> str:
 if __name__ == "__main__":
     DATA_DIR = Path(__file__).resolve().parent / "data"
     gold_corpus = Path(DATA_DIR / "gold_corpus.txt").read_text(encoding="utf-8")
-    gold_corpus = "༄༅ །། དཔལ་ནག་པོ་ཆེན་པོའི་སྒྲུབ་ཐབས་ཞེས་བྱ་བ། སྒྲུབ་ཐབས་ཀླུ་སྒྲུབ་ཀྱིས་མཛད་པ ༄༅༅༅།། རྒྱ་གར་སྐད་དུ ། "
     prepared_gold_corpus = transform_gold_corpus_for_tagging(gold_corpus)
     print(prepared_gold_corpus)
-    # with open(DATA_DIR / "gold_corpus_prepared.txt", "w", encoding="utf-8") as tsvfile:
-    #     tsvfile.write(prepared_gold_corpus)
+    with open(DATA_DIR / "gold_corpus_prepared.txt", "w", encoding="utf-8") as tsvfile:
+        tsvfile.write(prepared_gold_corpus)

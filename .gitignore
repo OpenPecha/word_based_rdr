@@ -1,5 +1,6 @@
 resources/
 github_token.py
+gold_corpus_tokenized.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
