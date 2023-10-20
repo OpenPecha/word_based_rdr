@@ -69,6 +69,15 @@ def adjust_spaces_for_tibetan_numbers(text: str) -> str:
     return text
 
 
+def adjust_spaces_for_non_tibetan_character(text: str) -> str:
+    patterns = {
+        r"(?<=[^\u0F00-\u0FFF\s]) (?=[^\u0F00-\u0FFF\s])": r"",  # For non tibetan characters
+        r"\s*([^\u0F00-\u0FFF\s_-]+)\s*": r" \1 ",
+    }
+    text = replace_with_regex(patterns, text)
+    return text
+
+
 def prepare_gold_corpus_for_tokenizer(gold_corpus: str) -> str:
 
     """
@@ -77,7 +86,6 @@ def prepare_gold_corpus_for_tokenizer(gold_corpus: str) -> str:
     """
 
     text = filter_text(gold_corpus)
-    text = keep_only_tibetan_characters(text)
 
     # Joining all the words, not leaving spaces unless its for SHAD
     patterns = {r"(?<=([^།])) (?=([^།]))": ""}
@@ -93,7 +101,6 @@ def transform_gold_corpus_for_tagging(gold_corpus: str) -> str:
     output/return: cleaned/preprocess string where words are still separated by space
     """
     text = filter_text(gold_corpus, is_gold_corpus=True)
-    text = keep_only_tibetan_characters(text)
 
     patterns = {
         "།[ ]+༄": "།_༄",  # ཕྲེང་བ།  ༄༅༅།-> ཕྲེང་བ།_༄༅༅།
@@ -107,6 +114,7 @@ def transform_gold_corpus_for_tagging(gold_corpus: str) -> str:
     text = replace_with_regex(patterns, text)
     text = adjust_spaces_for_non_affix(text)
     text = adjust_spaces_for_tibetan_numbers(text)
+    text = adjust_spaces_for_non_tibetan_character(text)
     text = adjust_spaces_for_affix(text)
 
     return text

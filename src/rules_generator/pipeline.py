@@ -31,6 +31,8 @@ def pipeline(gold_corpus):
         fileout.write(rdr_rules)
 
     cql_rules = convert_rdr_to_cql(rdr_rules)
+    with open(DATA_DIR / "gold_corpus.tsv", "w", encoding="utf-8") as fileout:
+        fileout.write(cql_rules)
 
     return cql_rules
 
@@ -39,5 +41,4 @@ if __name__ == "__main__":
     DATA_DIR = Path(__file__).resolve().parent / "data"
     gold_corpus = Path(DATA_DIR / "TIB_train.txt").read_text(encoding="utf-8")
     cql_rules = pipeline(gold_corpus)
-    with open(DATA_DIR / "gold_corpus.tsv", "w", encoding="utf-8") as tsvfile:
-        tsvfile.write(cql_rules)
+    print(cql_rules)
