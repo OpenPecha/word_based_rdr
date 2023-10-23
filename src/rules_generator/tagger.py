@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 from botok import TSEK
 
-from rules_generator.compare_strings import is_corpus_tokenization_identical
+from rules_generator.annotation_transfer import newline_annotations_transfer
 from rules_generator.data_processor import transform_gold_corpus_for_tagging
 from rules_generator.tokenizer_pipeline import botok_word_tokenizer_pipeline
 from rules_generator.Utility.get_syllables import get_syllables
@@ -157,40 +157,61 @@ def tag_unmatched_words(
 
 
 def tagger(gold_corpus: str) -> str:
-    gold_corpus_cleaned = transform_gold_corpus_for_tagging(gold_corpus)
     tokenized_output = botok_word_tokenizer_pipeline(gold_corpus)
-
-    is_syls_separated_correctly = is_corpus_tokenization_identical(
-        gold_corpus_cleaned, tokenized_output
+    gold_corpus_cleaned = transform_gold_corpus_for_tagging(gold_corpus)
+    gold_corpus_cleaned = newline_annotations_transfer(
+        tokenized_output, gold_corpus_cleaned
     )
 
-    if not is_syls_separated_correctly:
-        return "Error tagger.py: Output of gold corpus and tokenized output does not match."
+    gold_corpus_lines = gold_corpus_cleaned.splitlines()
+    tokenized_lines = tokenized_output.splitlines()
 
-    gold_corpus_words = gold_corpus_cleaned.split()
-    tokenized_words = tokenized_output.split()
+    if len(gold_corpus_lines) != len(tokenized_lines):
+        return (
+            "Error: Number of lines in gold corpus and tokenized output does not match."
+        )
 
-    gold_idx, tok_idx = 0, 0
     tagged_content = ""
 
-    while tok_idx < len(tokenized_words) and gold_idx < len(gold_corpus_words):
-        # Checking if the word is the same (ignoring '_' due to possible shads alignment)
+    # Now, process the content line by line
+    for line_idx in range(len(gold_corpus_lines)):
+        try:  # try block added here
+            gold_line_words = gold_corpus_lines[line_idx].split()
+            tokenized_line_words = tokenized_lines[line_idx].split()
 
-        curr_tok_word = filter_underscore(tokenized_words[tok_idx])
-        curr_gold_word = filter_underscore(gold_corpus_words[gold_idx])
-        # If the word matches perfectly in output of both botok and gold corpus
-        if curr_tok_word == curr_gold_word:
-            tagged_content += tokenized_words[tok_idx] + "/U "
-            gold_idx += 1
-            tok_idx += 1
+            gold_idx, tok_idx = 0, 0
+
+            while tok_idx < len(tokenized_line_words) and gold_idx < len(
+                gold_line_words
+            ):
+                curr_tok_word = filter_underscore(tokenized_line_words[tok_idx])
+                curr_gold_word = filter_underscore(gold_line_words[gold_idx])
+
+                if curr_tok_word == curr_gold_word:
+                    tagged_content += tokenized_line_words[tok_idx] + "/U "
+                    gold_idx += 1
+                    tok_idx += 1
+                    continue
+
+                unmatched_tagged_content, gold_idx, tok_idx = tag_unmatched_words(
+                    tokenized_line_words, gold_line_words, tok_idx, gold_idx
+                )
+                tagged_content += unmatched_tagged_content
+
+            tagged_content += (
+                "\n"  # At the end of each line, add a newline to separate the lines
+            )
+
+        except Exception as e:  # except block added here
+            print(f"An error occurred at line {line_idx + 1}: {e}")
+            # Optionally, log the error details somewhere for review.
+
+            # If you don't want to interrupt the loop, continue to the next iteration.
             continue
 
-        unmatched_tagged_content, gold_idx, tok_idx = tag_unmatched_words(
-            tokenized_words, gold_corpus_words, tok_idx, gold_idx
-        )
-        tagged_content += unmatched_tagged_content
-
-    return tagged_content
+    return (
+        tagged_content.strip()
+    )  # Use strip to remove the trailing newline if necessary
 
 
 if __name__ == "__main__":
