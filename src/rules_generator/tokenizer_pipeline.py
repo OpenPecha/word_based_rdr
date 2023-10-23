@@ -12,13 +12,12 @@ from rules_generator.Utility.regex_replacer import replace_with_regex
 def botok_word_tokenizer_pipeline(gold_corpus: str) -> str:
     """
     input: string of a file before going under max match(botok)
-    output/return: cleaned/preprocess string and word segmented
+    output/return: cleaned/preprocessed string and word segmented
     """
-    lines = gold_corpus.split("\n")
-    processed_lines = []
+    lines = gold_corpus.splitlines()
+    tokenized_lines = []
     counter = 1
     for line in lines:
-        # Apply pre-processing for each line
         print(f"Processing line [{counter}/{len(lines)}]")
         counter += 1
         preprocessed_text = prepare_gold_corpus_for_tokenizer(line)
@@ -26,8 +25,10 @@ def botok_word_tokenizer_pipeline(gold_corpus: str) -> str:
         tokenized_text = tokenizer.tokenize_words_raw_text
         tokenized_text = remove_extra_spaces(tokenized_text)
         tokenized_text = add_hyphens_to_affixes(tokenized_text)
-        processed_lines.append(tokenized_text)
-    return "\n".join(processed_lines)
+        tokenized_lines.append(tokenized_text)
+
+    result_text = "\n".join(tokenized_lines)
+    return result_text
 
 
 def add_hyphens_to_affixes(text: str) -> str:
