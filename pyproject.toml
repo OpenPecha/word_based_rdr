@@ -22,6 +22,7 @@ dependencies = [
   "ordered-set == 4.1.0",
   "PyGithub >= 2.1.1",
   "retrying >= 1.3.4",
+  "antx >= 0.1.11",
 ]
 
 
