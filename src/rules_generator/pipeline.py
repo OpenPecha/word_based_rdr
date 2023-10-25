@@ -53,7 +53,8 @@ def pipeline(gold_corpus, num_parts):
         )
 
         # Append the rdr_rules from the current part to the combined rules
-        rdr_rules_combined += rdr_rules
+        if rdr_rules is not None:
+            rdr_rules_combined += rdr_rules
         print(f"RDR rules done for part {i}....")
 
     # Save the combined RDR rules to the file
