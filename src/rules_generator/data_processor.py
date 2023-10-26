@@ -101,8 +101,7 @@ def prepare_gold_corpus_for_tokenizer(gold_corpus: str) -> str:
     input: string of a file before going under max match(botok)
     output/return: cleaned/preprocess string
     """
-    text = add_tsek_before_newline(gold_corpus)
-    text = filter_text(text)
+    text = filter_text(gold_corpus)
 
     COMBINED_PUNCTS = OPENING_PUNCTS + CLOSING_PUNCTS
     COMBINED_PUNCTS_CHAR_SET = "".join(COMBINED_PUNCTS)

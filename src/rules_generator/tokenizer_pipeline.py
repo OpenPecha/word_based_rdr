@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from rules_generator.data_processor import (
+    add_tsek_before_newline,
     prepare_gold_corpus_for_tokenizer,
     remove_extra_spaces,
     transform_gold_corpus_for_tagging,
@@ -13,6 +14,7 @@ def botok_word_tokenizer_pipeline(wt, gold_corpus: str) -> str:
     input: string of a file before going under max match(botok)
     output/return: cleaned/preprocessed string and word segmented
     """
+    gold_corpus = add_tsek_before_newline(gold_corpus)
     lines = gold_corpus.splitlines()
     tokenized_lines = []
     counter = 1
