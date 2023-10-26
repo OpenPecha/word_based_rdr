@@ -24,57 +24,55 @@ def convert_tags_to_perfect_tag(text: str) -> str:
 
 
 def pipeline(gold_corpus, num_parts):
-
-    # Get tokenized output form botok
-    wt = WordTokenizer()
-    tokenized_output = botok_word_tokenizer_pipeline(wt, gold_corpus)
-
-    # Clean the gold corpus and transfer the annotations
-    gold_corpus_cleaned = transform_gold_corpus_for_tagging(gold_corpus)
-    gold_corpus_cleaned = newline_annotations_transfer(
-        tokenized_output, gold_corpus_cleaned
-    )
-
-    # Tag the gold corpus
-    tagger_output = tagger(gold_corpus_cleaned, tokenized_output)
     DATA_DIR = Path(__file__).resolve().parent / "data"
 
-    with open(DATA_DIR / "gold_corpus.TAGGED", "w", encoding="utf-8") as fileout:
-        fileout.write(tagger_output)
-
-    print("Tagging done....")
-
-    # Split the tagger_output into parts based on newlines
-    all_lines = tagger_output.split("\n")
+    # Initially, split the gold_corpus into parts based on newlines
+    all_lines = gold_corpus.split("\n")
     lines_per_part = len(all_lines) // num_parts
-    parts = []
-
-    for i in range(num_parts):
-        # For the last part, we take all the remaining lines
-        if i == num_parts - 1:
-            parts.append("\n".join(all_lines[i * lines_per_part :]))  # noqa
-        else:
-            parts.append(
-                "\n".join(
-                    all_lines[i * lines_per_part : (i + 1) * lines_per_part]  # noqa
-                )
-            )
 
     rdr_rules_combined = ""  # This will store the combined rdr rules
 
     # Process each part
-    for i, current_part in enumerate(parts, 1):
-        external_tagger_output = convert_tags_to_perfect_tag(current_part)
+    for i in range(num_parts):
+        print(f"Processing part [{i + 1}/{num_parts}]...")
+
+        # Calculate the starting and ending index for each part
+        start_index = i * lines_per_part
+        if i == num_parts - 1:
+            end_index = None  # Take all the remaining lines in the last part
+        else:
+            end_index = (i + 1) * lines_per_part
+
+        # Segment of the corpus that we will work with in this iteration
+        current_corpus = "\n".join(all_lines[start_index:end_index])
+
+        # Tokenization and preparation for the current part of the gold corpus
+        wt = WordTokenizer()
+        tokenized_output = botok_word_tokenizer_pipeline(wt, current_corpus)
+
+        gold_corpus_cleaned = transform_gold_corpus_for_tagging(current_corpus)
+        gold_corpus_cleaned = newline_annotations_transfer(
+            tokenized_output, gold_corpus_cleaned
+        )
+
+        # Tag the current part of the corpus
+        tagger_output = tagger(gold_corpus_cleaned, tokenized_output)
+
+        # Additional processing (e.g., conversion, training) on the tagger output
+        external_tagger_output = convert_tags_to_perfect_tag(tagger_output)
         rdr_rules = train_with_external_rdr(
-            current_part, external_tagger_output, (3, 2)
+            tagger_output, external_tagger_output, (3, 2)
         )
 
         # Append the rdr_rules from the current part to the combined rules
         if rdr_rules is not None:
             rdr_rules_combined += rdr_rules
-        print(f"RDR rules done for part {i}....")
 
-    # Save the combined RDR rules to the file
+        print(f"RDR rules done for part {i + 1}....")
+
+    # After processing all parts, we handle the combined results
+
+    # Save the combined RDR rules to a file
     with open(DATA_DIR / "gold_corpus.RDR", "w", encoding="utf-8") as fileout:
         fileout.write(rdr_rules_combined)
 
@@ -92,6 +90,6 @@ def pipeline(gold_corpus, num_parts):
 
 if __name__ == "__main__":
     DATA_DIR = Path(__file__).resolve().parent / "data"
-    gold_corpus = Path(DATA_DIR / "TIB_train.txt").read_text(encoding="utf-8")
+    gold_corpus = Path(DATA_DIR / "TIB_demo.txt").read_text(encoding="utf-8")
     cql_rules = pipeline(gold_corpus, 1)
     print(cql_rules)

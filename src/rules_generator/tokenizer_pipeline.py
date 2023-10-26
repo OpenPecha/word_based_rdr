@@ -20,10 +20,11 @@ def botok_word_tokenizer_pipeline(wt, gold_corpus: str) -> str:
         print(f"Processing line [{counter}/{len(lines)}]")
         counter += 1
         preprocessed_text = prepare_gold_corpus_for_tokenizer(line)
-        tokens = wt.tokenize(preprocessed_text)
+        tokens = wt.tokenize(preprocessed_text, split_affixes=True)
         tokenized_text = " ".join(token.text for token in tokens)
         tokenized_text = transform_gold_corpus_for_tagging(tokenized_text)
         tokenized_text = remove_extra_spaces(tokenized_text)
+        tokenized_text = add_hyphens_to_affixes(tokenized_text)
         tokenized_lines.append(tokenized_text)
 
     tokenized_corpus = "\n".join(tokenized_lines)
