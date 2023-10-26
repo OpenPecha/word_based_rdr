@@ -157,7 +157,11 @@ def tag_unmatched_words(
 
 
 def tagger(gold_corpus: str) -> str:
-    tokenized_output = botok_word_tokenizer_pipeline(gold_corpus)
+    from botok import WordTokenizer
+
+    wt = WordTokenizer()
+
+    tokenized_output = botok_word_tokenizer_pipeline(wt, gold_corpus)
     gold_corpus_cleaned = transform_gold_corpus_for_tagging(gold_corpus)
     gold_corpus_cleaned = newline_annotations_transfer(
         tokenized_output, gold_corpus_cleaned
