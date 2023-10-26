@@ -42,7 +42,16 @@ def adjust_spaces_for_non_affix(text: str) -> str:
     Expected: དགེ འོ་ བཀྲ་ཤིས་ ཤོག།
     *Note that in དགེ འོ་, space before འོ་ is not closed,because this is an affix
     """
-    pattern = r"([^་།_]) ([^ར ས འི འམ འང འོ འིའོ འིའམ འིའང འོའམ འོའང ། _])"
+    COMBINED_PUNCTS = OPENING_PUNCTS + CLOSING_PUNCTS
+    COMBINED_PUNCTS_CHAR_SET = "".join(COMBINED_PUNCTS)
+
+    pattern = (
+        r"([^་"
+        + COMBINED_PUNCTS_CHAR_SET
+        + "_]) ([^ར ས འི འམ འང འོ འིའོ འིའམ འིའང འོའམ འོའང"
+        + COMBINED_PUNCTS_CHAR_SET
+        + " _])"
+    )
     replacement = r"\1\2"
     text = replace_with_regex({pattern: replacement}, text)
     return text
