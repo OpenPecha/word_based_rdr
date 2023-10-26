@@ -3,9 +3,6 @@ from typing import List, Tuple
 
 from botok import TSEK
 
-from rules_generator.annotation_transfer import newline_annotations_transfer
-from rules_generator.data_processor import transform_gold_corpus_for_tagging
-from rules_generator.tokenizer_pipeline import botok_word_tokenizer_pipeline
 from rules_generator.Utility.get_syllables import get_syllables
 
 
@@ -156,19 +153,9 @@ def tag_unmatched_words(
     return tagged_content, gold_last_idx, tok_last_idx
 
 
-def tagger(gold_corpus: str) -> str:
-    from botok import WordTokenizer
-
-    wt = WordTokenizer()
-
-    tokenized_output = botok_word_tokenizer_pipeline(wt, gold_corpus)
-    gold_corpus_cleaned = transform_gold_corpus_for_tagging(gold_corpus)
-    gold_corpus_cleaned = newline_annotations_transfer(
-        tokenized_output, gold_corpus_cleaned
-    )
-
-    gold_corpus_lines = gold_corpus_cleaned.splitlines()
-    tokenized_lines = tokenized_output.splitlines()
+def tagger(gold_corpus: str, tokenized_corpus: str) -> str:
+    gold_corpus_lines = gold_corpus.splitlines()
+    tokenized_lines = tokenized_corpus.splitlines()
 
     if len(gold_corpus_lines) != len(tokenized_lines):
         return (
@@ -220,6 +207,3 @@ def tagger(gold_corpus: str) -> str:
 
 if __name__ == "__main__":
     file_string = Path("src/data/TIB_train.txt").read_text(encoding="utf-8")
-    tagged_output = tagger(file_string)
-    with open("src/data/TIB_tagged.txt", "w", encoding="utf-8") as file:
-        file.write(tagged_output)

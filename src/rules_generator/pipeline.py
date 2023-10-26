@@ -1,8 +1,13 @@
 import re
 from pathlib import Path
 
+from botok import WordTokenizer
+
+from rules_generator.annotation_transfer import newline_annotations_transfer
+from rules_generator.data_processor import transform_gold_corpus_for_tagging
 from rules_generator.rdr_to_cql import convert_rdr_to_cql
 from rules_generator.tagger import tagger
+from rules_generator.tokenizer_pipeline import botok_word_tokenizer_pipeline
 from rules_generator.train_tag_rdr import train_with_external_rdr
 
 
@@ -19,7 +24,19 @@ def convert_tags_to_perfect_tag(text: str) -> str:
 
 
 def pipeline(gold_corpus, num_parts):
-    tagger_output = tagger(gold_corpus)
+
+    # Get tokenized output form botok
+    wt = WordTokenizer()
+    tokenized_output = botok_word_tokenizer_pipeline(wt, gold_corpus)
+
+    # Clean the gold corpus and transfer the annotations
+    gold_corpus_cleaned = transform_gold_corpus_for_tagging(gold_corpus)
+    gold_corpus_cleaned = newline_annotations_transfer(
+        tokenized_output, gold_corpus_cleaned
+    )
+
+    # Tag the gold corpus
+    tagger_output = tagger(gold_corpus_cleaned, tokenized_output)
     DATA_DIR = Path(__file__).resolve().parent / "data"
 
     with open(DATA_DIR / "gold_corpus.TAGGED", "w", encoding="utf-8") as fileout:
@@ -76,5 +93,5 @@ def pipeline(gold_corpus, num_parts):
 if __name__ == "__main__":
     DATA_DIR = Path(__file__).resolve().parent / "data"
     gold_corpus = Path(DATA_DIR / "TIB_train.txt").read_text(encoding="utf-8")
-    cql_rules = pipeline(gold_corpus, 5)
+    cql_rules = pipeline(gold_corpus, 1)
     print(cql_rules)
