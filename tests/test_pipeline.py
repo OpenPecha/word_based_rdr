@@ -18,7 +18,7 @@ def test_cql_rules():
 
     gold_corpus = Path("tests/data/TIB_gold_corpus.txt").read_text(encoding="utf-8")
     # get cql rules from gold corpus
-    cql_rules = pipeline(gold_corpus)
+    cql_rules = pipeline(gold_corpus, num_parts=1)
 
     # write test adjust rule to file
     Path("tests/data/TIB_lala_test.tsv").write_text(cql_rules, encoding="utf-8")
