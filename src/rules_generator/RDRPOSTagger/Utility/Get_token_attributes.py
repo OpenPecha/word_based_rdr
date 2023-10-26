@@ -4,6 +4,8 @@ from pathlib import Path
 from botok import WordTokenizer
 from botok.config import Config
 
+from rules_generator.data_processor import prepare_gold_corpus_for_tokenizer
+
 
 def Get_CONTENT_POS_attributes(string_text):
 
@@ -14,6 +16,7 @@ def Get_CONTENT_POS_attributes(string_text):
     pattern = r"([^ ])-([^ ])"
     replacement = r"\1\2"
     string_text = re.sub(pattern, replacement, string_text)
+    string_text = prepare_gold_corpus_for_tokenizer(string_text)
     tokens = Tokenize_words(string_text)
 
     pos_list = []
