@@ -32,6 +32,8 @@ def pipeline(gold_corpus, num_parts):
 
     rdr_rules_combined = ""  # This will store the combined rdr rules
 
+    # loading outside the loop to avoid loading it again and again
+    wt = WordTokenizer()
     # Process each part
     for i in range(num_parts):
         print(f"Processing part [{i + 1}/{num_parts}]...")
@@ -47,7 +49,6 @@ def pipeline(gold_corpus, num_parts):
         current_corpus = "\n".join(all_lines[start_index:end_index])
 
         # Tokenization and preparation for the current part of the gold corpus
-        wt = WordTokenizer()
         tokenized_output = botok_word_tokenizer_pipeline(wt, current_corpus)
 
         gold_corpus_cleaned = transform_gold_corpus_for_tagging(current_corpus)
