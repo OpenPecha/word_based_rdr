@@ -3,6 +3,7 @@ from pathlib import Path
 
 from botok import TSEK
 
+from rules_generator.config import CLOSING_PUNCTS, OPENING_PUNCTS
 from rules_generator.Utility.regex_replacer import replace_with_regex
 
 
@@ -94,8 +95,16 @@ def prepare_gold_corpus_for_tokenizer(gold_corpus: str) -> str:
     text = add_tsek_before_newline(gold_corpus)
     text = filter_text(text)
 
-    # Joining all the words, not leaving spaces unless its for SHAD
-    patterns = {r"(?<=([^།])) (?=([^།]))": ""}
+    COMBINED_PUNCTS = OPENING_PUNCTS + CLOSING_PUNCTS
+    COMBINED_PUNCTS_CHAR_SET = "".join(COMBINED_PUNCTS)
+    # Joining all the words, not leaving spaces unless its for punct
+    patterns = {
+        r"(?<=([^"
+        + COMBINED_PUNCTS_CHAR_SET
+        + "])) (?=([^"
+        + COMBINED_PUNCTS_CHAR_SET
+        + "]))": ""
+    }
 
     text = replace_with_regex(patterns, text)
     return text
@@ -123,7 +132,7 @@ def transform_gold_corpus_for_tagging(gold_corpus: str) -> str:
     text = adjust_spaces_for_non_affix(text)
     text = adjust_spaces_for_tibetan_numbers(text)
     text = adjust_spaces_for_non_tibetan_character(text)
-    text = adjust_spaces_for_affix(text)
+    # text = adjust_spaces_for_affix(text)
 
     return text
 
